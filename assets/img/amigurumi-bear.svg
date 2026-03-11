@@ -1,0 +1,33 @@
+<svg width="900" height="900" viewBox="0 0 900 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="bearShadow" x="122" y="102" width="656" height="698" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#26384D" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <g filter="url(#bearShadow)" stroke="#44576B" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="320" cy="252" r="86" fill="#EFC8D7"/>
+    <circle cx="580" cy="252" r="86" fill="#EFC8D7"/>
+    <circle cx="320" cy="252" r="38" fill="#FCEEF4"/>
+    <circle cx="580" cy="252" r="38" fill="#FCEEF4"/>
+    <path d="M450 212C368 212 300 280 300 362C300 430 344 482 402 500C355 514 322 556 322 606C322 668 380 718 450 718C520 718 578 668 578 606C578 556 545 514 498 500C556 482 600 430 600 362C600 280 532 212 450 212Z" fill="#F4D5E1"/>
+    <circle cx="378" cy="350" r="56" fill="#F7E1EA"/>
+    <circle cx="450" cy="332" r="62" fill="#F8E6EE"/>
+    <circle cx="522" cy="350" r="56" fill="#F7E1EA"/>
+    <circle cx="392" cy="424" r="58" fill="#F8E6EE"/>
+    <circle cx="508" cy="424" r="58" fill="#F8E6EE"/>
+    <circle cx="450" cy="398" r="68" fill="#FFF9FC"/>
+    <circle cx="402" cy="592" r="54" fill="#F8E6EE"/>
+    <circle cx="498" cy="592" r="54" fill="#F8E6EE"/>
+    <circle cx="450" cy="610" r="72" fill="#FFF9FC"/>
+    <circle cx="388" cy="392" r="12" fill="#2E3F52" stroke="none"/>
+    <circle cx="512" cy="392" r="12" fill="#2E3F52" stroke="none"/>
+    <ellipse cx="450" cy="432" rx="18" ry="14" fill="#2E3F52" stroke="none"/>
+    <path d="M410 462C432 482 468 482 490 462" fill="none"/>
+    <circle cx="350" cy="500" r="18" fill="#F1BACB" stroke="none"/>
+    <circle cx="550" cy="500" r="18" fill="#F1BACB" stroke="none"/>
+    <path d="M338 514L290 598" fill="none"/>
+    <path d="M562 514L610 598" fill="none"/>
+    <path d="M408 706L388 780" fill="none"/>
+    <path d="M492 706L512 780" fill="none"/>
+  </g>
+</svg>
