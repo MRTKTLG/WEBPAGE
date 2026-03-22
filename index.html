@@ -9,13 +9,21 @@
       content="Yıldız Amigurumi el işi oyuncakların satışa sunulduğu butik mağaza sayfası."
     />
     <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23f6cfe0'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Poppins, Arial, sans-serif' fill='%23111319'%3EY%3C/text%3E%3C/svg%3E"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    />
+    <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
     />
-    <link rel="stylesheet" href="assets/styles.css?v=restore-ref-3" />
+    <link rel="stylesheet" href="assets/styles.css?v=hero-carousel-rollback-176" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg border-bottom sticky-top">
+    <nav class="navbar navbar-expand-lg sticky-top">
       <div class="container">
         <a class="navbar-brand fw-bold text-uppercase" href="#anasayfa">Yıldız Amigurumi</a>
         <button
@@ -34,7 +42,6 @@
             <li class="nav-item"><a class="nav-link" href="#anasayfa">Anasayfa</a></li>
             <li class="nav-item"><a class="nav-link" href="#hakkimizda">Hakkımda</a></li>
             <li class="nav-item"><a class="nav-link" href="#urunler">Ürünler</a></li>
-            <li class="nav-item"><a class="nav-link" href="#yorumlar">Yorumlar</a></li>
             <li class="nav-item"><a class="nav-link" href="#sss">SSS</a></li>
             <li class="nav-item"><a class="nav-link" href="#iletisim">İletişim</a></li>
           </ul>
@@ -42,8 +49,102 @@
       </div>
     </nav>
 
-    <header id="anasayfa" class="hero-wrap border-bottom">
-      <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <header id="anasayfa" class="hero-wrap border-bottom">
+          <div
+            id="heroCarousel"
+            class="carousel slide"
+            data-bs-ride="carousel"
+            data-bs-interval="6000"
+          >
+        <div class="carousel-inner">
+          <div class="carousel-item active bg-forward">
+            <div class="hero-bg" aria-hidden="true"></div>
+            <div class="carousel-caption text-start">
+              <h1 class="hero-split-title">
+                <span class="hero-title-back">Bal</span>
+                <span class="hero-title-front">Düşü</span>
+              </h1>
+              <p>
+                Yumuşak dokulu ipliklerle hazırlanan sevimli ayıcıklar, hediye ve oda dekoru için
+                sıcak bir seçim.
+              </p>
+            </div>
+            <div class="hero-media">
+              <img
+                src="assets/img/internet-bear.svg"
+                class="hero-toy-image hero-toy-bear"
+                alt="İnternetten alınmış benzer stilde vektörel oyuncak ayı"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+          <div class="carousel-item bg-reverse">
+            <div class="hero-bg" aria-hidden="true"></div>
+            <div class="carousel-caption text-start">
+              <h2 class="hero-split-title">
+                <span class="hero-title-back">Mırıl</span>
+                <span class="hero-title-front">Masalı</span>
+              </h2>
+              <p>
+                Renk, ifade ve detayları özenle çalışılmış amigurumi kedi tasarımları her siparişte
+                ayrı karakter taşır.
+              </p>
+            </div>
+            <div class="hero-media">
+              <img
+                src="assets/img/internet-cat.svg"
+                class="hero-toy-image hero-toy-cat"
+                alt="İnternetten alınmış benzer stilde vektörel oyuncak kedi"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+          <div class="carousel-item bg-forward">
+            <div class="hero-bg" aria-hidden="true"></div>
+            <div class="carousel-caption text-start">
+              <h2 class="hero-split-title">
+                <span class="hero-title-back">Orman</span>
+                <span class="hero-title-front">Neşesi</span>
+              </h2>
+              <p>
+                Sıcacık renk paleti ve dengeli formuyla hazırlanan özel figürler, koleksiyonluk ve
+                anlamlı bir hatıraya dönüşür.
+              </p>
+            </div>
+            <div class="hero-media">
+              <img
+                src="assets/img/internet-squirrel.svg"
+                class="hero-toy-image hero-toy-squirrel"
+                alt="İnternetten alınmış benzer stilde vektörel oyuncak sincap"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#heroCarousel"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Önceki</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#heroCarousel"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Sonraki</span>
+        </button>
         <div class="carousel-indicators">
           <button
             type="button"
@@ -66,104 +167,50 @@
             aria-label="3. slayt"
           ></button>
         </div>
-
-        <div class="carousel-inner">
-          <div class="carousel-item active bg-forward">
-            <div class="hero-bg" aria-hidden="true"></div>
-            <div class="carousel-caption text-start">
-              <h1 class="display-6 fw-bold">El Örgüsü Ayıcıklar</h1>
-              <p>Yumuşak dokulu ipliklerle hazırlanan sevimli ayıcıklar, hediye ve oda dekoru için sıcak bir seçim.</p>
-            </div>
-            <div class="hero-media">
-              <img
-                src="assets/img/internet-bear.svg"
-                class="hero-toy-image hero-toy-bear"
-                alt="İnternetten alınmış benzer stilde vektörel oyuncak ayı"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
           </div>
-          <div class="carousel-item bg-reverse">
-            <div class="hero-bg" aria-hidden="true"></div>
-            <div class="carousel-caption text-start">
-              <h2 class="display-6 fw-bold">Karakterli Kedi Modelleri</h2>
-              <p>Renk, ifade ve detayları özenle çalışılmış amigurumi kedi tasarımları her siparişte ayrı karakter taşır.</p>
-            </div>
-            <div class="hero-media">
-              <img
-                src="assets/img/internet-cat.svg"
-                class="hero-toy-image hero-toy-cat"
-                alt="İnternetten alınmış benzer stilde vektörel oyuncak kedi"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
-          <div class="carousel-item bg-forward">
-            <div class="hero-bg" aria-hidden="true"></div>
-            <div class="carousel-caption text-start">
-              <h2 class="display-6 fw-bold">Doğadan İlham Alan Tasarımlar</h2>
-              <p>Sıcacık renk paleti ve dengeli formuyla hazırlanan özel figürler, koleksiyonluk ve anlamlı bir hatıraya dönüşür.</p>
-            </div>
-            <div class="hero-media">
-              <img
-                src="assets/img/internet-squirrel.svg"
-                class="hero-toy-image hero-toy-squirrel"
-                alt="İnternetten alınmış benzer stilde vektörel oyuncak sincap"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
-        </div>
+        </header>
 
-        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Önceki</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Sonraki</span>
-        </button>
-      </div>
-    </header>
-
-    <main>
+        <main>
       <section id="hakkimizda" class="py-5 section-ghost">
         <div class="container">
-          <span class="ghost-heading" aria-hidden="true">Hakkımda</span>
-          <h2 class="mb-3">Hakkımda</h2>
-          <p class="lead mb-3">
-            Ben Yıldız. Her amigurumi oyuncağını tek tek elde örüyor, her ilmeğe karakter ve sıcaklık
-            katıyorum.
-          </p>
-          <p>
-            Benim için amigurumi sadece bir ürün değil; çocuklara güvenli bir arkadaş, yetişkinlere
-            anlamlı bir hatıra tasarlama süreci.
+          <div class="ghost-title-wrap">
+            <span class="ghost-heading" aria-hidden="true">Hakkımda</span>
+            <h2 class="section-title mb-3">Hakkımda</h2>
+          </div>
+          <p class="lead mb-3 about-single-line">
+            Ben Yıldız. El emeğiyle hazırladığım amigurumi tasarımlarında sevimliliği, sadeliği ve
+            özeni bir araya getiriyorum. Her oyuncak benim için sadece bir ürün değil; küçük bir
+            hikaye, özel bir hediye ve uzun süre gülümseten sıcak bir hatıra anlamı taşıyor.
           </p>
           <h3 class="h4 mt-4 mb-3">Üretimde Önceliğim</h3>
-          <p class="mb-0">
-            Yumuşak dokulu iplikler, temiz dikiş ve dengeli form ile her modelin hem estetik hem de
-            güvenli olmasına özen gösteriyorum.
+          <p>
+            Yumuşak iplik seçimi, düzgün işçilik ve dengeli form ile her modelin hem estetik hem de
+            güven veren bir kaliteye sahip olmasına dikkat ediyorum. Sipariş öncesinde tüm detayları
+            birlikte netleştiriyor, üretim sürecinde düzenli bilgilendirme paylaşıyorum.
           </p>
-          <p>Sipariş öncesi tüm detayları netleştirip üretim boyunca düzenli bilgilendirme paylaşıyorum.</p>
           <h3 class="h4 mt-4 mb-3">Marka Yaklaşımım</h3>
           <p class="mb-0">
-            Her tasarımı çocuklara mutluluk, ailelere güven verecek şekilde sade ve zamansız bir çizgide
-            hazırlıyorum.
+            Tasarımlarımı zamansız, yumuşak ve samimi bir çizgide hazırlayarak hem çocuklara neşe
+            hem de ailelere iç rahatlığı sunmayı hedefliyorum.
           </p>
         </div>
       </section>
 
-      <section class="py-5 bg-light border-top border-bottom">
+      <section class="py-5 bg-light stats-section">
+        <div class="section-orb section-orb-pink" aria-hidden="true"></div>
+        <div class="section-orb section-orb-blue" aria-hidden="true"></div>
         <div class="container">
-          <h2 class="mb-4">Amigurumi İstatistikleri</h2>
+          <h2 class="section-title stats-title mb-4">
+            <span class="stats-title-line">Her ilmekte özen, her siparişte güven var.</span>
+            <span class="stats-title-line">Ortaya çıkan bu sayılar, sevgiyle hazırlanan küçük ama anlamlı başarıları anlatıyor.</span>
+          </h2>
           <div class="row g-3">
             <div class="col-12 col-md-4">
               <div class="card h-100 text-center">
                 <div class="card-body">
-                  <p class="display-6 fw-bold mb-2">1376+</p>
+                  <p class="display-6 fw-bold mb-2 stat-counter" data-count="1376" data-suffix="+">
+                    1376+
+                  </p>
                   <p class="mb-0">Tamamlanan Sipariş</p>
                 </div>
               </div>
@@ -171,7 +218,9 @@
             <div class="col-12 col-md-4">
               <div class="card h-100 text-center">
                 <div class="card-body">
-                  <p class="display-6 fw-bold mb-2">825+</p>
+                  <p class="display-6 fw-bold mb-2 stat-counter" data-count="825" data-suffix="+">
+                    825+
+                  </p>
                   <p class="mb-0">Memnun Müşteri</p>
                 </div>
               </div>
@@ -179,7 +228,9 @@
             <div class="col-12 col-md-4">
               <div class="card h-100 text-center">
                 <div class="card-body">
-                  <p class="display-6 fw-bold mb-2">684+</p>
+                  <p class="display-6 fw-bold mb-2 stat-counter" data-count="684" data-suffix="+">
+                    684+
+                  </p>
                   <p class="mb-0">Özel Tasarım Siparişi</p>
                 </div>
               </div>
@@ -188,78 +239,520 @@
         </div>
       </section>
 
-      <section id="urunler" class="py-5">
+      <section id="urunler" class="py-5 section-ghost">
         <div class="container">
-          <div class="d-flex align-items-end justify-content-between mb-4">
-            <h2 class="mb-0">Ürünler</h2>
-            <a class="btn btn-outline-dark btn-sm" href="#iletisim">Sipariş Ver</a>
+          <div class="mb-4">
+            <div class="ghost-title-wrap">
+              <span class="ghost-heading" aria-hidden="true">Ürünler</span>
+              <h2 class="section-title mb-0">Ürünler</h2>
+            </div>
+            <p class="lead mb-0">
+              El emeğiyle hazırlanan amigurumi tasarımlar arasından en sevilen modelleri ve
+              avantajlı fiyatlarla sunduğum secili urunleri burada inceleyebilirsin.
+            </p>
           </div>
-          <div class="row g-4">
-            <div class="col-12 col-sm-6 col-lg-3">
-              <article class="card h-100">
-                <img src="https://placehold.co/640x640/ffd8e8/212529?text=Pudra+Ayicik" class="card-img-top" alt="Pudra Ayıcık" />
-                <div class="card-body">
-                  <h3 class="h5 card-title">Pudra Ayıcık</h3>
-                  <p class="card-text">Pastel tonları ve dengeli formuyla her yaşa hitap eden model.</p>
+          <div class="product-carousel-group">
+            <p class="product-subtitle">Popüler Ürünler</p>
+            <div class="product-carousel" aria-label="Popüler ürün carousel">
+              <div class="carousel-inner">
+                <div class="product-image-grid" aria-label="Popüler ürün görselleri">
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-12109904.jpg" class="card-img-top" alt="Pudra Ayıcık" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 100%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title">Pudra Ayıcık</h3>
+                        <p class="card-text">₺960</p>
+                        <p class="product-model">Klasik Seri</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-17357483.jpg" class="card-img-top" alt="Bulut Tavşan" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 100%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title">Bulut Tavşan</h3>
+                        <p class="card-text">₺880</p>
+                        <p class="product-model">Soft Touch</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-34276455.jpg" class="card-img-top" alt="Tarçın Kedi" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4.5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 90%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title">Tarçın Kedi</h3>
+                        <p class="card-text">₺790</p>
+                        <p class="product-model">Warm Paws</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-17357483.jpg" class="card-img-top" alt="Nane Tilki" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4.5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 90%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title">Nane Tilki</h3>
+                        <p class="card-text">₺1000</p>
+                        <p class="product-model">Forest Edit</p>
+                      </div>
+                    </div>
+                  </article>
                 </div>
-              </article>
+              </div>
             </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-              <article class="card h-100">
-                <img src="https://placehold.co/640x640/e5f4ff/212529?text=Bulut+Tavsan" class="card-img-top" alt="Bulut Tavşan" />
-                <div class="card-body">
-                  <h3 class="h5 card-title">Bulut Tavşan</h3>
-                  <p class="card-text">Zarif görünüm ve yumuşak geçişlerle öne çıkan tasarım.</p>
+          </div>
+          <div class="product-carousel-group">
+            <p class="product-subtitle">Kampanyalı Ürünler</p>
+            <div class="product-carousel" aria-label="Kampanyalı ürün carousel">
+              <div class="carousel-inner">
+                <div class="product-image-grid" aria-label="Kampanyalı ürün görselleri">
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-12109904.jpg" class="card-img-top" alt="Mini Ayıcık" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4.5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 90%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title">Mini Ayıcık</h3>
+                        <p class="card-text">₺400</p>
+                        <p class="product-model">Mini Collection</p>
+                        <p class="product-old-price">₺520</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-17357483.jpg" class="card-img-top" alt="Bulut Fil" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 80%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title">Bulut Fil</h3>
+                        <p class="card-text">₺620</p>
+                        <p class="product-model">Dream Pack</p>
+                        <p class="product-old-price">₺760</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-34276455.jpg" class="card-img-top" alt="Karamel Kedi" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4.5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 90%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title">Karamel Kedi</h3>
+                        <p class="card-text">₺540</p>
+                        <p class="product-model">Soft Caramel</p>
+                        <p class="product-old-price">₺690</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-17357483.jpg" class="card-img-top" alt="Yeşil Tavşancık" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 80%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title">Yeşil Tavşancık</h3>
+                        <p class="card-text">₺470</p>
+                        <p class="product-model">Spring Line</p>
+                        <p class="product-old-price">₺610</p>
+                      </div>
+                    </div>
+                  </article>
                 </div>
-              </article>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-              <article class="card h-100">
-                <img src="https://placehold.co/640x640/ffe9dc/212529?text=Tarcin+Kedi" class="card-img-top" alt="Tarçın Kedi" />
-                <div class="card-body">
-                  <h3 class="h5 card-title">Tarçın Kedi</h3>
-                  <p class="card-text">Sıcak tonlu ve minimal yüz ifadesine sahip klasik model.</p>
-                </div>
-              </article>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-              <article class="card h-100">
-                <img src="https://placehold.co/640x640/e7f7f3/212529?text=Nane+Tilki" class="card-img-top" alt="Nane Tilki" />
-                <div class="card-body">
-                  <h3 class="h5 card-title">Nane Tilki</h3>
-                  <p class="card-text">Canlı renk dokunuşu ve modern çizgisiyle dikkat çeker.</p>
-                </div>
-              </article>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="yorumlar" class="py-5 bg-light border-top border-bottom">
+      <section id="yorumlar" class="py-5 bg-light">
+        <div class="section-orb section-orb-pink" aria-hidden="true"></div>
+        <div class="section-orb section-orb-blue" aria-hidden="true"></div>
         <div class="container">
-          <h2 class="mb-4">Müşteri Yorumları</h2>
-          <div class="row g-3">
-            <div class="col-12 col-md-4">
-              <div class="card h-100">
-                <div class="card-body">
-                  <h3 class="h6">Ayşe K.</h3>
-                  <p class="mb-0">Süreç çok netti, ürün beklediğimden de kaliteli geldi.</p>
-                </div>
+          <h2 class="section-title stats-title feedback-title mb-4">
+            <span class="stats-title-line">Müşterilerden gelen olumlu geri bildirimler, her siparişte kurulan güveni</span>
+            <span class="stats-title-line">ve el emeğinin bıraktığı sıcak etkiyi yansıtıyor.</span>
+          </h2>
+          <div class="testimonial-marquee" aria-label="Müşteri yorumları">
+            <div class="testimonial-column">
+              <div class="testimonial-track">
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">Sipariş öncesinde tüm detayları sabırla konuştuk, süreç boyunca düzenli bilgilendirme aldım ve ürün elime ulaştığında fotoğraftakinden bile daha özenli ve kaliteli olduğunu görmek beni gerçekten çok mutlu etti.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Ayşe K.</h3>
+                        <p class="testimonial-role mb-0">Bal Düşü Ayıcık</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">Renk ve model seçiminde her ayrıntı tek tek konuşuldu. Sonuç tam hayal ettiğim gibi oldu ve kutuyu açar açmaz emeğin ne kadar özenli olduğunu hissettim.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Merve S.</h3>
+                        <p class="testimonial-role mb-0">Bulut Tavşan</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">Dikişlerin temizliği, dolgunun dengesi ve genel görünüm gerçekten çok başarılıydı. Fotoğrafta güzel görünüyordu ama canlı hali çok daha etkileyiciydi.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Seda T.</h3>
+                        <p class="testimonial-role mb-0">Tarçın Kedi</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">Sipariş öncesinde tüm detayları sabırla konuştuk, süreç boyunca düzenli bilgilendirme aldım ve ürün elime ulaştığında fotoğraftakinden bile daha özenli ve kaliteli olduğunu görmek beni gerçekten çok mutlu etti.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Ayşe K.</h3>
+                        <p class="testimonial-role mb-0">Bal Düşü Ayıcık</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">Renk ve model seçiminde her ayrıntı tek tek konuşuldu. Sonuç tam hayal ettiğim gibi oldu ve kutuyu açar açmaz emeğin ne kadar özenli olduğunu hissettim.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Merve S.</h3>
+                        <p class="testimonial-role mb-0">Bulut Tavşan</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">Dikişlerin temizliği, dolgunun dengesi ve genel görünüm gerçekten çok başarılıydı. Fotoğrafta güzel görünüyordu ama canlı hali çok daha etkileyiciydi.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Seda T.</h3>
+                        <p class="testimonial-role mb-0">Tarçın Kedi</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
               </div>
             </div>
-            <div class="col-12 col-md-4">
-              <div class="card h-100">
-                <div class="card-body">
-                  <h3 class="h6">Elif M.</h3>
-                  <p class="mb-0">Renk ve model tam istediğim gibi. Paketleme çok özenliydi.</p>
-                </div>
+            <div class="testimonial-column">
+              <div class="testimonial-track testimonial-track-delayed">
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">İstediğim renkleri ve modeli birebir uygulamış olması harikaydı; ayrıca paketleme o kadar özenliydi ki ürünü hem kendim için çok keyifle açtım hem de hediye etmeden önce içim tamamen rahattı.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Elif M.</h3>
+                        <p class="testimonial-role mb-0">Mırıl Masalı Kedi</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">Üretim süreci boyunca sürekli bilgilendirildim. Sanki hazır ürün almıyormuşum da benim için özel bir hikaye hazırlanıyormuş gibi hissettirdi.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Büşra N.</h3>
+                        <p class="testimonial-role mb-0">Pudra Ayıcık</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">Hediye ettiğim kişi ilk bakışta çok etkilendi. Hem sevimli hem kaliteli bir iş çıkmıştı; uzun süre saklanacak özel bir hediye oldu.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Gamze Y.</h3>
+                        <p class="testimonial-role mb-0">Mini Ayıcık</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">İstediğim renkleri ve modeli birebir uygulamış olması harikaydı; ayrıca paketleme o kadar özenliydi ki ürünü hem kendim için çok keyifle açtım hem de hediye etmeden önce içim tamamen rahattı.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Elif M.</h3>
+                        <p class="testimonial-role mb-0">Mırıl Masalı Kedi</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">Üretim süreci boyunca sürekli bilgilendirildim. Sanki hazır ürün almıyormuşum da benim için özel bir hikaye hazırlanıyormuş gibi hissettirdi.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Büşra N.</h3>
+                        <p class="testimonial-role mb-0">Pudra Ayıcık</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">Hediye ettiğim kişi ilk bakışta çok etkilendi. Hem sevimli hem kaliteli bir iş çıkmıştı; uzun süre saklanacak özel bir hediye oldu.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Gamze Y.</h3>
+                        <p class="testimonial-role mb-0">Mini Ayıcık</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
               </div>
             </div>
-            <div class="col-12 col-md-4">
-              <div class="card h-100">
-                <div class="card-body">
-                  <h3 class="h6">Derya A.</h3>
-                  <p class="mb-0">İletişim hızlıydı, teslimat zamanında gerçekleşti.</p>
+            <div class="testimonial-column">
+              <div class="testimonial-track testimonial-track-slow">
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">İletişim baştan sona çok hızlı ve güven vericiydi, her soruma hemen dönüş aldım ve teslimat da konuştuğumuz tarihte sorunsuz şekilde gerçekleştiği için tüm deneyim beklediğimden çok daha rahattı.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Derya A.</h3>
+                        <p class="testimonial-role mb-0">Orman Neşesi Sincap</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Zeynep T.</h3>
+                        <p class="testimonial-role mb-0">Bulut Fil</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card">
+                  <div class="card-body">
+                    <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
+                    <p class="mb-0">Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Nilay E.</h3>
+                        <p class="testimonial-role mb-0">Yeşil Tavşancık</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">İletişim baştan sona çok hızlı ve güven vericiydi, her soruma hemen dönüş aldım ve teslimat da konuştuğumuz tarihte sorunsuz şekilde gerçekleştiği için tüm deneyim beklediğimden çok daha rahattı.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Derya A.</h3>
+                        <p class="testimonial-role mb-0">Orman Neşesi Sincap</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Zeynep T.</h3>
+                        <p class="testimonial-role mb-0">Bulut Fil</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="card testimonial-card" aria-hidden="true">
+                  <div class="card-body">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="mb-0">Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.</p>
+                    <div class="testimonial-meta">
+                      <div>
+                        <h3 class="h6">Nilay E.</h3>
+                        <p class="testimonial-role mb-0">Yeşil Tavşancık</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sss" class="py-5 section-ghost">
+        <div class="container">
+          <div class="faq-shell">
+            <div class="ghost-title-wrap">
+              <span class="ghost-heading" aria-hidden="true">Sık Sorulan Sorular</span>
+              <h2 class="section-title mb-3">Sık Sorulan Sorular</h2>
+            </div>
+            <p class="lead mb-4">
+              Sipariş süreci, teslimat ve kişiye özel hazırlıklarla ilgili en çok sorulan konuları
+              burada topladım. Aklına takılan farklı bir detay olursa iletişim bölümünden her zaman
+              yazabilirsin.
+            </p>
+            <div class="accordion faq-accordion" id="faqAccordion">
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#q1"
+                    aria-expanded="true"
+                    aria-controls="q1"
+                  >
+                    Siparişim ne kadar sürede hazırlanıyor?
+                  </button>
+                </h3>
+                <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Hazır modellerde ortalama 3-6 iş günü içinde üretimi tamamlıyorum. Kişiye özel
+                    siparişlerde modelin detayına göre net hazırlık süresini sipariş öncesinde birlikte
+                    belirtiyorum.
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#q2"
+                    aria-expanded="false"
+                    aria-controls="q2"
+                  >
+                    Kişiye özel renk veya model seçebiliyor muyum?
+                  </button>
+                </h3>
+                <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Evet. Renk, boyut ve bazı tasarım detaylarını birlikte netleştirerek sana özel bir
+                    çalışma hazırlayabiliyorum. Referans görsel veya fikir paylaşman süreci daha da
+                    kolaylaştırıyor.
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#q3"
+                    aria-expanded="false"
+                    aria-controls="q3"
+                  >
+                    Türkiye geneline gönderim yapıyor musunuz?
+                  </button>
+                </h3>
+                <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Evet, Türkiye'nin tüm şehirlerine kargo gönderimi yapıyorum. Paketleme sırasında
+                    ürünün formunu koruyacak şekilde özenli bir hazırlık yapıyor, gönderi bilgisini de
+                    seninle paylaşıyorum.
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#q4"
+                    aria-expanded="false"
+                    aria-controls="q4"
+                  >
+                    Ürünü hediye olarak göndermek istersem yardımcı oluyor musunuz?
+                  </button>
+                </h3>
+                <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Tabii. Hediye notu eklemek, daha özenli bir paketleme hazırlamak veya teslimat
+                    zamanını planlamak gibi detaylarda yardımcı oluyorum. Sipariş sırasında bunu
+                    belirtmen yeterli.
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#q5"
+                    aria-expanded="false"
+                    aria-controls="q5"
+                  >
+                    Sipariş vermeden önce süreç hakkında bilgi alabilir miyim?
+                  </button>
+                </h3>
+                <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Elbette. Sipariş vermeden önce model, fiyat aralığı, hazırlık süresi ve uygunluk
+                    hakkında mesaj atabilirsin. Önce tüm detayları netleştirip ardından üretime geçmeyi
+                    tercih ediyorum.
+                  </div>
                 </div>
               </div>
             </div>
@@ -267,55 +760,30 @@
         </div>
       </section>
 
-      <section id="sss" class="py-5">
-        <div class="container">
-          <h2 class="mb-4">Sık Sorulan Sorular</h2>
-          <div class="accordion" id="faqAccordion">
-            <div class="accordion-item">
-              <h3 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1" aria-expanded="true" aria-controls="q1">
-                  Siparişimi ne kadar sürede hazırlıyorsunuz?
-                </button>
-              </h3>
-              <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">Standart modellerde ortalama 3-6 iş günü içinde hazırlanır.</div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h3 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2" aria-expanded="false" aria-controls="q2">
-                  Hangi bölgelere gönderim yapılıyor?
-                </button>
-              </h3>
-              <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">Türkiye'nin tüm şehirlerine kargo gönderimi yapılır.</div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h3 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3" aria-expanded="false" aria-controls="q3">
-                  Kişiye özel model yapılabiliyor mu?
-                </button>
-              </h3>
-              <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">Evet, model ve renk seçeneklerini birlikte belirleyip özel üretim yapıyorum.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="iletisim" class="py-5 bg-light border-top">
+      <section id="iletisim" class="py-5 bg-light">
         <div class="container">
           <div class="row g-4 align-items-start">
             <div class="col-12 col-lg-6">
-              <h2 class="mb-3">İletişim</h2>
+              <h2 class="section-title mb-3">İletişim</h2>
               <p class="mb-4">
-                Yeni model talebi, özel renk isteği veya hediye siparişi için doğrudan yazabilirsiniz.
+                Yeni model talebi, özel renk isteği veya hediye siparişi için doğrudan
+                yazabilirsiniz.
               </p>
-              <div class="d-flex gap-2">
-                <a class="btn btn-dark" href="https://instagram.com/yildizamigurumibebek" target="_blank" rel="noopener noreferrer">Instagram</a>
-                <a class="btn btn-success" href="https://wa.me/905551112233" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <div class="d-flex gap-2 contact-actions">
+                <a
+                  class="btn btn-dark"
+                  href="https://instagram.com/yildizamigurumibebek"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Instagram</a
+                >
+                <a
+                  class="btn btn-success"
+                  href="https://wa.me/905551112233"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >WhatsApp</a
+                >
               </div>
             </div>
             <div class="col-12 col-lg-6">
@@ -334,7 +802,13 @@
                 </div>
                 <div class="col-12">
                   <label for="message" class="form-label">Mesaj</label>
-                  <textarea id="message" name="message" class="form-control" rows="4" required></textarea>
+                  <textarea
+                    id="message"
+                    name="message"
+                    class="form-control"
+                    rows="4"
+                    required
+                  ></textarea>
                 </div>
                 <div class="col-12">
                   <button type="submit" class="btn btn-primary">Gönder</button>
@@ -344,21 +818,29 @@
           </div>
         </div>
       </section>
-    </main>
+        </main>
 
-    <footer class="py-4 border-top">
-      <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
-        <span>© 2026 Yıldız Amigurumi</span>
-        <span>Kocası tarafından sevgiyle tasarlandı.</span>
+        <footer class="py-4 border-top">
+          <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
+            <span>© 2026 Yıldız Amigurumi</span>
+            <span class="footer-signature">
+              <span class="footer-signature-heart" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path
+                    d="M12 20.4 10.55 19.08C5.4 14.41 2 11.34 2 7.58 2 4.5 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 4.5 22 7.58c0 3.76-3.4 6.83-8.55 11.5z"
+                  />
+                </svg>
+              </span>
+              <span>Kocası tarafından sevgiyle tasarlandı.</span>
+            </span>
+          </div>
+        </footer>
       </div>
-    </footer>
+    </div>
 
-    <script
-      src="https://code.jquery.com/jquery-4.0.0.min.js"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    ></script>
-    <script src="assets/app.js"></script>
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.3.11/dist/lenis.min.js"></script>
+    <script src="assets/app.js?v=hero-carousel-rollback-176"></script>
   </body>
 </html>
