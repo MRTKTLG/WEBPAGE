@@ -55,6 +55,7 @@
   --stats-title-reveal-2: 0%;
   --text-nav: 0.86rem;
   --text-label: 0.88rem;
+  --text-section-label: 1rem;
   --text-meta: 0.98rem;
   --text-body: 1rem;
   --text-body-lg: clamp(1.02rem, 1.04vw, 1.1rem);
@@ -156,7 +157,7 @@ footer .container {
 
 .navbar-nav .nav-link {
   font-size: var(--text-nav);
-  font-weight: 600;
+  font-weight: 400;
   color: rgba(0, 0, 0, 0.54);
   text-transform: none;
   letter-spacing: 0.012em;
@@ -792,10 +793,6 @@ main > section {
   padding-block: var(--section-pad-y) !important;
 }
 
-main > section.py-5 {
-  padding-block: var(--section-pad-y) !important;
-}
-
 .section-ghost {
   position: relative;
   --ghost-offset: 120vw;
@@ -889,11 +886,6 @@ main > section:not([id]) > .container > h2 {
   z-index: 1;
 }
 
-#hakkimizda h3.h4 {
-  margin-top: var(--rhythm-gap-2) !important;
-  margin-bottom: var(--rhythm-gap-2) !important;
-}
-
 .card-title,
 #yorumlar h3 {
   margin-top: var(--space-2) !important;
@@ -906,7 +898,7 @@ main > section:not([id]) > .container > h2 {
 }
 
 .stats-title {
-  display: inline-flex;
+  display: inline-block;
   width: fit-content;
   max-width: min(100%, 62rem);
   margin-inline: auto;
@@ -926,39 +918,7 @@ main > section:not([id]) > .container > h2 {
 }
 
 .stats-title {
-  flex-direction: column;
-  align-items: center;
-  gap: 0.08em;
-}
-
-.stats-title .stats-title-line {
-  display: inline-block;
-  padding-bottom: 0.1em;
-  background: linear-gradient(
-    90deg,
-    var(--ink) 0%,
-    var(--ink) var(--stats-title-reveal-1),
-    rgba(79, 88, 101, 0.52) var(--stats-title-reveal-1),
-    rgba(79, 88, 101, 0.52) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-.stats-title .stats-title-line:last-child {
-  background: linear-gradient(
-    90deg,
-    var(--ink) 0%,
-    var(--ink) var(--stats-title-reveal-2),
-    rgba(79, 88, 101, 0.52) var(--stats-title-reveal-2),
-    rgba(79, 88, 101, 0.52) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  text-wrap: balance;
 }
 
 .feedback-title {
@@ -982,8 +942,9 @@ main > section:not([id]) > .container > h2 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--testimonial-gap);
   align-items: start;
-  min-height: 42rem;
-  max-height: 42rem;
+  box-sizing: border-box;
+  height: 42rem;
+  padding-block: var(--space-1);
   overflow: hidden;
   -webkit-mask-image: linear-gradient(
     180deg,
@@ -1043,8 +1004,12 @@ main > section:not([id]) > .container > h2 {
 }
 
 .testimonial-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   padding-block: calc(var(--space-5) + 0.25rem);
   padding-inline: calc(var(--space-5) + 0.1rem);
+  padding-bottom: var(--space-3);
   text-align: left;
   border-radius: calc(var(--testimonial-card-radius) - 1px);
 }
@@ -1052,6 +1017,10 @@ main > section:not([id]) > .container > h2 {
 .testimonial-card p {
   margin-bottom: var(--space-4) !important;
   text-align: left;
+}
+
+.testimonial-card .card-body > p.mb-0 {
+  margin-bottom: 0 !important;
 }
 
 .testimonial-card h3 {
@@ -1076,14 +1045,10 @@ main > section:not([id]) > .container > h2 {
   padding-top: var(--space-3);
 }
 
-.testimonial-role {
-  margin: 0 !important;
-  font-size: 0.84rem;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: 0.03em;
-  color: rgba(79, 88, 101, 0.88);
-  text-align: right;
+.testimonial-meta > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .stats-section .stat-counter {
@@ -1106,8 +1071,6 @@ main > section:not([id]) > .container > h2 {
 }
 
 .lead,
-#urunler .card-text,
-#sss .accordion-body,
 #iletisim p {
   margin-bottom: var(--content-block-gap);
   font-size: var(--text-body-lg);
@@ -1120,34 +1083,6 @@ main > section:not([id]) > .container > h2 {
   margin: 0;
   max-width: 34rem;
   font-size: var(--text-body-lg);
-  font-weight: var(--text-body-weight);
-  line-height: var(--content-line-height);
-  color: var(--muted);
-}
-
-#hakkimizda h3,
-#urunler .card-title,
-#urunler .product-card .card-text,
-#sss .accordion-button,
-#iletisim h3,
-.product-subtitle {
-  font-size: var(--text-subtitle);
-  line-height: var(--content-heading-line-height);
-  font-weight: 600;
-  color: var(--ink);
-}
-
-#yorumlar h3 {
-  font-size: 1.08rem;
-  letter-spacing: 0.01em;
-}
-
-.card-title {
-  font-size: var(--text-card-title);
-}
-
-.card-text {
-  font-size: var(--text-card);
   font-weight: var(--text-body-weight);
   line-height: var(--content-line-height);
   color: var(--muted);
@@ -1332,13 +1267,6 @@ textarea.form-control,
   border-radius: 0 0 calc(var(--surface-radius) - 1px) calc(var(--surface-radius) - 1px);
 }
 
-#sss .accordion-button {
-  font-size: clamp(1.02rem, 1.1vw, 1.12rem);
-  font-weight: 600;
-  line-height: 1.45;
-  letter-spacing: -0.015em;
-}
-
 #sss .accordion-button::after {
   width: 1rem;
   height: 1rem;
@@ -1349,9 +1277,6 @@ textarea.form-control,
 #sss .accordion-body {
   padding: 0 1.5rem 1.4rem;
   margin: 0;
-  font-size: 0.98rem;
-  line-height: 1.78;
-  color: var(--muted);
 }
 
 #yorumlar {
@@ -1395,7 +1320,20 @@ textarea.form-control,
 .stats-section .container {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
   text-align: center;
+}
+
+.stats-section .row {
+  --bs-gutter-y: 0;
+  margin-top: 0;
+  row-gap: var(--space-3);
+}
+
+.stats-section .row > * {
+  padding-top: 0;
 }
 
 .section-orb {
@@ -1432,12 +1370,8 @@ textarea.form-control,
 }
 
 .stats-section .card-body {
-  padding-inline: 0;
+  padding: 0;
   background: transparent;
-}
-
-.stats-section .card-body > p.mb-0 {
-  font-weight: 600;
 }
 
 .stats-section .card-body > p.display-6 {
@@ -1446,6 +1380,7 @@ textarea.form-control,
 
 .stats-section .section-title {
   margin-inline: auto;
+  margin-bottom: 0 !important;
 }
 
 .card {
@@ -1455,21 +1390,10 @@ textarea.form-control,
 .product-carousel {
   position: relative;
   overflow: hidden;
-  padding-bottom: 4.25rem;
 }
 
 .product-carousel-group + .product-carousel-group {
   margin-top: var(--rhythm-gap-2);
-}
-
-.product-subtitle {
-  margin: 0 0 var(--rhythm-gap-2);
-  max-width: 42rem;
-  font-size: var(--text-section-title-mid);
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  text-align: left;
-  margin-inline: 0;
 }
 
 #yorumlar .testimonial-marquee {
@@ -1620,19 +1544,12 @@ textarea.form-control,
   grid-column: 1;
   grid-row: 2;
   margin: 0;
-  font-size: 0.82rem;
-  font-weight: 400;
-  line-height: 1.35;
-  color: rgba(79, 88, 101, 0.74);
   text-align: left;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 #urunler .product-meta-row .card-text {
   grid-column: 2;
   grid-row: 1;
-  color: var(--ink);
   text-align: right;
 }
 
@@ -1645,15 +1562,8 @@ textarea.form-control,
   grid-column: 2;
   grid-row: 2;
   margin: 0;
-  color: #d55353;
-  font-size: 0.78rem;
-  font-weight: 400;
-  line-height: 1.12;
   justify-self: end;
   text-align: right;
-  text-decoration: line-through;
-  text-decoration-thickness: 1px;
-  text-decoration-color: currentcolor;
 }
 
 .product-rating {
@@ -1824,8 +1734,7 @@ footer {
 
   .testimonial-marquee {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    min-height: 36rem;
-    max-height: 36rem;
+    height: 36rem;
   }
 
   .testimonial-column:last-child {
@@ -1844,10 +1753,6 @@ footer {
 
 @media (max-width: 767px) {
   main > section {
-    padding-block: var(--section-pad-y-mobile) !important;
-  }
-
-  main > section.py-5 {
     padding-block: var(--section-pad-y-mobile) !important;
   }
 
@@ -1931,8 +1836,7 @@ footer {
 
   .testimonial-marquee {
     grid-template-columns: minmax(0, 1fr);
-    min-height: 34rem;
-    max-height: 34rem;
+    height: 34rem;
     gap: var(--space-3);
   }
 
@@ -1946,16 +1850,8 @@ footer {
 
   #hakkimizda p,
   .lead,
-  #iletisim p,
-  #sss .accordion-body,
-  #urunler .card-text {
+  #iletisim p {
     font-size: var(--text-body);
-  }
-  #hakkimizda h3,
-  #urunler .card-title,
-  #sss .accordion-button,
-  .product-subtitle {
-    font-size: var(--text-subtitle);
   }
 
   #sss .accordion-button,
