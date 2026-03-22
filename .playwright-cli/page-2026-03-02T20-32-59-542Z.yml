@@ -1,0 +1,307 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "Yıldız Amigurumi" [ref=e4] [cursor=pointer]:
+        - /url: "#"
+      - list [ref=e6]:
+        - listitem [ref=e7]:
+          - link "Anasayfa" [ref=e8] [cursor=pointer]:
+            - /url: "#heroCarousel"
+        - listitem [ref=e9]:
+          - link "Hakkımızda" [ref=e10] [cursor=pointer]:
+            - /url: "#hakkimizda"
+        - listitem [ref=e11]:
+          - link "Ürünler" [ref=e12] [cursor=pointer]:
+            - /url: "#urunler"
+        - listitem [ref=e13]:
+          - link "İletişim" [ref=e14] [cursor=pointer]:
+            - /url: "#iletisim"
+  - banner [ref=e15]:
+    - generic [ref=e16]:
+      - button "Slide 1" [ref=e17] [cursor=pointer]
+      - button "Slide 2" [ref=e18] [cursor=pointer]
+      - button "Slide 3" [ref=e19] [cursor=pointer]
+    - generic [ref=e21]:
+      - generic:
+        - generic:
+          - generic:
+            - heading "Modern Amigurumi" [level=1]
+            - paragraph: El emeği, özgün tasarım ve yumuşak dokuyu bir araya getiren koleksiyonları inceleyin.
+        - generic:
+          - img "Vectörel çizim tarzında PNG amigurumi ayı"
+    - button "Önceki" [ref=e22] [cursor=pointer]:
+      - generic [ref=e24]: Önceki
+    - button "Sonraki" [ref=e25] [cursor=pointer]:
+      - generic [ref=e27]: Sonraki
+  - generic [ref=e31]:
+    - heading "Hakkımda" [level=2] [ref=e32]
+    - paragraph [ref=e33]: Ben, Yıldız Amigurumi'nin kurucusuyum. Her amigurumi oyuncağı tek tek elde örüyor, her ilmeğe karakter ve sıcaklık katıyorum.
+    - paragraph [ref=e34]: Amigurumi benim için sadece bir ürün değil; çocuklara güvenli bir arkadaş, yetişkinlere de anlamlı bir hatıra üretme sanatı. Yumuşak dokulu iplikler, özenli dikiş ve kişiye özel renk tercihleriyle her siparişi özel bir hikayeye dönüştürüyorum.
+  - region "Amigurumi İstatistikleri" [ref=e35]:
+    - generic [ref=e37]:
+      - article [ref=e38]:
+        - paragraph [ref=e39]: "0"
+        - paragraph [ref=e40]: Tamamlanan Amigurumi Ürün
+      - article [ref=e41]:
+        - paragraph [ref=e42]: "0"
+        - paragraph [ref=e43]: Memnun Müşteri
+      - article [ref=e44]:
+        - paragraph [ref=e45]: "0"
+        - paragraph [ref=e46]: Özel Tasarım Sipariş
+  - main [ref=e47]:
+    - generic [ref=e48]:
+      - generic [ref=e49]:
+        - heading "Ürünler" [level=2] [ref=e50]
+        - paragraph [ref=e51]: Popüler ve kampanyalı koleksiyonları yatay slider yapısıyla inceleyebilir, her ürünün özet bilgisine hızlıca ulaşabilirsiniz.
+      - generic [ref=e52]:
+        - heading "Popüler Ürünler" [level=3] [ref=e54]
+        - generic [ref=e57]:
+          - article [ref=e58]:
+            - img "Popüler ürün ayıcık" [ref=e59]
+            - generic [ref=e60]:
+              - heading "Pudra Ayıcık" [level=4] [ref=e61]
+              - generic "5 üzerinden 5 yıldız" [ref=e62]: ★★★★★
+              - paragraph [ref=e63]: Yumuşak dokulu, modern pastel tonlu klasik ayıcık tasarımı.
+          - article [ref=e64]:
+            - img "Popüler ürün tavşan" [ref=e65]
+            - generic [ref=e66]:
+              - heading "Bulut Tavşan" [level=4] [ref=e67]
+              - generic "5 üzerinden 4.5 yıldız" [ref=e68]: ★★★★☆
+              - paragraph [ref=e69]: Uzun kulak detayıyla öne çıkan hafif ton geçişli zarif model.
+          - article [ref=e70]:
+            - img "Popüler ürün kedi" [ref=e71]
+            - generic [ref=e72]:
+              - heading "Tarçın Kedi" [level=4] [ref=e73]
+              - generic "5 üzerinden 5 yıldız" [ref=e74]: ★★★★★
+              - paragraph [ref=e75]: Minimal yüz ifadesiyle sıcak ve sevimli bir duruş sunar.
+          - article [ref=e76]:
+            - img "Popüler ürün tilki" [ref=e77]
+            - generic [ref=e78]:
+              - heading "Nane Tilki" [level=4] [ref=e79]
+              - generic "5 üzerinden 4 yıldız" [ref=e80]: ★★★★☆
+              - paragraph [ref=e81]: Kontrast örgü detaylarıyla vitrinde dikkat çeken canlı seri.
+          - article [ref=e82]:
+            - img "Popüler ürün koala" [ref=e83]
+            - generic [ref=e84]:
+              - heading "Lila Koala" [level=4] [ref=e85]
+              - generic "5 üzerinden 5 yıldız" [ref=e86]: ★★★★★
+              - paragraph [ref=e87]: Yuvarlak hatlı formu ve pastel geçişleriyle modern bir yorum.
+          - article [ref=e88]:
+            - img "Popüler ürün mini ayı" [ref=e89]
+            - generic [ref=e90]:
+              - heading "Mini Bal Ayı" [level=4] [ref=e91]
+              - generic "5 üzerinden 4.5 yıldız" [ref=e92]: ★★★★☆
+              - paragraph [ref=e93]: Kompakt ölçüsüyle hediye setlerine kolayca uyum sağlayan model.
+          - article [ref=e94]:
+            - img "Popüler ürün panda" [ref=e95]
+            - generic [ref=e96]:
+              - heading "Soft Panda" [level=4] [ref=e97]
+              - generic "5 üzerinden 5 yıldız" [ref=e98]: ★★★★★
+              - paragraph [ref=e99]: Yumuşak dikiş yapısı ve dengeli renkleriyle öne çıkan seçenek.
+          - article [ref=e100]:
+            - img "Popüler ürün bebek tavşan" [ref=e101]
+            - generic [ref=e102]:
+              - heading "Bebek Tavşan" [level=4] [ref=e103]
+              - generic "5 üzerinden 4 yıldız" [ref=e104]: ★★★★☆
+              - paragraph [ref=e105]: Narin tasarım diliyle koleksiyonun en zarif parçalarından biri.
+          - article [ref=e106]:
+            - img [ref=e107]
+            - generic [ref=e108]:
+              - heading [level=4] [ref=e109]: Pudra Ayıcık
+              - generic [ref=e110]: ★★★★★
+              - paragraph [ref=e111]: Yumuşak dokulu, modern pastel tonlu klasik ayıcık tasarımı.
+          - article [ref=e112]:
+            - img [ref=e113]
+            - generic [ref=e114]:
+              - heading [level=4] [ref=e115]: Bulut Tavşan
+              - generic [ref=e116]: ★★★★☆
+              - paragraph [ref=e117]: Uzun kulak detayıyla öne çıkan hafif ton geçişli zarif model.
+          - article [ref=e118]:
+            - img [ref=e119]
+            - generic [ref=e120]:
+              - heading [level=4] [ref=e121]: Tarçın Kedi
+              - generic [ref=e122]: ★★★★★
+              - paragraph [ref=e123]: Minimal yüz ifadesiyle sıcak ve sevimli bir duruş sunar.
+          - article [ref=e124]:
+            - img [ref=e125]
+            - generic [ref=e126]:
+              - heading [level=4] [ref=e127]: Nane Tilki
+              - generic [ref=e128]: ★★★★☆
+              - paragraph [ref=e129]: Kontrast örgü detaylarıyla vitrinde dikkat çeken canlı seri.
+          - article [ref=e130]:
+            - img [ref=e131]
+            - generic [ref=e132]:
+              - heading [level=4] [ref=e133]: Lila Koala
+              - generic [ref=e134]: ★★★★★
+              - paragraph [ref=e135]: Yuvarlak hatlı formu ve pastel geçişleriyle modern bir yorum.
+          - article [ref=e136]:
+            - img [ref=e137]
+            - generic [ref=e138]:
+              - heading [level=4] [ref=e139]: Mini Bal Ayı
+              - generic [ref=e140]: ★★★★☆
+              - paragraph [ref=e141]: Kompakt ölçüsüyle hediye setlerine kolayca uyum sağlayan model.
+          - article [ref=e142]:
+            - img [ref=e143]
+            - generic [ref=e144]:
+              - heading [level=4] [ref=e145]: Soft Panda
+              - generic [ref=e146]: ★★★★★
+              - paragraph [ref=e147]: Yumuşak dikiş yapısı ve dengeli renkleriyle öne çıkan seçenek.
+          - article [ref=e148]:
+            - img [ref=e149]
+            - generic [ref=e150]:
+              - heading [level=4] [ref=e151]: Bebek Tavşan
+              - generic [ref=e152]: ★★★★☆
+              - paragraph [ref=e153]: Narin tasarım diliyle koleksiyonun en zarif parçalarından biri.
+      - generic [ref=e154]:
+        - heading "Kampanyalı Ürünler" [level=3] [ref=e156]
+        - generic [ref=e159]:
+          - article [ref=e160]:
+            - img "Kampanyalı ürün ayı" [ref=e161]
+            - generic [ref=e162]:
+              - heading "Gri Ayıcık" [level=4] [ref=e163]
+              - generic "5 üzerinden 4 yıldız" [ref=e164]: ★★★★☆
+              - paragraph [ref=e165]: İndirimli seri içinde sade çizgili ve günlük kullanıma uygun model.
+          - article [ref=e166]:
+            - img "Kampanyalı ürün koala" [ref=e167]
+            - generic [ref=e168]:
+              - heading "Karamel Koala" [level=4] [ref=e169]
+              - generic "5 üzerinden 5 yıldız" [ref=e170]: ★★★★★
+              - paragraph [ref=e171]: Sıcak tonları ve yumuşak dokusuyla kampanya grubunun favorisi.
+          - article [ref=e172]:
+            - img "Kampanyalı ürün tavşan" [ref=e173]
+            - generic [ref=e174]:
+              - heading "Leylak Tavşan" [level=4] [ref=e175]
+              - generic "5 üzerinden 4.5 yıldız" [ref=e176]: ★★★★☆
+              - paragraph [ref=e177]: Uzun kulaklı modern formu kampanya fiyatıyla sunulan özel model.
+          - article [ref=e178]:
+            - img "Kampanyalı ürün mini set" [ref=e179]
+            - generic [ref=e180]:
+              - heading "Mini Set" [level=4] [ref=e181]
+              - generic "5 üzerinden 4 yıldız" [ref=e182]: ★★★★☆
+              - paragraph [ref=e183]: Kompakt ölçüleriyle hediye kutularına kolay eklenen ekonomik seri.
+          - article [ref=e184]:
+            - img "Kampanyalı ürün yavru kedi" [ref=e185]
+            - generic [ref=e186]:
+              - heading "Yavru Kedi" [level=4] [ref=e187]
+              - generic "5 üzerinden 5 yıldız" [ref=e188]: ★★★★★
+              - paragraph [ref=e189]: Klasik tasarım, kampanya etiketiyle daha ulaşılabilir hale getirildi.
+          - article [ref=e190]:
+            - img "Kampanyalı ürün ay tavşanı" [ref=e191]
+            - generic [ref=e192]:
+              - heading "Ay Tavşanı" [level=4] [ref=e193]
+              - generic "5 üzerinden 4 yıldız" [ref=e194]: ★★★★☆
+              - paragraph [ref=e195]: Serin tonlardaki örgü doku ile sade odalara uyum sağlar.
+          - article [ref=e196]:
+            - img "Kampanyalı ürün uyku ayısı" [ref=e197]
+            - generic [ref=e198]:
+              - heading "Uyku Ayısı" [level=4] [ref=e199]
+              - generic "5 üzerinden 4.5 yıldız" [ref=e200]: ★★★★☆
+              - paragraph [ref=e201]: Yumuşak formu sayesinde özellikle bebek odaları için tercih edilir.
+          - article [ref=e202]:
+            - img "Kampanyalı ürün mint tilki" [ref=e203]
+            - generic [ref=e204]:
+              - heading "Mint Tilki" [level=4] [ref=e205]
+              - generic "5 üzerinden 5 yıldız" [ref=e206]: ★★★★★
+              - paragraph [ref=e207]: Dinamik renk dokunuşu ile kampanya serisinin dikkat çeken üyesi.
+          - article [ref=e208]:
+            - img [ref=e209]
+            - generic [ref=e210]:
+              - heading [level=4] [ref=e211]: Gri Ayıcık
+              - generic [ref=e212]: ★★★★☆
+              - paragraph [ref=e213]: İndirimli seri içinde sade çizgili ve günlük kullanıma uygun model.
+          - article [ref=e214]:
+            - img [ref=e215]
+            - generic [ref=e216]:
+              - heading [level=4] [ref=e217]: Karamel Koala
+              - generic [ref=e218]: ★★★★★
+              - paragraph [ref=e219]: Sıcak tonları ve yumuşak dokusuyla kampanya grubunun favorisi.
+          - article [ref=e220]:
+            - img [ref=e221]
+            - generic [ref=e222]:
+              - heading [level=4] [ref=e223]: Leylak Tavşan
+              - generic [ref=e224]: ★★★★☆
+              - paragraph [ref=e225]: Uzun kulaklı modern formu kampanya fiyatıyla sunulan özel model.
+          - article [ref=e226]:
+            - img [ref=e227]
+            - generic [ref=e228]:
+              - heading [level=4] [ref=e229]: Mini Set
+              - generic [ref=e230]: ★★★★☆
+              - paragraph [ref=e231]: Kompakt ölçüleriyle hediye kutularına kolay eklenen ekonomik seri.
+          - article [ref=e232]:
+            - img [ref=e233]
+            - generic [ref=e234]:
+              - heading [level=4] [ref=e235]: Yavru Kedi
+              - generic [ref=e236]: ★★★★★
+              - paragraph [ref=e237]: Klasik tasarım, kampanya etiketiyle daha ulaşılabilir hale getirildi.
+          - article [ref=e238]:
+            - img [ref=e239]
+            - generic [ref=e240]:
+              - heading [level=4] [ref=e241]: Ay Tavşanı
+              - generic [ref=e242]: ★★★★☆
+              - paragraph [ref=e243]: Serin tonlardaki örgü doku ile sade odalara uyum sağlar.
+          - article [ref=e244]:
+            - img [ref=e245]
+            - generic [ref=e246]:
+              - heading [level=4] [ref=e247]: Uyku Ayısı
+              - generic [ref=e248]: ★★★★☆
+              - paragraph [ref=e249]: Yumuşak formu sayesinde özellikle bebek odaları için tercih edilir.
+          - article [ref=e250]:
+            - img [ref=e251]
+            - generic [ref=e252]:
+              - heading [level=4] [ref=e253]: Mint Tilki
+              - generic [ref=e254]: ★★★★★
+              - paragraph [ref=e255]: Dinamik renk dokunuşu ile kampanya serisinin dikkat çeken üyesi.
+    - generic [ref=e256]:
+      - heading "İletişim" [level=2] [ref=e258]
+      - generic [ref=e262]:
+        - generic [ref=e263]:
+          - heading "Sosyal Medya" [level=3] [ref=e264]
+          - paragraph [ref=e265]: Yeni modelleri, özel sipariş örneklerini ve hazırlık sürecinden kısa paylaşımları sosyal medya hesaplarında görebilirsiniz.
+          - link "Instagram" [ref=e267] [cursor=pointer]:
+            - /url: https://instagram.com/yildizamigurumi
+            - generic [ref=e268]: 
+            - text: Instagram
+          - generic "Instagram paylaşımları" [ref=e269]:
+            - link "Instagram paylaşımı amigurumi ayıcık Pastel ayıcık serisinden yeni paylaşım" [ref=e270] [cursor=pointer]:
+              - /url: https://instagram.com/yildizamigurumi
+              - img "Instagram paylaşımı amigurumi ayıcık" [ref=e271]
+              - generic [ref=e272]: Pastel ayıcık serisinden yeni paylaşım
+            - link "Instagram paylaşımı amigurumi tavşan Özel renk seçimiyle hazırlanan tavşan modeli" [ref=e273] [cursor=pointer]:
+              - /url: https://instagram.com/yildizamigurumi
+              - img "Instagram paylaşımı amigurumi tavşan" [ref=e274]
+              - generic [ref=e275]: Özel renk seçimiyle hazırlanan tavşan modeli
+            - link "Instagram paylaşımı amigurumi kedi Hediye kutusu için hazırlanan minik kedi" [ref=e276] [cursor=pointer]:
+              - /url: https://instagram.com/yildizamigurumi
+              - img "Instagram paylaşımı amigurumi kedi" [ref=e277]
+              - generic [ref=e278]: Hediye kutusu için hazırlanan minik kedi
+            - link "Instagram paylaşımı amigurumi set Toplu siparişten sahne arkası detayları" [ref=e279] [cursor=pointer]:
+              - /url: https://instagram.com/yildizamigurumi
+              - img "Instagram paylaşımı amigurumi set" [ref=e280]
+              - generic [ref=e281]: Toplu siparişten sahne arkası detayları
+        - generic [ref=e282]:
+          - heading "WhatsApp İletişim" [level=3] [ref=e283]
+          - paragraph [ref=e284]: En hızlı iletişim için WhatsApp üzerinden model, renk ve teslim süresi bilgilerini paylaşabilirsiniz. Mesajla sipariş detayları netleştirilir.
+          - link "+90 555 111 22 33" [ref=e285] [cursor=pointer]:
+            - /url: https://wa.me/905551112233
+            - generic [ref=e286]: 
+            - text: +90 555 111 22 33
+        - generic [ref=e287]:
+          - heading "Sipariş Linkleri" [level=3] [ref=e288]
+          - paragraph [ref=e289]: Sipariş vermek için mağaza linklerini kullanabilir ya da doğrudan Instagram DM ve WhatsApp üzerinden istediğiniz modelin ekran görüntüsünü göndererek talep oluşturabilirsiniz.
+          - generic [ref=e290]:
+            - link "Trendyol Mağaza" [ref=e291] [cursor=pointer]:
+              - /url: https://www.trendyol.com/
+              - text: Trendyol Mağaza
+              - generic [ref=e292]: 
+            - link "Etsy Shop" [ref=e293] [cursor=pointer]:
+              - /url: https://www.etsy.com/
+              - text: Etsy Shop
+              - generic [ref=e294]: 
+            - link "Instagram DM ile Sipariş" [ref=e295] [cursor=pointer]:
+              - /url: https://instagram.com/yildizamigurumi
+              - text: Instagram DM ile Sipariş
+              - generic [ref=e296]: 
+  - contentinfo [ref=e297]:
+    - generic [ref=e298]:
+      - generic [ref=e299]: © 2026 Yıldız Amigurumi
+      - generic [ref=e300]: El emeği, sevgiyle tasarlanır.
