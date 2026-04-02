@@ -27,7 +27,23 @@
           })
         : null;
 
-    const getNavOffset = () => navbarEl?.offsetHeight ?? 0;
+    const isMobileViewport = () => window.innerWidth < 992;
+    const isNavMenuExpanded = () =>
+      navCollapseEl?.classList.contains('show') || navCollapseEl?.classList.contains('collapsing');
+    const getExpandedNavOffset = () => navbarEl?.offsetHeight ?? 0;
+    const getNavOffset = () => {
+      if (!navbarEl) return 0;
+
+      const expandedMenuHeight = isNavMenuExpanded() ? (navCollapseEl?.offsetHeight ?? 0) : 0;
+
+      return Math.max(navbarEl.offsetHeight - expandedMenuHeight, 0);
+    };
+    const isNavbarHidden = () => navbarEl?.classList.contains('is-hidden');
+    const getActiveNavOffset = () => {
+      const isMenuExpanded = isNavMenuExpanded();
+      if (isNavbarHidden() && !isMenuExpanded) return 0;
+      return isMenuExpanded ? getExpandedNavOffset() : getNavOffset();
+    };
 
     const syncNavOffset = () => {
       document.documentElement.style.setProperty('--nav-offset', `${getNavOffset()}px`);
@@ -60,6 +76,23 @@
         link.classList.toggle('is-active', link.getAttribute('href') === hash);
       });
     };
+
+    const closeNavMenuIfNeeded = () =>
+      new Promise((resolve) => {
+        if (!navCollapseEl?.classList.contains('show') || !navCollapse) {
+          resolve();
+          return;
+        }
+
+        navCollapseEl.addEventListener(
+          'hidden.bs.collapse',
+          () => {
+            resolve();
+          },
+          { once: true }
+        );
+        navCollapse.hide();
+      });
 
     const statCounters = Array.from(document.querySelectorAll('.stat-counter[data-count]'));
 
@@ -205,12 +238,76 @@
     let scrollEffectsFrame = 0;
     let activeSectionHash = '';
     let lastScrollY = window.scrollY;
+    let lastNavbarToggleScrollY = window.scrollY;
+    let navbarScrollLock = null;
     let applyHeroScrollParallax = () => false;
     let syncHeroParallaxLayout = () => {};
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
     const lerp = (start, end, amount) => start + (end - start) * amount;
+
+    const updateNavbarVisibility = (currentScrollY = window.scrollY) => {
+      if (!navbarEl) return;
+
+      const safeScrollY = Math.max(currentScrollY, 0);
+      if (isMobileViewport()) {
+        navbarScrollLock = null;
+        navbarEl.classList.remove('is-hidden');
+        lastNavbarToggleScrollY = safeScrollY;
+        return;
+      }
+
+      if (navbarScrollLock) {
+        navbarEl.classList.toggle('is-hidden', navbarScrollLock.hidden);
+        lastNavbarToggleScrollY = safeScrollY;
+
+        if (Math.abs(safeScrollY - navbarScrollLock.targetY) <= 2) {
+          navbarScrollLock = null;
+          return;
+        } else {
+          return;
+        }
+      }
+
+      const deltaY = safeScrollY - lastNavbarToggleScrollY;
+      const isMenuExpanded = navCollapseEl?.classList.contains('show');
+
+      if (safeScrollY <= getNavOffset() || isMenuExpanded) {
+        navbarEl.classList.remove('is-hidden');
+        lastNavbarToggleScrollY = safeScrollY;
+        return;
+      }
+
+      if (Math.abs(deltaY) < 1) return;
+
+      if (deltaY > 0) {
+        navbarEl.classList.add('is-hidden');
+      } else {
+        navbarEl.classList.remove('is-hidden');
+      }
+
+      lastNavbarToggleScrollY = safeScrollY;
+    };
+
+    const lockNavbarDuringNavScroll = (hidden, targetY, durationMs = 1250) => {
+      if (isMobileViewport()) {
+        navbarScrollLock = null;
+        navbarEl?.classList.remove('is-hidden');
+        return;
+      }
+
+      navbarScrollLock = {
+        hidden,
+        targetY: Math.max(targetY, 0)
+      };
+      navbarEl?.classList.toggle('is-hidden', hidden);
+
+      window.setTimeout(() => {
+        if (!navbarScrollLock || navbarScrollLock.targetY !== Math.max(targetY, 0)) return;
+        navbarScrollLock = null;
+      }, durationMs);
+    };
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let testimonialMarqueeFrame = 0;
@@ -358,10 +455,7 @@
     const updateSectionOrbParallax = () => {
       if (!orbParallaxSections.length) return false;
 
-      if (
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-        window.innerWidth <= 767
-      ) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         orbParallaxSections.forEach((metric) => {
           metric.currentPinkOffsetPx = 0;
           metric.currentBlueOffsetPx = 0;
@@ -378,8 +472,9 @@
         const rect = metric.sectionEl.getBoundingClientRect();
         const sectionCenter = rect.top + rect.height * 0.5;
         const normalizedOffset = clamp((sectionCenter - viewportCenter) / window.innerHeight, -1, 1);
-        const pinkTargetOffsetPx = normalizedOffset * -132;
-        const blueTargetOffsetPx = normalizedOffset * 132;
+        const orbRangePx = window.innerWidth <= 767 ? 64 : 132;
+        const pinkTargetOffsetPx = normalizedOffset * -orbRangePx;
+        const blueTargetOffsetPx = normalizedOffset * orbRangePx;
         const pinkDelta = Math.abs(pinkTargetOffsetPx - metric.currentPinkOffsetPx);
         const blueDelta = Math.abs(blueTargetOffsetPx - metric.currentBlueOffsetPx);
         const pinkNextOffsetPx = pinkDelta < 0.08
@@ -485,7 +580,7 @@
     const updateActiveSection = () => {
       const navSections = getNavSections();
       const firstHash = navSections[0]?.hash ?? navLinks[0]?.getAttribute('href') ?? '';
-      const scrollMarker = window.scrollY + getNavOffset() + 1;
+      const scrollMarker = window.scrollY + getActiveNavOffset() + 1;
       let currentHash = firstHash;
 
       navSections.forEach((section) => {
@@ -512,6 +607,7 @@
       lenis.resize();
       lenis.on('scroll', () => {
         lastScrollY = window.scrollY;
+        updateNavbarVisibility(lastScrollY);
         updateActiveSection();
         if (!scrollEffectsFrame) {
           scrollEffectsFrame = window.requestAnimationFrame(runScrollEffects);
@@ -520,9 +616,23 @@
     }
 
     if (heroCarousel) {
-      bootstrap.Carousel.getOrCreateInstance(heroCarousel);
+      const heroCarouselInstance = bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
+        interval: isMobileViewport() ? false : 6000,
+        touch: true,
+        ride: isMobileViewport() ? false : 'carousel',
+        pause: false,
+        wrap: true
+      });
       const heroItems = Array.from(heroCarousel.querySelectorAll('.carousel-item'));
       const revealTimers = new WeakMap();
+      const syncStaticHeroState = () => {
+        const activeIndex = heroItems.findIndex((item) => item.classList.contains('active'));
+
+        heroItems.forEach((item, index) => {
+          setHeroVisibleState(item, index === activeIndex);
+          setHeroMediaCirclesVisibleState(item, false);
+        });
+      };
 
       const setBackgroundDirection = (item, isReverse) => {
         if (!item) return;
@@ -732,6 +842,12 @@
       window.requestAnimationFrame(() => {
         heroCarousel.classList.add('is-parallax-ready');
       });
+
+      if (isMobileViewport()) {
+        heroCarousel.classList.remove('hero-animated');
+        heroCarouselInstance.pause();
+      }
+
       if (activeIndex !== -1) {
         window.requestAnimationFrame(() => {
           animateInitialHeroMedia(heroItems[activeIndex]);
@@ -775,10 +891,14 @@
 
     const productCarouselsState = [];
 
-    const getProductVisibleCount = () => {
-      if (window.innerWidth <= 767) return 1;
-      if (window.innerWidth <= 991) return 2;
-      return 4;
+    const getProductVisibleCount = (carouselEl) => {
+      if (window.innerWidth <= 767) {
+        return Number.parseInt(carouselEl?.dataset.visibleMobile ?? '1', 10) || 1;
+      }
+      if (window.innerWidth <= 991) {
+        return Number.parseInt(carouselEl?.dataset.visibleTablet ?? '2', 10) || 2;
+      }
+      return Number.parseInt(carouselEl?.dataset.visibleDesktop ?? '4', 10) || 4;
     };
 
     const getProductGapPx = () => {
@@ -812,7 +932,7 @@
           sourceCards,
           trackEl: null,
           currentIndex: 0,
-          visibleCount: getProductVisibleCount(),
+          visibleCount: getProductVisibleCount(carouselEl),
           isAnimating: false,
           timerId: null,
           gapPx: 0
@@ -821,7 +941,7 @@
     };
 
     const renderProductCarousel = (slider) => {
-      const visibleCount = getProductVisibleCount();
+      const visibleCount = getProductVisibleCount(slider.carouselEl);
       const leadingCards = slider.sourceCards.slice(-visibleCount);
       const trailingCards = slider.sourceCards.slice(0, visibleCount);
       const trackMarkup = [...leadingCards, ...slider.sourceCards, ...trailingCards]
@@ -851,7 +971,7 @@
       const gapPx = getProductGapPx();
 
       productCarouselsState.forEach((slider) => {
-        const visibleCount = getProductVisibleCount();
+        const visibleCount = getProductVisibleCount(slider.carouselEl);
         if (!slider.trackEl || slider.visibleCount !== visibleCount) {
           renderProductCarousel(slider);
         }
@@ -925,23 +1045,23 @@
     const syncProductCardHeights = () => {
       if (!productCarousels.length) return;
 
-      const productCards = Array.from(document.querySelectorAll('.product-card'));
-      if (!productCards.length) return;
-
-      productCards.forEach((card) => {
-        card.style.height = 'auto';
-      });
-
-      const maxHeight = Math.max(
-        ...productCards.map((card) => Math.ceil(card.getBoundingClientRect().height))
-      );
-
       productCarousels.forEach((carouselEl) => {
-        carouselEl.style.setProperty('--product-card-height', `${maxHeight}px`);
-      });
+        const productCards = Array.from(carouselEl.querySelectorAll('.product-card'));
+        if (!productCards.length) return;
 
-      productCards.forEach((card) => {
-        card.style.height = `${maxHeight}px`;
+        productCards.forEach((card) => {
+          card.style.height = 'auto';
+        });
+
+        const maxHeight = Math.max(
+          ...productCards.map((card) => Math.ceil(card.getBoundingClientRect().height))
+        );
+
+        carouselEl.style.setProperty('--product-card-height', `${maxHeight}px`);
+
+        productCards.forEach((card) => {
+          card.style.height = `${maxHeight}px`;
+        });
       });
     };
 
@@ -973,6 +1093,7 @@
     syncNavLinkWidths();
     updateStatsTitleReveal();
     refreshGhostMetrics();
+    updateNavbarVisibility();
     updateActiveSection();
     updateGhostHeadingPosition();
     updateSectionOrbParallax();
@@ -1006,6 +1127,7 @@
     window.addEventListener(
       'scroll',
       () => {
+        updateNavbarVisibility(window.scrollY);
         updateActiveSection();
         scheduleScrollEffects();
       },
@@ -1014,6 +1136,7 @@
     window.addEventListener('resize', () => {
       syncNavOffset();
       syncNavLinkWidths();
+      updateNavbarVisibility(window.scrollY);
       syncTestimonialMarquee();
       updateStatsTitleReveal();
       refreshGhostMetrics();
@@ -1040,7 +1163,7 @@
       startTestimonialMarquee();
     });
 
-    $('a.nav-link[href^="#"]').on('click', function (event) {
+    $('a.nav-link[href^="#"]').on('click', async function (event) {
       const href = $(this).attr('href');
       if (!href || href.length < 2) return;
 
@@ -1048,10 +1171,19 @@
       if (!target) return;
 
       event.preventDefault();
+      await closeNavMenuIfNeeded();
+      syncNavOffset();
       activeSectionHash = href;
       setActiveNavLink(href);
-      const targetTop = target.getBoundingClientRect().top + window.scrollY - getNavOffset();
+      const currentScrollY = window.scrollY;
+      const targetDocumentTop = target.getBoundingClientRect().top + currentScrollY;
+      const isScrollingDown = targetDocumentTop > currentScrollY;
+      const targetOffset = isMobileViewport()
+        ? getNavOffset()
+        : (isScrollingDown ? 0 : getNavOffset());
+      const targetTop = targetDocumentTop - targetOffset;
       const nextTop = Math.max(targetTop, 0);
+      lockNavbarDuringNavScroll(isScrollingDown, nextTop);
       if (lenis) {
         lenis.scrollTo(nextTop, {
           duration: 1.1,
@@ -1061,10 +1193,16 @@
         window.scrollTo({ top: nextTop, behavior: 'smooth' });
       }
       window.history.replaceState(null, '', href);
+    });
 
-      if (navCollapseEl && navCollapseEl.classList.contains('show')) {
-        navCollapse.hide();
-      }
+    navCollapseEl?.addEventListener('show.bs.collapse', () => {
+      navbarEl?.classList.remove('is-hidden');
+      lastNavbarToggleScrollY = window.scrollY;
+    });
+
+    navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
+      updateNavbarVisibility(window.scrollY);
+      updateActiveSection();
     });
 
 

@@ -20,7 +20,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
     />
-    <link rel="stylesheet" href="assets/styles.css?v=layout-pass-203" />
+    <link rel="stylesheet" href="assets/styles.css?v=layout-pass-229" />
   </head>
   <body>
     <nav class="navbar navbar-expand-lg sticky-top">
@@ -62,10 +62,12 @@
           <div class="carousel-item active bg-forward">
             <div class="hero-bg" aria-hidden="true"></div>
             <div class="carousel-caption text-start">
-              <h1 class="hero-split-title">
-                <span class="hero-title-back">Bal</span>
-                <span class="hero-title-front">Düşü</span>
-              </h1>
+              <div class="hero-title-anchor">
+                <h1 class="hero-split-title">
+                  <span class="hero-title-back">Bal</span>
+                  <span class="hero-title-front">Düşü</span>
+                </h1>
+              </div>
               <p>
                 Yumuşak dokulu ipliklerle hazırlanan sevimli ayıcıklar, hediye ve oda dekoru için
                 sıcak bir seçim.
@@ -84,10 +86,12 @@
           <div class="carousel-item bg-reverse">
             <div class="hero-bg" aria-hidden="true"></div>
             <div class="carousel-caption text-start">
-              <h2 class="hero-split-title">
-                <span class="hero-title-back">Mırıl</span>
-                <span class="hero-title-front">Masalı</span>
-              </h2>
+              <div class="hero-title-anchor">
+                <h2 class="hero-split-title">
+                  <span class="hero-title-back">Mırıl</span>
+                  <span class="hero-title-front">Masalı</span>
+                </h2>
+              </div>
               <p>
                 Renk, ifade ve detayları özenle çalışılmış amigurumi kedi tasarımları her siparişte
                 ayrı karakter taşır.
@@ -106,10 +110,12 @@
           <div class="carousel-item bg-forward">
             <div class="hero-bg" aria-hidden="true"></div>
             <div class="carousel-caption text-start">
-              <h2 class="hero-split-title">
-                <span class="hero-title-back">Orman</span>
-                <span class="hero-title-front">Neşesi</span>
-              </h2>
+              <div class="hero-title-anchor">
+                <h2 class="hero-split-title">
+                  <span class="hero-title-back">Orman</span>
+                  <span class="hero-title-front">Neşesi</span>
+                </h2>
+              </div>
               <p>
                 Sıcacık renk paleti ve dengeli formuyla hazırlanan özel figürler, koleksiyonluk ve
                 anlamlı bir hatıraya dönüşür.
@@ -201,8 +207,13 @@
         <div class="section-orb section-orb-blue" aria-hidden="true"></div>
         <div class="container">
           <h2 class="section-title stats-title">
-            Her ilmekte özen, her siparişte güven var. Ortaya çıkan bu sayılar, sevgiyle hazırlanan
-            küçük ama anlamlı başarıları anlatıyor.
+            <span class="stats-title-line stats-title-line-1"
+              >Her ilmekte özen, her siparişte güven var.</span
+            >
+            <span class="stats-title-line stats-title-line-2"
+              >Ortaya çıkan bu sayılar, sevgiyle hazırlanan küçük ama anlamlı başarıları
+              anlatıyor.</span
+            >
           </h2>
           <div class="row g-3">
             <div class="col-12 col-md-4">
@@ -316,6 +327,36 @@
                       </div>
                     </div>
                   </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-34276455.jpg" class="card-img-top" alt="Lavanta Panda" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 100%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Lavanta Panda</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺920</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Calm Mood</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-12109904.jpg" class="card-img-top" alt="Şeker Koala" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4.5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 90%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Şeker Koala</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺870</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Cozy Line</p>
+                      </div>
+                    </div>
+                  </article>
                 </div>
               </div>
             </div>
@@ -389,6 +430,141 @@
                       </div>
                     </div>
                   </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-12109904.jpg" class="card-img-top" alt="Cep Dostu Baykuş" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4.5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 90%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Cep Dostu Baykuş</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺450</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Pocket Gift</p>
+                        <p class="product-old-price small fw-medium text-body-secondary text-decoration-line-through mb-0">₺590</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-34276455.jpg" class="card-img-top" alt="Tarçın Kirpi" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 80%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Tarçın Kirpi</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺510</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Autumn Mini</p>
+                        <p class="product-old-price small fw-medium text-body-secondary text-decoration-line-through mb-0">₺670</p>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="product-carousel-group">
+            <h3 class="fs-6 fw-semibold lh-base text-dark mb-4">Diğer Ürünler</h3>
+            <div
+              class="product-carousel product-carousel--compact"
+              aria-label="Diğer ürünler carousel"
+              data-visible-desktop="6"
+            >
+              <div class="carousel-inner">
+                <div class="product-image-grid" aria-label="Diğer ürün görselleri">
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-12109904.jpg" class="card-img-top" alt="Papatya Kuzu" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 100%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Papatya Kuzu</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺830</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Bloom Soft</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-17357483.jpg" class="card-img-top" alt="Masal Tavşanı" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4.5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 90%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Masal Tavşanı</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺910</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Storybook</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-34276455.jpg" class="card-img-top" alt="Krem Tilki" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 80%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Krem Tilki</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺760</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Nordic Soft</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-12109904.jpg" class="card-img-top" alt="Bal Köpüğü Ayıcık" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 100%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Bal Köpüğü Ayıcık</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺980</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Honey Touch</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-17357483.jpg" class="card-img-top" alt="Ada Tavşancık" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4.5 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 90%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Ada Tavşancık</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺740</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Sea Breeze</p>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="product-card">
+                    <div class="product-media">
+                      <img src="assets/img/pexels-34276455.jpg" class="card-img-top" alt="Gece Kedisi" />
+                    </div>
+                    <div class="card-body">
+                      <div class="product-rating" aria-label="5 üzerinden 4 puan">
+                        <span class="product-rating-stars" style="--rating-fill: 80%">★★★★★</span>
+                      </div>
+                      <div class="product-meta-row">
+                        <h3 class="h5 card-title fw-semibold mb-0">Gece Kedisi</h3>
+                        <p class="card-text fs-6 fw-bold text-dark mb-0">₺820</p>
+                        <p class="product-model small fw-medium text-body-secondary text-uppercase mb-0">Moonlight</p>
+                      </div>
+                    </div>
+                  </article>
                 </div>
               </div>
             </div>
@@ -401,8 +577,13 @@
         <div class="section-orb section-orb-blue" aria-hidden="true"></div>
         <div class="container">
           <h2 class="section-title stats-title feedback-title mb-4">
-            Müşterilerden gelen olumlu geri bildirimler, her siparişte kurulan güveni ve el
-            emeğinin bıraktığı sıcak etkiyi yansıtıyor.
+            <span class="stats-title-line stats-title-line-1"
+              >Müşterilerden gelen olumlu geri bildirimler, her siparişte kurulan güveni ve
+              el</span
+            >
+            <span class="stats-title-line stats-title-line-2"
+              >emeğinin bıraktığı sıcak etkiyi yansıtıyor.</span
+            >
           </h2>
           <div class="testimonial-marquee" aria-label="Müşteri yorumları">
             <div class="testimonial-column">
@@ -841,6 +1022,6 @@
     <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/lenis@1.3.11/dist/lenis.min.js"></script>
-    <script src="assets/app.js?v=layout-pass-203"></script>
+    <script src="assets/app.js?v=layout-pass-229"></script>
   </body>
 </html>
