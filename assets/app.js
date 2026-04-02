@@ -28,12 +28,21 @@
         : null;
 
     const isMobileViewport = () => window.innerWidth < 992;
-    const getNavOffset = () => navbarEl?.offsetHeight ?? 0;
+    const isNavMenuExpanded = () =>
+      navCollapseEl?.classList.contains('show') || navCollapseEl?.classList.contains('collapsing');
+    const getExpandedNavOffset = () => navbarEl?.offsetHeight ?? 0;
+    const getNavOffset = () => {
+      if (!navbarEl) return 0;
+
+      const expandedMenuHeight = isNavMenuExpanded() ? (navCollapseEl?.offsetHeight ?? 0) : 0;
+
+      return Math.max(navbarEl.offsetHeight - expandedMenuHeight, 0);
+    };
     const isNavbarHidden = () => navbarEl?.classList.contains('is-hidden');
     const getActiveNavOffset = () => {
-      if (isMobileViewport()) return getNavOffset();
-      const isMenuExpanded = navCollapseEl?.classList.contains('show');
-      return isNavbarHidden() && !isMenuExpanded ? 0 : getNavOffset();
+      const isMenuExpanded = isNavMenuExpanded();
+      if (isNavbarHidden() && !isMenuExpanded) return 0;
+      return isMenuExpanded ? getExpandedNavOffset() : getNavOffset();
     };
 
     const syncNavOffset = () => {
@@ -67,6 +76,23 @@
         link.classList.toggle('is-active', link.getAttribute('href') === hash);
       });
     };
+
+    const closeNavMenuIfNeeded = () =>
+      new Promise((resolve) => {
+        if (!navCollapseEl?.classList.contains('show') || !navCollapse) {
+          resolve();
+          return;
+        }
+
+        navCollapseEl.addEventListener(
+          'hidden.bs.collapse',
+          () => {
+            resolve();
+          },
+          { once: true }
+        );
+        navCollapse.hide();
+      });
 
     const statCounters = Array.from(document.querySelectorAll('.stat-counter[data-count]'));
 
@@ -247,7 +273,7 @@
       const deltaY = safeScrollY - lastNavbarToggleScrollY;
       const isMenuExpanded = navCollapseEl?.classList.contains('show');
 
-      if (safeScrollY <= 24 || isMenuExpanded) {
+      if (safeScrollY <= getNavOffset() || isMenuExpanded) {
         navbarEl.classList.remove('is-hidden');
         lastNavbarToggleScrollY = safeScrollY;
         return;
@@ -429,10 +455,7 @@
     const updateSectionOrbParallax = () => {
       if (!orbParallaxSections.length) return false;
 
-      if (
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-        window.innerWidth <= 767
-      ) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         orbParallaxSections.forEach((metric) => {
           metric.currentPinkOffsetPx = 0;
           metric.currentBlueOffsetPx = 0;
@@ -449,8 +472,9 @@
         const rect = metric.sectionEl.getBoundingClientRect();
         const sectionCenter = rect.top + rect.height * 0.5;
         const normalizedOffset = clamp((sectionCenter - viewportCenter) / window.innerHeight, -1, 1);
-        const pinkTargetOffsetPx = normalizedOffset * -132;
-        const blueTargetOffsetPx = normalizedOffset * 132;
+        const orbRangePx = window.innerWidth <= 767 ? 64 : 132;
+        const pinkTargetOffsetPx = normalizedOffset * -orbRangePx;
+        const blueTargetOffsetPx = normalizedOffset * orbRangePx;
         const pinkDelta = Math.abs(pinkTargetOffsetPx - metric.currentPinkOffsetPx);
         const blueDelta = Math.abs(blueTargetOffsetPx - metric.currentBlueOffsetPx);
         const pinkNextOffsetPx = pinkDelta < 0.08
@@ -592,9 +616,23 @@
     }
 
     if (heroCarousel) {
-      bootstrap.Carousel.getOrCreateInstance(heroCarousel);
+      const heroCarouselInstance = bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
+        interval: isMobileViewport() ? false : 6000,
+        touch: true,
+        ride: isMobileViewport() ? false : 'carousel',
+        pause: false,
+        wrap: true
+      });
       const heroItems = Array.from(heroCarousel.querySelectorAll('.carousel-item'));
       const revealTimers = new WeakMap();
+      const syncStaticHeroState = () => {
+        const activeIndex = heroItems.findIndex((item) => item.classList.contains('active'));
+
+        heroItems.forEach((item, index) => {
+          setHeroVisibleState(item, index === activeIndex);
+          setHeroMediaCirclesVisibleState(item, false);
+        });
+      };
 
       const setBackgroundDirection = (item, isReverse) => {
         if (!item) return;
@@ -804,6 +842,12 @@
       window.requestAnimationFrame(() => {
         heroCarousel.classList.add('is-parallax-ready');
       });
+
+      if (isMobileViewport()) {
+        heroCarousel.classList.remove('hero-animated');
+        heroCarouselInstance.pause();
+      }
+
       if (activeIndex !== -1) {
         window.requestAnimationFrame(() => {
           animateInitialHeroMedia(heroItems[activeIndex]);
@@ -1119,7 +1163,7 @@
       startTestimonialMarquee();
     });
 
-    $('a.nav-link[href^="#"]').on('click', function (event) {
+    $('a.nav-link[href^="#"]').on('click', async function (event) {
       const href = $(this).attr('href');
       if (!href || href.length < 2) return;
 
@@ -1127,18 +1171,16 @@
       if (!target) return;
 
       event.preventDefault();
-      updateActiveSection();
-      if (activeSectionHash === href) {
-        window.history.replaceState(null, '', href);
-        return;
-      }
-
+      await closeNavMenuIfNeeded();
+      syncNavOffset();
       activeSectionHash = href;
       setActiveNavLink(href);
       const currentScrollY = window.scrollY;
       const targetDocumentTop = target.getBoundingClientRect().top + currentScrollY;
       const isScrollingDown = targetDocumentTop > currentScrollY;
-      const targetOffset = isScrollingDown ? 0 : getNavOffset();
+      const targetOffset = isMobileViewport()
+        ? getNavOffset()
+        : (isScrollingDown ? 0 : getNavOffset());
       const targetTop = targetDocumentTop - targetOffset;
       const nextTop = Math.max(targetTop, 0);
       lockNavbarDuringNavScroll(isScrollingDown, nextTop);
@@ -1151,10 +1193,6 @@
         window.scrollTo({ top: nextTop, behavior: 'smooth' });
       }
       window.history.replaceState(null, '', href);
-
-      if (navCollapseEl && navCollapseEl.classList.contains('show')) {
-        navCollapse.hide();
-      }
     });
 
     navCollapseEl?.addEventListener('show.bs.collapse', () => {
@@ -1164,6 +1202,7 @@
 
     navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
       updateNavbarVisibility(window.scrollY);
+      updateActiveSection();
     });
 
 
