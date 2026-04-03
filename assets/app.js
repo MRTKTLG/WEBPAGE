@@ -890,6 +890,7 @@
     }
 
     const productCarouselsState = [];
+    const isProductPeekViewport = () => window.innerWidth <= 767;
 
     const getProductVisibleCount = (carouselEl) => {
       if (window.innerWidth <= 767) {
@@ -911,6 +912,18 @@
       const gapPx = probe.getBoundingClientRect().width || 24;
       probe.remove();
       return gapPx;
+    };
+
+    const getProductTrackGapPx = (trackEl) => {
+      if (!trackEl) return getProductGapPx();
+
+      const computedGap = Number.parseFloat(window.getComputedStyle(trackEl).gap);
+      return Number.isFinite(computedGap) ? computedGap : getProductGapPx();
+    };
+
+    const getProductCloneCount = (carouselEl) => {
+      const visibleCount = getProductVisibleCount(carouselEl);
+      return isProductPeekViewport() ? visibleCount + 2 : visibleCount;
     };
 
     const buildProductCarousels = () => {
@@ -935,15 +948,17 @@
           visibleCount: getProductVisibleCount(carouselEl),
           isAnimating: false,
           timerId: null,
-          gapPx: 0
+          gapPx: 0,
+          dragState: null
         });
       });
     };
 
     const renderProductCarousel = (slider) => {
       const visibleCount = getProductVisibleCount(slider.carouselEl);
-      const leadingCards = slider.sourceCards.slice(-visibleCount);
-      const trailingCards = slider.sourceCards.slice(0, visibleCount);
+      const cloneCount = getProductCloneCount(slider.carouselEl);
+      const leadingCards = slider.sourceCards.slice(-cloneCount);
+      const trailingCards = slider.sourceCards.slice(0, cloneCount);
       const trackMarkup = [...leadingCards, ...slider.sourceCards, ...trailingCards]
         .map((cardMarkup) => `<div class="product-carousel-item">${cardMarkup}</div>`)
         .join('');
@@ -951,7 +966,7 @@
       slider.carouselInner.innerHTML = `<div class="product-carousel-track">${trackMarkup}</div>`;
       slider.trackEl = slider.carouselInner.querySelector('.product-carousel-track');
       slider.visibleCount = visibleCount;
-      slider.currentIndex = visibleCount;
+      slider.currentIndex = cloneCount;
       slider.isAnimating = false;
     };
 
@@ -959,16 +974,109 @@
       const { trackEl, gapPx, currentIndex } = slider;
       if (!trackEl?.firstElementChild) return;
 
-      const itemWidthPx = trackEl.firstElementChild.getBoundingClientRect().width;
-      const offsetPx = (itemWidthPx + gapPx) * currentIndex;
+      const itemWidthPx = trackEl.firstElementChild.offsetWidth;
+      const viewportWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth || itemWidthPx;
+      const centerShiftPx = isProductPeekViewport() ? Math.max((viewportWidth - itemWidthPx) / 2, 0) : 0;
+      const offsetPx = (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
 
       trackEl.style.transition = useTransition ? 'transform 760ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none';
       trackEl.style.transform = `translate3d(${-offsetPx.toFixed(3)}px, 0, 0)`;
     };
 
+    const getProductCarouselOffsetPx = (slider) => {
+      const { trackEl, gapPx, currentIndex } = slider;
+      if (!trackEl?.firstElementChild) return 0;
+
+      const itemWidthPx = trackEl.firstElementChild.offsetWidth;
+      const viewportWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth || itemWidthPx;
+      const centerShiftPx = isProductPeekViewport() ? Math.max((viewportWidth - itemWidthPx) / 2, 0) : 0;
+
+      return (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
+    };
+
+    const bindProductCarouselSwipe = (slider) => {
+      let dragState = null;
+
+      slider.carouselInner.addEventListener(
+        'touchstart',
+        (event) => {
+          if (!isProductPeekViewport() || slider.isAnimating || slider.sourceCards.length <= 1) return;
+
+          const touch = event.touches[0];
+          if (!touch) return;
+
+          if (slider.timerId) {
+            window.clearInterval(slider.timerId);
+            slider.timerId = null;
+          }
+
+          dragState = {
+            startX: touch.clientX,
+            startY: touch.clientY,
+            deltaX: 0,
+            isSwiping: false,
+            baseOffsetPx: getProductCarouselOffsetPx(slider)
+          };
+          slider.dragState = dragState;
+          slider.trackEl.style.transition = 'none';
+        },
+        { passive: true }
+      );
+
+      slider.carouselInner.addEventListener(
+        'touchmove',
+        (event) => {
+          if (!dragState || !slider.trackEl) return;
+
+          const touch = event.touches[0];
+          if (!touch) return;
+
+          dragState.deltaX = touch.clientX - dragState.startX;
+          const deltaY = touch.clientY - dragState.startY;
+
+          if (!dragState.isSwiping) {
+            if (Math.abs(dragState.deltaX) < 8) return;
+            if (Math.abs(dragState.deltaX) <= Math.abs(deltaY)) {
+              dragState = null;
+              slider.dragState = null;
+              startProductCarousels();
+              return;
+            }
+            dragState.isSwiping = true;
+          }
+
+          event.preventDefault();
+          const nextOffsetPx = dragState.baseOffsetPx - dragState.deltaX;
+          slider.trackEl.style.transform = `translate3d(${-nextOffsetPx.toFixed(3)}px, 0, 0)`;
+        },
+        { passive: false }
+      );
+
+      const finishSwipe = () => {
+        if (!dragState) return;
+
+        const swipeThresholdPx = Math.min(slider.carouselInner.clientWidth * 0.12, 56);
+        const shouldMove = dragState.isSwiping && Math.abs(dragState.deltaX) >= swipeThresholdPx;
+        const direction = dragState.deltaX < 0 ? 1 : -1;
+
+        dragState = null;
+        slider.dragState = null;
+
+        if (shouldMove) {
+          moveProductCarousel(slider, direction);
+        } else {
+          syncProductCarouselPosition(slider, true);
+        }
+
+        startProductCarousels();
+      };
+
+      slider.carouselInner.addEventListener('touchend', finishSwipe);
+      slider.carouselInner.addEventListener('touchcancel', finishSwipe);
+    };
+
     const syncProductCarouselLayout = () => {
       if (!productCarouselsState.length) return;
-      const gapPx = getProductGapPx();
 
       productCarouselsState.forEach((slider) => {
         const visibleCount = getProductVisibleCount(slider.carouselEl);
@@ -979,8 +1087,11 @@
         const { trackEl } = slider;
         if (!trackEl) return;
 
+        const gapPx = getProductTrackGapPx(trackEl);
         const carouselWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth;
-        const itemWidthPx = Math.max((carouselWidth - gapPx * (visibleCount - 1)) / visibleCount, 0);
+        const itemWidthPx = isProductPeekViewport()
+          ? Math.min(Math.max(carouselWidth * 0.64, 208), Math.max(carouselWidth - gapPx * 2, 0))
+          : Math.max((carouselWidth - gapPx * (visibleCount - 1)) / visibleCount, 0);
         slider.carouselEl.style.setProperty('--product-carousel-item-width', `${itemWidthPx.toFixed(3)}px`);
         trackEl.querySelectorAll('.product-carousel-item').forEach((itemEl) => {
           itemEl.style.flexBasis = `${itemWidthPx.toFixed(3)}px`;
@@ -988,9 +1099,10 @@
         });
 
         slider.visibleCount = visibleCount;
+        const cloneCount = getProductCloneCount(slider.carouselEl);
         slider.currentIndex = Math.min(
-          Math.max(slider.currentIndex, slider.visibleCount),
-          slider.sourceCards.length + slider.visibleCount
+          Math.max(slider.currentIndex, cloneCount),
+          slider.sourceCards.length + cloneCount
         );
         slider.gapPx = gapPx;
         syncProductCarouselPosition(slider, false);
@@ -1006,23 +1118,23 @@
       slider.currentIndex += direction;
       syncProductCarouselPosition(slider, true);
 
-      trackEl.addEventListener(
-        'transitionend',
-        (event) => {
-          if (event.target !== trackEl) return;
+      const handleTrackTransitionEnd = (event) => {
+        if (event.target !== trackEl || event.propertyName !== 'transform') return;
+        trackEl.removeEventListener('transitionend', handleTrackTransitionEnd);
+        const cloneCount = getProductCloneCount(slider.carouselEl);
 
-          if (slider.currentIndex <= 0) {
-            slider.currentIndex = slider.sourceCards.length;
-          } else if (slider.currentIndex >= slider.sourceCards.length + slider.visibleCount) {
-            slider.currentIndex = slider.visibleCount;
-          }
+        if (slider.currentIndex <= 0) {
+          slider.currentIndex = slider.sourceCards.length;
+        } else if (slider.currentIndex >= slider.sourceCards.length + cloneCount) {
+          slider.currentIndex = cloneCount;
+        }
 
-          syncProductCarouselPosition(slider, false);
-          void trackEl.offsetWidth;
-          slider.isAnimating = false;
-        },
-        { once: true }
-      );
+        syncProductCarouselPosition(slider, false);
+        void trackEl.offsetWidth;
+        slider.isAnimating = false;
+      };
+
+      trackEl.addEventListener('transitionend', handleTrackTransitionEnd);
     };
 
     const startProductCarousels = () => {
@@ -1067,6 +1179,9 @@
 
     buildProductCarousels();
     syncProductCarouselLayout();
+    productCarouselsState.forEach((slider) => {
+      bindProductCarouselSwipe(slider);
+    });
 
     if (productCarouselsState.length) {
       window.requestAnimationFrame(() => {
@@ -1163,7 +1278,7 @@
       startTestimonialMarquee();
     });
 
-    $('a.nav-link[href^="#"]').on('click', async function (event) {
+    $('a.navbar-brand[href^="#"], a.nav-link[href^="#"]').on('click', async function (event) {
       const href = $(this).attr('href');
       if (!href || href.length < 2) return;
 
