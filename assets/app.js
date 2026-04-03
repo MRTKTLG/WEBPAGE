@@ -10,10 +10,29 @@
       ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
       : null;
     const navbarEl = document.querySelector('.navbar');
-    const statsSectionEl = document.querySelector('.stats-section');
+    const statsSectionEl = document.getElementById('sayaclar');
     const navLinks = Array.from(document.querySelectorAll('a.nav-link[href^="#"]'));
     const heroCarousel = document.getElementById('heroCarousel');
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
+    const currentProductsContainer = document.querySelector('#urunler > .container');
+    const legacyProductsSection = document.getElementById('urunler-eski');
+    const legacyProductsGroups = Array.from(
+      legacyProductsSection?.querySelectorAll('.product-carousel-group') ?? []
+    );
+    const faqSectionEl = document.getElementById('sss');
+    const feedbackSectionEl = document.getElementById('yorumlar');
+
+    if (currentProductsContainer && legacyProductsSection && legacyProductsGroups.length) {
+      legacyProductsGroups.forEach((group) => {
+        currentProductsContainer.appendChild(group);
+      });
+      legacyProductsSection.remove();
+    }
+
+    if (faqSectionEl && feedbackSectionEl && faqSectionEl.compareDocumentPosition(feedbackSectionEl) & Node.DOCUMENT_POSITION_PRECEDING) {
+      feedbackSectionEl.before(faqSectionEl);
+    }
+
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
     const lenis =
       window.Lenis
@@ -188,7 +207,7 @@
 
       statCounters.forEach(setupStatCounter);
 
-      const statsSection = document.querySelector('.stats-section');
+      const statsSection = statsSectionEl;
       if (!statsSection) {
         statCounters.forEach(animateStatCounter);
         return;
@@ -572,9 +591,10 @@
     };
 
     const updateStatsTitleReveal = () => {
+      const isJourneyAnimating = updateTitleReveal(document.querySelector('#urun-yolculugu'));
       const isStatsAnimating = updateTitleReveal(statsSectionEl);
       const isFeedbackAnimating = updateTitleReveal(document.querySelector('#yorumlar'));
-      return isStatsAnimating || isFeedbackAnimating;
+      return isJourneyAnimating || isStatsAnimating || isFeedbackAnimating;
     };
 
     const updateActiveSection = () => {
@@ -1286,14 +1306,17 @@
       activeSectionHash = href;
       setActiveNavLink(href);
       const currentScrollY = window.scrollY;
-      const targetDocumentTop = target.getBoundingClientRect().top + currentScrollY;
+      const isHomeTarget = href === '#anasayfa';
+      const targetDocumentTop = isHomeTarget
+        ? 0
+        : target.getBoundingClientRect().top + currentScrollY;
       const isScrollingDown = targetDocumentTop > currentScrollY;
       const targetOffset = isMobileViewport()
         ? getNavOffset()
         : (isScrollingDown ? 0 : getNavOffset());
-      const targetTop = targetDocumentTop - targetOffset;
+      const targetTop = isHomeTarget ? 0 : targetDocumentTop - targetOffset;
       const nextTop = Math.max(targetTop, 0);
-      lockNavbarDuringNavScroll(isScrollingDown, nextTop);
+      lockNavbarDuringNavScroll(!isHomeTarget && isScrollingDown, nextTop);
       if (lenis) {
         lenis.scrollTo(nextTop, {
           duration: 1.1,
