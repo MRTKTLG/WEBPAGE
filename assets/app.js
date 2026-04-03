@@ -617,9 +617,9 @@
 
     if (heroCarousel) {
       const heroCarouselInstance = bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
-        interval: isMobileViewport() ? false : 6000,
+        interval: 6000,
         touch: true,
-        ride: isMobileViewport() ? false : 'carousel',
+        ride: 'carousel',
         pause: false,
         wrap: true
       });
@@ -842,11 +842,6 @@
       window.requestAnimationFrame(() => {
         heroCarousel.classList.add('is-parallax-ready');
       });
-
-      if (isMobileViewport()) {
-        heroCarousel.classList.remove('hero-animated');
-        heroCarouselInstance.pause();
-      }
 
       if (activeIndex !== -1) {
         window.requestAnimationFrame(() => {
