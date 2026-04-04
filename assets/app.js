@@ -636,7 +636,7 @@
     }
 
     if (heroCarousel) {
-      const heroCarouselInstance = bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
+      bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
         interval: 6000,
         touch: true,
         ride: 'carousel',
@@ -645,14 +645,6 @@
       });
       const heroItems = Array.from(heroCarousel.querySelectorAll('.carousel-item'));
       const revealTimers = new WeakMap();
-      const syncStaticHeroState = () => {
-        const activeIndex = heroItems.findIndex((item) => item.classList.contains('active'));
-
-        heroItems.forEach((item, index) => {
-          setHeroVisibleState(item, index === activeIndex);
-          setHeroMediaCirclesVisibleState(item, false);
-        });
-      };
 
       const setBackgroundDirection = (item, isReverse) => {
         if (!item) return;
@@ -662,6 +654,13 @@
 
       const isReverseBackground = (item) => item?.classList.contains('bg-reverse');
 
+      const getHeroTextElements = (item) => ({
+        title: item?.querySelector('h1, h2') ?? null,
+        price: item?.querySelector('.hero-price-tag') ?? null,
+        body: item?.querySelector('.carousel-caption > p:not(.hero-price-tag)') ?? null,
+        caption: item?.querySelector('.carousel-caption') ?? null
+      });
+
       const resetHeroRevealClasses = () => {
         heroItems.forEach((item) => {
           const timers = revealTimers.get(item) ?? [];
@@ -669,18 +668,22 @@
           revealTimers.set(item, []);
           item
             .querySelectorAll(
-              '.hero-title-enter-up, .hero-title-enter-down, .hero-body-enter-up, .hero-body-enter-down, .hero-circle-enter-up, .hero-circle-enter-down, .hero-title-exit-up, .hero-title-exit-down, .hero-body-exit-up, .hero-body-exit-down, .hero-circle-exit-up, .hero-circle-exit-down, .hero-media-circles-enter-up, .hero-media-circles-enter-down, .hero-media-circles-exit-up, .hero-media-circles-exit-down'
+              '.hero-title-enter-up, .hero-title-enter-down, .hero-price-enter-up, .hero-price-enter-down, .hero-body-enter-up, .hero-body-enter-down, .hero-circle-enter-up, .hero-circle-enter-down, .hero-title-exit-up, .hero-title-exit-down, .hero-price-exit-up, .hero-price-exit-down, .hero-body-exit-up, .hero-body-exit-down, .hero-circle-exit-up, .hero-circle-exit-down, .hero-media-circles-enter-up, .hero-media-circles-enter-down, .hero-media-circles-exit-up, .hero-media-circles-exit-down'
             )
             .forEach((node) => {
               node.classList.remove(
                 'hero-title-enter-up',
                 'hero-title-enter-down',
+                'hero-price-enter-up',
+                'hero-price-enter-down',
                 'hero-body-enter-up',
                 'hero-body-enter-down',
                 'hero-circle-enter-up',
                 'hero-circle-enter-down',
                 'hero-title-exit-up',
                 'hero-title-exit-down',
+                'hero-price-exit-up',
+                'hero-price-exit-down',
                 'hero-body-exit-up',
                 'hero-body-exit-down',
                 'hero-circle-exit-up',
@@ -697,11 +700,13 @@
       const ENTRY_VISIBLE_TIMINGS = {
         circle: 820,
         body: 970,
+        price: 1060,
         title: 1140
       };
       const ENTRY_START_DELAYS = {
         circle: 0,
         body: 150,
+        price: 240,
         title: 320
       };
       const INITIAL_MEDIA_ENTRY_MS = 600;
@@ -713,11 +718,10 @@
       const setHeroVisibleState = (item, isVisible) => {
         if (!item) return;
 
-        const title = item.querySelector('h1, h2');
-        const body = item.querySelector('p');
-        const caption = item.querySelector('.carousel-caption');
+        const { title, price, body, caption } = getHeroTextElements(item);
 
         title?.classList.toggle('hero-title-visible', isVisible);
+        price?.classList.toggle('hero-price-visible', isVisible);
         body?.classList.toggle('hero-body-visible', isVisible);
         caption?.classList.toggle('hero-circle-visible', isVisible);
       };
@@ -781,15 +785,14 @@
       const animateHeroText = (item, direction) => {
         if (!item) return;
 
-        const title = item.querySelector('h1, h2');
-        const body = item.querySelector('p');
-        const caption = item.querySelector('.carousel-caption');
+        const { title, price, body, caption } = getHeroTextElements(item);
         const titleClass = direction === 'down' ? 'hero-title-enter-down' : 'hero-title-enter-up';
+        const priceClass = direction === 'down' ? 'hero-price-enter-down' : 'hero-price-enter-up';
         const bodyClass = direction === 'down' ? 'hero-body-enter-down' : 'hero-body-enter-up';
         const circleClass =
           direction === 'down' ? 'hero-circle-enter-down' : 'hero-circle-enter-up';
 
-        [title, body, caption].forEach((node) => {
+        [title, price, body, caption].forEach((node) => {
           if (!node) return;
           void node.offsetWidth;
         });
@@ -805,9 +808,17 @@
           title?.classList.add(titleClass);
         }, ENTRY_START_DELAYS.title);
 
+        const priceStartTimer = window.setTimeout(() => {
+          price?.classList.add(priceClass);
+        }, ENTRY_START_DELAYS.price);
+
         const titleTimer = window.setTimeout(() => {
           title?.classList.add('hero-title-visible');
         }, ENTRY_VISIBLE_TIMINGS.title);
+
+        const priceTimer = window.setTimeout(() => {
+          price?.classList.add('hero-price-visible');
+        }, ENTRY_VISIBLE_TIMINGS.price);
 
         const bodyTimer = window.setTimeout(() => {
           body?.classList.add('hero-body-visible');
@@ -817,25 +828,33 @@
           caption?.classList.add('hero-circle-visible');
         }, ENTRY_VISIBLE_TIMINGS.circle);
 
-        revealTimers.set(item, [bodyStartTimer, titleStartTimer, titleTimer, bodyTimer, circleTimer]);
+        revealTimers.set(item, [
+          bodyStartTimer,
+          priceStartTimer,
+          titleStartTimer,
+          bodyTimer,
+          priceTimer,
+          titleTimer,
+          circleTimer
+        ]);
       };
 
       const animateHeroExit = (item, direction) => {
         if (!item) return;
 
-        const title = item.querySelector('h1, h2');
-        const body = item.querySelector('p');
-        const caption = item.querySelector('.carousel-caption');
+        const { title, price, body, caption } = getHeroTextElements(item);
         const titleClass = direction === 'down' ? 'hero-title-exit-down' : 'hero-title-exit-up';
+        const priceClass = direction === 'down' ? 'hero-price-exit-down' : 'hero-price-exit-up';
         const bodyClass = direction === 'down' ? 'hero-body-exit-down' : 'hero-body-exit-up';
         const circleClass = direction === 'down' ? 'hero-circle-exit-down' : 'hero-circle-exit-up';
 
-        [title, body, caption].forEach((node) => {
+        [title, price, body, caption].forEach((node) => {
           if (!node) return;
           void node.offsetWidth;
         });
 
         title?.classList.add(titleClass);
+        price?.classList.add(priceClass);
         body?.classList.add(bodyClass);
         caption?.classList.add(circleClass);
       };
