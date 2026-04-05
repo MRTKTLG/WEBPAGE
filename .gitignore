@@ -2,3 +2,6 @@
 .playwright-cli/
 tmp/
 node_modules/
+.npm/
+Library/
+output/playwright/

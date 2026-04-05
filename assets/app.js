@@ -1109,6 +1109,85 @@
       slider.carouselInner.addEventListener('touchcancel', finishSwipe);
     };
 
+    const bindProductCarouselMouseDrag = (slider) => {
+      let dragState = null;
+
+      const clearDragState = () => {
+        dragState = null;
+        slider.dragState = null;
+        slider.carouselEl.classList.remove('is-dragging');
+        document.body.classList.remove('is-product-carousel-dragging');
+      };
+
+      const finishDrag = () => {
+        if (!dragState) return;
+
+        const dragThresholdPx = Math.min(slider.carouselInner.clientWidth * 0.1, 72);
+        const shouldMove = dragState.hasMoved && Math.abs(dragState.deltaX) >= dragThresholdPx;
+        const direction = dragState.deltaX < 0 ? 1 : -1;
+
+        clearDragState();
+
+        if (shouldMove) {
+          moveProductCarousel(slider, direction);
+        } else {
+          syncProductCarouselPosition(slider, true);
+        }
+
+        startProductCarousels();
+      };
+
+      slider.carouselInner.addEventListener('mousedown', (event) => {
+        if (isProductPeekViewport() || slider.isAnimating || slider.sourceCards.length <= 1) return;
+        if (event.button !== 0 || !slider.trackEl) return;
+
+        if (slider.timerId) {
+          window.clearInterval(slider.timerId);
+          slider.timerId = null;
+        }
+
+        dragState = {
+          startX: event.clientX,
+          deltaX: 0,
+          hasMoved: false,
+          baseOffsetPx: getProductCarouselOffsetPx(slider)
+        };
+        slider.dragState = dragState;
+        slider.trackEl.style.transition = 'none';
+        slider.carouselEl.classList.add('is-dragging');
+        document.body.classList.add('is-product-carousel-dragging');
+        event.preventDefault();
+      });
+
+      window.addEventListener('mousemove', (event) => {
+        if (!dragState || !slider.trackEl) return;
+
+        dragState.deltaX = event.clientX - dragState.startX;
+
+        if (!dragState.hasMoved && Math.abs(dragState.deltaX) >= 6) {
+          dragState.hasMoved = true;
+        }
+
+        if (!dragState.hasMoved) return;
+
+        const nextOffsetPx = dragState.baseOffsetPx - dragState.deltaX;
+        slider.trackEl.style.transform = `translate3d(${-nextOffsetPx.toFixed(3)}px, 0, 0)`;
+      });
+
+      window.addEventListener('mouseup', finishDrag);
+      window.addEventListener('blur', finishDrag);
+
+      slider.carouselInner.addEventListener(
+        'click',
+        (event) => {
+          if (!dragState?.hasMoved) return;
+          event.preventDefault();
+          event.stopPropagation();
+        },
+        true
+      );
+    };
+
     const syncProductCarouselLayout = () => {
       if (!productCarouselsState.length) return;
 
@@ -1124,7 +1203,7 @@
         const gapPx = getProductTrackGapPx(trackEl);
         const carouselWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth;
         const itemWidthPx = isProductPeekViewport()
-          ? Math.min(Math.max(carouselWidth * 0.64, 208), Math.max(carouselWidth - gapPx * 2, 0))
+          ? Math.min(Math.max(carouselWidth * 0.6, 208), Math.max(carouselWidth - gapPx * 2, 0))
           : Math.max((carouselWidth - gapPx * (visibleCount - 1)) / visibleCount, 0);
         slider.carouselEl.style.setProperty('--product-carousel-item-width', `${itemWidthPx.toFixed(3)}px`);
         trackEl.querySelectorAll('.product-carousel-item').forEach((itemEl) => {
@@ -1215,6 +1294,7 @@
     syncProductCarouselLayout();
     productCarouselsState.forEach((slider) => {
       bindProductCarouselSwipe(slider);
+      bindProductCarouselMouseDrag(slider);
     });
 
     if (productCarouselsState.length) {
