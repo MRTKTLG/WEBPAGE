@@ -245,6 +245,8 @@
     const ghostSectionMetrics = ghostSections.map((sectionEl) => ({
       sectionEl,
       titleWrapEl: sectionEl.querySelector('.ghost-title-wrap'),
+      ghostHeadingEl: sectionEl.querySelector('.ghost-heading'),
+      sectionTitleEl: sectionEl.querySelector('.section-title'),
       currentOffsetPx: null
     }));
     const orbParallaxSections = Array.from(
@@ -415,9 +417,16 @@
         if (!metric.titleWrapEl) return;
 
         const wrapRect = metric.titleWrapEl.getBoundingClientRect();
+        const ghostRect = metric.ghostHeadingEl?.getBoundingClientRect();
+        const titleRect = metric.sectionTitleEl?.getBoundingClientRect();
+        const widthDeltaPx =
+          ghostRect && titleRect ? Math.max(ghostRect.width - titleRect.width, 0) : 0;
+        const opticalAdjustPx = Math.min(widthDeltaPx * 0.018, 24);
+
         metric.sectionTop = getDocumentTop(metric.sectionEl);
         metric.sectionHeight = metric.sectionEl.offsetHeight || window.innerHeight;
         metric.titleWrapLeft = wrapRect.left;
+        metric.titleWrapEl.style.setProperty('--ghost-left-adjust', `${opticalAdjustPx.toFixed(3)}px`);
       });
     };
 
@@ -425,50 +434,34 @@
       if (!metric.titleWrapEl) return 0;
 
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-      const scrollMarker = lastScrollY + getNavOffset() + 24;
+      const scrollMarker = lastScrollY + getNavOffset();
       const sectionTop = metric.sectionTop ?? getDocumentTop(metric.sectionEl);
       const sectionHeight = metric.sectionHeight || metric.sectionEl.offsetHeight || viewportHeight;
       const titleWrapLeft =
         metric.titleWrapLeft ?? metric.titleWrapEl.getBoundingClientRect().left;
       const maxOffsetPx = Math.max(window.innerWidth - titleWrapLeft + 180, 360);
       const startMarker = sectionTop - viewportHeight * 0.65;
-      const arriveDenominator = Math.max(sectionTop - startMarker, 1);
-      const arriveProgress = clamp((scrollMarker - startMarker) / arriveDenominator, 0, 1);
-      let offsetPx = (1 - arriveProgress) * maxOffsetPx;
+      const arriveDistance = Math.max(sectionTop - startMarker, 1);
+      const continueDistance = Math.min(sectionHeight * 0.6, viewportHeight * 0.95);
+      const totalDistance = Math.max(arriveDistance + continueDistance, 1);
+      const progress = clamp((scrollMarker - startMarker) / totalDistance, 0, 1);
+      const endOffsetPx = maxOffsetPx * (-continueDistance / arriveDistance);
 
-      if (scrollMarker > sectionTop) {
-        const continueProgress = clamp((scrollMarker - sectionTop) / (sectionHeight * 0.6), 0, 1);
-        offsetPx = continueProgress * (maxOffsetPx * -0.35);
-      }
-
-      return offsetPx;
+      return maxOffsetPx + (endOffsetPx - maxOffsetPx) * progress;
     };
 
     const updateGhostHeadingPosition = () => {
       if (!ghostSectionMetrics.length) return false;
 
-      let isStillAnimating = false;
-
       ghostSectionMetrics.forEach((metric) => {
         if (!metric.titleWrapEl) return;
 
         const targetOffsetPx = getGhostTargetOffset(metric);
-        const currentOffsetPx =
-          metric.currentOffsetPx === null ? targetOffsetPx : metric.currentOffsetPx;
-        const delta = Math.abs(targetOffsetPx - currentOffsetPx);
-        const nextOffsetPx = delta < 0.12
-          ? targetOffsetPx
-          : lerp(currentOffsetPx, targetOffsetPx, getScrollEase(delta));
-
-        metric.currentOffsetPx = nextOffsetPx;
-        metric.sectionEl.style.setProperty('--ghost-offset', `${nextOffsetPx.toFixed(3)}px`);
-
-        if (Math.abs(targetOffsetPx - nextOffsetPx) >= 0.12) {
-          isStillAnimating = true;
-        }
+        metric.currentOffsetPx = targetOffsetPx;
+        metric.sectionEl.style.setProperty('--ghost-offset', `${targetOffsetPx.toFixed(3)}px`);
       });
 
-      return isStillAnimating;
+      return false;
     };
 
     const updateSectionOrbParallax = () => {
@@ -656,8 +649,7 @@
 
       const getHeroTextElements = (item) => ({
         title: item?.querySelector('h1, h2') ?? null,
-        price: item?.querySelector('.hero-price-tag') ?? null,
-        body: item?.querySelector('.carousel-caption > p:not(.hero-price-tag)') ?? null,
+        body: item?.querySelector('.carousel-caption > p') ?? null,
         caption: item?.querySelector('.carousel-caption') ?? null
       });
 
@@ -668,22 +660,18 @@
           revealTimers.set(item, []);
           item
             .querySelectorAll(
-              '.hero-title-enter-up, .hero-title-enter-down, .hero-price-enter-up, .hero-price-enter-down, .hero-body-enter-up, .hero-body-enter-down, .hero-circle-enter-up, .hero-circle-enter-down, .hero-title-exit-up, .hero-title-exit-down, .hero-price-exit-up, .hero-price-exit-down, .hero-body-exit-up, .hero-body-exit-down, .hero-circle-exit-up, .hero-circle-exit-down, .hero-media-circles-enter-up, .hero-media-circles-enter-down, .hero-media-circles-exit-up, .hero-media-circles-exit-down'
+              '.hero-title-enter-up, .hero-title-enter-down, .hero-body-enter-up, .hero-body-enter-down, .hero-circle-enter-up, .hero-circle-enter-down, .hero-title-exit-up, .hero-title-exit-down, .hero-body-exit-up, .hero-body-exit-down, .hero-circle-exit-up, .hero-circle-exit-down, .hero-media-circles-enter-up, .hero-media-circles-enter-down, .hero-media-circles-exit-up, .hero-media-circles-exit-down'
             )
             .forEach((node) => {
               node.classList.remove(
                 'hero-title-enter-up',
                 'hero-title-enter-down',
-                'hero-price-enter-up',
-                'hero-price-enter-down',
                 'hero-body-enter-up',
                 'hero-body-enter-down',
                 'hero-circle-enter-up',
                 'hero-circle-enter-down',
                 'hero-title-exit-up',
                 'hero-title-exit-down',
-                'hero-price-exit-up',
-                'hero-price-exit-down',
                 'hero-body-exit-up',
                 'hero-body-exit-down',
                 'hero-circle-exit-up',
@@ -697,17 +685,22 @@
         });
       };
 
+      const HERO_ANIMATION_DURATION_MS = 820;
+      const HERO_ANIMATION_STAGGER_MS = 160;
       const ENTRY_VISIBLE_TIMINGS = {
-        circle: 820,
-        body: 970,
-        price: 1060,
-        title: 1140
+        circle: HERO_ANIMATION_DURATION_MS,
+        title: HERO_ANIMATION_DURATION_MS + HERO_ANIMATION_STAGGER_MS,
+        body: HERO_ANIMATION_DURATION_MS + HERO_ANIMATION_STAGGER_MS * 2
       };
       const ENTRY_START_DELAYS = {
         circle: 0,
-        body: 150,
-        price: 240,
-        title: 320
+        title: HERO_ANIMATION_STAGGER_MS,
+        body: HERO_ANIMATION_STAGGER_MS * 2
+      };
+      const EXIT_START_DELAYS = {
+        circle: 0,
+        title: HERO_ANIMATION_STAGGER_MS,
+        body: HERO_ANIMATION_STAGGER_MS * 2
       };
       const INITIAL_MEDIA_ENTRY_MS = 600;
       const MEDIA_CIRCLES_VISIBLE_TIMINGS = {
@@ -718,10 +711,9 @@
       const setHeroVisibleState = (item, isVisible) => {
         if (!item) return;
 
-        const { title, price, body, caption } = getHeroTextElements(item);
+        const { title, body, caption } = getHeroTextElements(item);
 
         title?.classList.toggle('hero-title-visible', isVisible);
-        price?.classList.toggle('hero-price-visible', isVisible);
         body?.classList.toggle('hero-body-visible', isVisible);
         caption?.classList.toggle('hero-circle-visible', isVisible);
       };
@@ -785,14 +777,13 @@
       const animateHeroText = (item, direction) => {
         if (!item) return;
 
-        const { title, price, body, caption } = getHeroTextElements(item);
+        const { title, body, caption } = getHeroTextElements(item);
         const titleClass = direction === 'down' ? 'hero-title-enter-down' : 'hero-title-enter-up';
-        const priceClass = direction === 'down' ? 'hero-price-enter-down' : 'hero-price-enter-up';
         const bodyClass = direction === 'down' ? 'hero-body-enter-down' : 'hero-body-enter-up';
         const circleClass =
           direction === 'down' ? 'hero-circle-enter-down' : 'hero-circle-enter-up';
 
-        [title, price, body, caption].forEach((node) => {
+        [title, body, caption].forEach((node) => {
           if (!node) return;
           void node.offsetWidth;
         });
@@ -800,25 +791,17 @@
         setHeroVisibleState(item, false);
         caption?.classList.add(circleClass);
 
-        const bodyStartTimer = window.setTimeout(() => {
-          body?.classList.add(bodyClass);
-        }, ENTRY_START_DELAYS.body);
-
         const titleStartTimer = window.setTimeout(() => {
           title?.classList.add(titleClass);
         }, ENTRY_START_DELAYS.title);
 
-        const priceStartTimer = window.setTimeout(() => {
-          price?.classList.add(priceClass);
-        }, ENTRY_START_DELAYS.price);
+        const bodyStartTimer = window.setTimeout(() => {
+          body?.classList.add(bodyClass);
+        }, ENTRY_START_DELAYS.body);
 
         const titleTimer = window.setTimeout(() => {
           title?.classList.add('hero-title-visible');
         }, ENTRY_VISIBLE_TIMINGS.title);
-
-        const priceTimer = window.setTimeout(() => {
-          price?.classList.add('hero-price-visible');
-        }, ENTRY_VISIBLE_TIMINGS.price);
 
         const bodyTimer = window.setTimeout(() => {
           body?.classList.add('hero-body-visible');
@@ -829,12 +812,10 @@
         }, ENTRY_VISIBLE_TIMINGS.circle);
 
         revealTimers.set(item, [
-          bodyStartTimer,
-          priceStartTimer,
           titleStartTimer,
-          bodyTimer,
-          priceTimer,
+          bodyStartTimer,
           titleTimer,
+          bodyTimer,
           circleTimer
         ]);
       };
@@ -842,21 +823,30 @@
       const animateHeroExit = (item, direction) => {
         if (!item) return;
 
-        const { title, price, body, caption } = getHeroTextElements(item);
+        const { title, body, caption } = getHeroTextElements(item);
         const titleClass = direction === 'down' ? 'hero-title-exit-down' : 'hero-title-exit-up';
-        const priceClass = direction === 'down' ? 'hero-price-exit-down' : 'hero-price-exit-up';
         const bodyClass = direction === 'down' ? 'hero-body-exit-down' : 'hero-body-exit-up';
         const circleClass = direction === 'down' ? 'hero-circle-exit-down' : 'hero-circle-exit-up';
 
-        [title, price, body, caption].forEach((node) => {
+        [title, body, caption].forEach((node) => {
           if (!node) return;
           void node.offsetWidth;
         });
 
-        title?.classList.add(titleClass);
-        price?.classList.add(priceClass);
-        body?.classList.add(bodyClass);
-        caption?.classList.add(circleClass);
+        const circleTimer = window.setTimeout(() => {
+          caption?.classList.add(circleClass);
+        }, EXIT_START_DELAYS.circle);
+
+        const titleTimer = window.setTimeout(() => {
+          title?.classList.add(titleClass);
+        }, EXIT_START_DELAYS.title);
+
+        const bodyTimer = window.setTimeout(() => {
+          body?.classList.add(bodyClass);
+        }, EXIT_START_DELAYS.body);
+
+        const timers = revealTimers.get(item) ?? [];
+        revealTimers.set(item, [...timers, circleTimer, titleTimer, bodyTimer]);
       };
 
       const applyInitialSlideDistance = () => {
@@ -1013,7 +1003,7 @@
       const centerShiftPx = isProductPeekViewport() ? Math.max((viewportWidth - itemWidthPx) / 2, 0) : 0;
       const offsetPx = (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
 
-      trackEl.style.transition = useTransition ? 'transform 760ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none';
+      trackEl.style.transition = useTransition ? 'transform 820ms cubic-bezier(0.76, 0, 0.24, 1)' : 'none';
       trackEl.style.transform = `translate3d(${-offsetPx.toFixed(3)}px, 0, 0)`;
     };
 
@@ -1400,12 +1390,22 @@
       if (!target) return;
 
       event.preventDefault();
-      await closeNavMenuIfNeeded();
       syncNavOffset();
-      activeSectionHash = href;
-      setActiveNavLink(href);
-      const currentScrollY = window.scrollY;
       const isHomeTarget = href === '#anasayfa';
+      const targetViewportTop = isHomeTarget ? 0 : target.getBoundingClientRect().top;
+      const currentVisibleNavOffset = getActiveNavOffset();
+      const isCurrentTargetAligned = isHomeTarget
+        ? Math.abs(window.scrollY) <= 6
+        : Math.abs(targetViewportTop - currentVisibleNavOffset) <= 6;
+      const isCurrentLinkActive =
+        this.classList.contains('nav-link') &&
+        (this.classList.contains('is-active') || href === activeSectionHash);
+
+      if (isCurrentLinkActive && isCurrentTargetAligned) {
+        return;
+      }
+
+      const currentScrollY = window.scrollY;
       const targetDocumentTop = isHomeTarget
         ? 0
         : target.getBoundingClientRect().top + currentScrollY;
@@ -1415,6 +1415,10 @@
         : (isScrollingDown ? 0 : getNavOffset());
       const targetTop = isHomeTarget ? 0 : targetDocumentTop - targetOffset;
       const nextTop = Math.max(targetTop, 0);
+
+      await closeNavMenuIfNeeded();
+      activeSectionHash = href;
+      setActiveNavLink(href);
       lockNavbarDuringNavScroll(!isHomeTarget && isScrollingDown, nextTop);
       if (lenis) {
         lenis.scrollTo(nextTop, {
