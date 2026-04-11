@@ -39,10 +39,10 @@
         ? new window.Lenis({
             duration: 1.85,
             smoothWheel: true,
-            smoothTouch: false,
+            smoothTouch: true,
             wheelMultiplier: 0.95,
-            touchMultiplier: 1,
-            lerp: 0.085
+            touchMultiplier: 0.9,
+            lerp: 0.075
           })
         : null;
 
@@ -477,24 +477,28 @@
         return false;
       }
 
-      const viewportCenter = window.innerHeight * 0.5;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
       let isStillAnimating = false;
 
       orbParallaxSections.forEach((metric) => {
         const rect = metric.sectionEl.getBoundingClientRect();
-        const sectionCenter = rect.top + rect.height * 0.5;
-        const normalizedOffset = clamp((sectionCenter - viewportCenter) / window.innerHeight, -1, 1);
-        const orbRangePx = window.innerWidth <= 767 ? 64 : 132;
+        const sectionTravel = Math.max(viewportHeight + rect.height, 1);
+        const progress = clamp((viewportHeight - rect.top) / sectionTravel, 0, 1);
+        const normalizedOffset = progress * 2 - 1;
+        const orbRangePx = window.innerWidth <= 767 ? 42 : 132;
         const pinkTargetOffsetPx = normalizedOffset * -orbRangePx;
         const blueTargetOffsetPx = normalizedOffset * orbRangePx;
         const pinkDelta = Math.abs(pinkTargetOffsetPx - metric.currentPinkOffsetPx);
         const blueDelta = Math.abs(blueTargetOffsetPx - metric.currentBlueOffsetPx);
+        const orbEase = window.innerWidth <= 767
+          ? 0.16
+          : getScrollEase(Math.max(pinkDelta, blueDelta));
         const pinkNextOffsetPx = pinkDelta < 0.08
           ? pinkTargetOffsetPx
-          : lerp(metric.currentPinkOffsetPx, pinkTargetOffsetPx, getScrollEase(pinkDelta));
+          : lerp(metric.currentPinkOffsetPx, pinkTargetOffsetPx, orbEase);
         const blueNextOffsetPx = blueDelta < 0.08
           ? blueTargetOffsetPx
-          : lerp(metric.currentBlueOffsetPx, blueTargetOffsetPx, getScrollEase(blueDelta));
+          : lerp(metric.currentBlueOffsetPx, blueTargetOffsetPx, orbEase);
 
         metric.currentPinkOffsetPx = pinkNextOffsetPx;
         metric.currentBlueOffsetPx = blueNextOffsetPx;
@@ -562,12 +566,45 @@
       if (!sectionEl) return false;
 
       const rect = sectionEl.getBoundingClientRect();
+      const sectionStyles = window.getComputedStyle(sectionEl);
+      const primaryCompleteAtRaw = Number.parseFloat(
+        sectionStyles.getPropertyValue('--stats-title-primary-complete-at')
+      );
+      const secondaryStartAtRaw = Number.parseFloat(
+        sectionStyles.getPropertyValue('--stats-title-secondary-start-at')
+      );
+      const revealDelayRaw = Number.parseFloat(
+        sectionStyles.getPropertyValue('--stats-title-secondary-delay')
+      );
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
       const start = viewportHeight * 0.88;
       const end = viewportHeight * 0.22;
       const progress = clamp((start - rect.top) / Math.max(start - end, 1), 0, 1);
-      const lineOneProgress = progress;
-      const lineTwoProgress = clamp((progress - 0.16) / 0.84, 0, 1);
+      const hasPrimaryPhaseSplit = Number.isFinite(primaryCompleteAtRaw);
+      const primaryCompleteAt = hasPrimaryPhaseSplit
+        ? clamp(primaryCompleteAtRaw, 0.05, 0.95)
+        : 1;
+      const secondaryStartAt = hasPrimaryPhaseSplit
+        ? clamp(
+            Number.isFinite(secondaryStartAtRaw) ? secondaryStartAtRaw : primaryCompleteAt,
+            0,
+            primaryCompleteAt
+          )
+        : 0;
+      const revealDelay = Number.isFinite(revealDelayRaw)
+        ? clamp(revealDelayRaw, 0, 0.95)
+        : 0.16;
+      const lineOneProgress = hasPrimaryPhaseSplit
+        ? clamp(progress / primaryCompleteAt, 0, 1)
+        : progress;
+      const lineTwoProgress = hasPrimaryPhaseSplit
+        ? clamp(
+            (progress - secondaryStartAt) /
+              Math.max(1 - secondaryStartAt, 0.01),
+            0,
+            1
+          )
+        : clamp((progress - revealDelay) / Math.max(1 - revealDelay, 0.01), 0, 1);
       const nextRevealOne = `${(lineOneProgress * 100).toFixed(2)}%`;
       const nextRevealTwo = `${(lineTwoProgress * 100).toFixed(2)}%`;
 
@@ -612,7 +649,9 @@
     if (lenis) {
       const runLenisFrame = (time) => {
         lenis.raf(time);
-        updateActiveSection();
+        lastScrollY = window.scrollY;
+        updateNavbarVisibility(lastScrollY);
+        performScrollEffects();
         window.requestAnimationFrame(runLenisFrame);
       };
 
@@ -621,10 +660,6 @@
       lenis.on('scroll', () => {
         lastScrollY = window.scrollY;
         updateNavbarVisibility(lastScrollY);
-        updateActiveSection();
-        if (!scrollEffectsFrame) {
-          scrollEffectsFrame = window.requestAnimationFrame(runScrollEffects);
-        }
       });
     }
 
@@ -1193,7 +1228,13 @@
         const gapPx = getProductTrackGapPx(trackEl);
         const carouselWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth;
         const itemWidthPx = isProductPeekViewport()
-          ? Math.min(Math.max(carouselWidth * 0.6, 208), Math.max(carouselWidth - gapPx * 2, 0))
+          ? Math.min(
+              Math.max(
+                carouselWidth * (window.innerWidth <= 430 ? 0.82 : 0.78),
+                window.innerWidth <= 430 ? 252 : 236
+              ),
+              Math.max(carouselWidth - gapPx * 1.15, 0)
+            )
           : Math.max((carouselWidth - gapPx * (visibleCount - 1)) / visibleCount, 0);
         slider.carouselEl.style.setProperty('--product-carousel-item-width', `${itemWidthPx.toFixed(3)}px`);
         trackEl.querySelectorAll('.product-carousel-item').forEach((itemEl) => {
@@ -1318,8 +1359,7 @@
     updateSectionOrbParallax();
     updateProductImageParallax();
 
-    const runScrollEffects = () => {
-      scrollEffectsFrame = 0;
+    function performScrollEffects() {
       lastScrollY = window.scrollY;
       updateActiveSection();
       const isStatsTitleAnimating = updateStatsTitleReveal();
@@ -1327,12 +1367,20 @@
       const isOrbAnimating = updateSectionOrbParallax();
       const isProductImageAnimating = updateProductImageParallax();
       const isHeroAnimating = applyHeroScrollParallax();
-      if (
+      return (
         isStatsTitleAnimating ||
         isGhostAnimating ||
         isOrbAnimating ||
         isProductImageAnimating ||
         isHeroAnimating
+      );
+    }
+
+    const runScrollEffects = () => {
+      scrollEffectsFrame = 0;
+      const isStillAnimating = performScrollEffects();
+      if (
+        isStillAnimating
       ) {
         scrollEffectsFrame = window.requestAnimationFrame(runScrollEffects);
       }
@@ -1406,17 +1454,21 @@
       }
 
       const currentScrollY = window.scrollY;
+
+      await closeNavMenuIfNeeded();
+      syncNavOffset();
+
+      const recalculatedScrollY = window.scrollY;
       const targetDocumentTop = isHomeTarget
         ? 0
-        : target.getBoundingClientRect().top + currentScrollY;
-      const isScrollingDown = targetDocumentTop > currentScrollY;
+        : getDocumentTop(target);
+      const isScrollingDown = targetDocumentTop > recalculatedScrollY;
       const targetOffset = isMobileViewport()
         ? getNavOffset()
         : (isScrollingDown ? 0 : getNavOffset());
       const targetTop = isHomeTarget ? 0 : targetDocumentTop - targetOffset;
       const nextTop = Math.max(targetTop, 0);
 
-      await closeNavMenuIfNeeded();
       activeSectionHash = href;
       setActiveNavLink(href);
       lockNavbarDuringNavScroll(!isHomeTarget && isScrollingDown, nextTop);
