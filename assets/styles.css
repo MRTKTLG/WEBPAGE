@@ -574,7 +574,7 @@ main > section,
 
 .carousel-caption {
   --title-circle-anchor-x: -1.35rem;
-  --title-circle-anchor-y: calc(var(--text-section-title) * 0.48);
+  --title-circle-anchor-y: calc(var(--text-section-title) * 1.08);
   left: var(--content-edge);
   right: auto;
   width: fit-content;
@@ -627,7 +627,7 @@ main > section,
 .carousel-caption h1,
 .carousel-caption h2 {
   margin: 0;
-  font-size: var(--text-section-title);
+  font-size: calc(var(--text-section-title) * 2);
   line-height: 1.08;
   letter-spacing: -0.025em;
   color: var(--ink);
@@ -1393,6 +1393,8 @@ main > section {
 
 .journey-card h3 {
   position: relative;
+  display: inline-block;
+  text-align: left;
   margin-bottom: var(--space-3);
   color: #273242 !important;
   isolation: isolate;
@@ -2425,7 +2427,7 @@ body.is-product-carousel-dragging {
   grid-row: 1;
   font-size: 0.95rem;
   text-align: left;
-  color: #5f7288 !important;
+  color: var(--preview-contrast) !important;
 }
 
 #urunler .product-model {
@@ -2489,7 +2491,7 @@ body.is-product-carousel-dragging {
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: #5f7288 !important;
+  color: var(--preview-contrast) !important;
 }
 
 #urunler .product-carousel-featured .product-meta-row .card-text {
