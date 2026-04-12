@@ -13,6 +13,8 @@
   --hero-blue: #cfe6fb;
   --accent-pink-strong: #df8eb8;
   --accent-blue-strong: #7aa8cf;
+  --hero-caption-text: #5f7288;
+  --product-old-price-color: #c86e76;
   --circle-strong-alpha: 0.64;
   --circle-mid-alpha: 0.28;
   --circle-fade-alpha: 0.04;
@@ -126,16 +128,18 @@ body.is-preloading {
 .page-preloader-shell {
   display: grid;
   justify-items: center;
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 1.8rem;
 }
 
 .page-preloader-brand {
   font-size: clamp(1.45rem, 2vw, 1.8rem);
   font-weight: 700;
   letter-spacing: 0.01em;
-  line-height: 1.1;
+  line-height: 1.2;
   position: relative;
   display: inline-block;
+  padding-block: 0.08em 0.14em;
+  overflow: visible;
   color: rgba(22, 24, 31, 0.22);
   background: linear-gradient(90deg, #d78fb1 0%, #7b9fbe 100%);
   background-repeat: no-repeat;
@@ -697,7 +701,7 @@ main > section,
   font-weight: 400;
   line-height: 1.72;
   letter-spacing: 0.002em;
-  color: var(--muted);
+  color: var(--hero-caption-text);
   opacity: 0;
 }
 
@@ -1253,6 +1257,12 @@ main > section {
   isolation: isolate;
 }
 
+.journey-visual-media {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+}
+
 .journey-visual::before {
   content: '';
   position: absolute;
@@ -1382,15 +1392,44 @@ main > section {
 }
 
 .journey-card h3 {
+  position: relative;
   margin-bottom: var(--space-3);
   color: #273242 !important;
+  isolation: isolate;
+}
+
+.journey-card h3::before {
+  content: attr(data-step);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -56%);
+  font-size: clamp(4.2rem, 7vw, 6.4rem);
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: -0.08em;
+  color: rgba(43, 52, 66, 0.1);
+  text-shadow: 0 14px 28px rgba(104, 121, 145, 0.08);
+  z-index: -1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.journey-card:nth-child(2) h3::before,
+.journey-card:nth-child(4) h3::before {
+  color: rgba(123, 159, 190, 0.13);
+}
+
+.journey-card:nth-child(1) h3::before,
+.journey-card:nth-child(3) h3::before {
+  color: rgba(215, 143, 177, 0.13);
 }
 
 .journey-card p:last-child {
   margin-bottom: 0;
   font-size: var(--text-body);
   line-height: var(--content-line-height);
-  color: var(--muted);
+  color: var(--hero-caption-text);
 }
 
 .section-ghost .container {
@@ -1745,7 +1784,7 @@ main > section:not([id]) > .container > h2 {
 }
 
 #sayaclar .stat-counter {
-  color: var(--heading);
+  color: var(--preview-contrast);
 }
 
 #sayaclar .card-body > p:last-child {
@@ -1764,7 +1803,7 @@ main > section:not([id]) > .container > h2 {
   font-size: var(--text-body-lg);
   font-weight: var(--text-body-weight);
   line-height: var(--content-line-height);
-  color: var(--muted);
+  color: var(--hero-caption-text);
 }
 
 #hakkimizda .section-title {
@@ -1778,7 +1817,11 @@ main > section:not([id]) > .container > h2 {
 
 #hakkimizda p,
 #hakkimizda p.lead {
-  color: var(--muted);
+  color: var(--hero-caption-text);
+}
+
+#urunler p.lead {
+  color: var(--hero-caption-text);
 }
 
 .lead,
@@ -1796,12 +1839,12 @@ main > section:not([id]) > .container > h2 {
   font-size: var(--text-body-lg);
   font-weight: var(--text-body-weight);
   line-height: var(--content-line-height);
-  color: var(--muted);
+  color: var(--hero-caption-text);
 }
 
 .card-body > p.display-6 {
   font-size: clamp(2rem, 3.4vw, 3rem) !important;
-  font-weight: 700 !important;
+  font-weight: 900 !important;
   line-height: 1.05;
   letter-spacing: -0.03em;
 }
@@ -1847,6 +1890,7 @@ main > section:not([id]) > .container > h2 {
   min-height: var(--stat-digit-height);
   height: var(--stat-digit-height);
   line-height: 1;
+  font-weight: inherit;
 }
 
 .stat-digit-face-measure {
@@ -1859,6 +1903,7 @@ main > section:not([id]) > .container > h2 {
   display: inline-flex;
   align-items: center;
   margin-left: 0.06em;
+  font-weight: inherit;
 }
 
 .btn,
@@ -2308,19 +2353,19 @@ body.is-product-carousel-dragging {
 
 .product-carousel-compact .product-meta-row .card-title,
 .product-carousel-compact .product-meta-row .card-text {
-  font-size: 1rem;
+  font-size: var(--text-body-lg);
 }
 
 .product-carousel-compact .product-meta-row h3.card-title {
   order: 1;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   text-align: left;
 }
 
 .product-carousel-compact .product-model {
   order: 2;
-  font-size: 0.69rem;
-  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
   text-align: left;
 }
 
@@ -2338,7 +2383,7 @@ body.is-product-carousel-dragging {
 
 .product-description {
   margin: 0;
-  color: var(--muted);
+  color: var(--hero-caption-text);
   font-size: 0.98rem;
   line-height: 1.7;
 }
@@ -2377,7 +2422,7 @@ body.is-product-carousel-dragging {
   grid-row: 2;
   margin: 0;
   text-align: left;
-  color: var(--body-soft);
+  color: var(--hero-caption-text) !important;
   text-transform: none !important;
   letter-spacing: 0.03em;
 }
@@ -2429,7 +2474,7 @@ body.is-product-carousel-dragging {
 
 #urunler .product-carousel-featured .product-meta-row .card-title {
   order: 1;
-  font-size: clamp(1.2rem, 1.6vw, 1.45rem);
+  font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.04em;
@@ -2465,11 +2510,11 @@ body.is-product-carousel-dragging {
 }
 
 #urunler .product-carousel-featured .product-price-row .product-old-price {
-  order: 0;
+  order: 1;
 }
 
 #urunler .product-carousel-featured .product-price-row .card-title {
-  order: 1;
+  order: 0;
   text-align: right;
 }
 
@@ -2482,7 +2527,7 @@ body.is-product-carousel-dragging {
   letter-spacing: 0.04em;
   text-transform: none;
   text-align: left;
-  color: var(--muted);
+  color: var(--hero-caption-text);
 }
 
 #urunler .product-carousel-featured .product-model {
@@ -2490,14 +2535,14 @@ body.is-product-carousel-dragging {
   font-size: 0.82rem;
   letter-spacing: 0.04em;
   text-transform: none !important;
-  color: var(--body-soft);
+  color: var(--hero-caption-text) !important;
 }
 
 #urunler .product-carousel-featured .product-old-price {
   justify-self: start;
   font-size: 0.92rem;
   text-align: left;
-  color: var(--body-soft);
+  color: var(--product-old-price-color) !important;
 }
 
 .product-old-price {
@@ -2506,7 +2551,7 @@ body.is-product-carousel-dragging {
   margin: 0;
   justify-self: end;
   text-align: right;
-  color: var(--body-soft);
+  color: var(--product-old-price-color) !important;
 }
 
 .product-rating {
@@ -2859,6 +2904,10 @@ footer {
     min-height: 12rem;
   }
 
+  .journey-card h3::before {
+    font-size: clamp(3.8rem, 16vw, 5.2rem);
+  }
+
   #hakkimizda h2,
   #urunler .d-flex h2,
   #yorumlar h2,
@@ -2995,13 +3044,22 @@ footer {
   }
 
   #urunler .product-carousel-featured .product-meta-row .card-title {
-    font-size: 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  #urunler .product-carousel-compact .product-meta-row .card-title {
+    font-size: 0.95rem;
   }
 
   #urunler .product-carousel-featured .product-meta-row .card-text {
     font-size: 1.65rem;
   }
 
+  #urunler .product-carousel-compact .product-meta-row .card-text {
+    font-size: 1.65rem;
+  }
+
+  #urunler .product-carousel-compact .product-description,
   #urunler .product-carousel-featured .product-description {
     max-width: none;
   }
