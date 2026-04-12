@@ -1343,7 +1343,7 @@ main > section {
 
 .journey-card h3 {
   margin-bottom: var(--space-3);
-  color: var(--heading) !important;
+  color: #273242 !important;
 }
 
 .journey-card p:last-child {
@@ -1389,7 +1389,7 @@ main > section:not([id]) > .container > h2 {
 }
 
 #hakkimizda h3 {
-  color: var(--heading) !important;
+  color: #273242 !important;
 }
 
 #hakkimizda .ghost-title-wrap,
@@ -1426,14 +1426,14 @@ main > section:not([id]) > .container > h2 {
 }
 
 .card-title {
-  color: var(--heading);
+  color: #273242;
 }
 
 #urunler .product-carousel-group > h3,
 #yorumlar h3,
 #sss .accordion-button,
 .form-label {
-  color: var(--heading) !important;
+  color: #273242 !important;
   letter-spacing: -0.01em;
 }
 
@@ -1658,7 +1658,7 @@ main > section:not([id]) > .container > h2 {
   margin-top: 0;
   margin-bottom: 0;
   text-align: left;
-  color: var(--muted-strong);
+  color: #273242;
 }
 
 .testimonial-rating {
@@ -1732,7 +1732,7 @@ main > section:not([id]) > .container > h2 {
 }
 
 #hakkimizda h3 {
-  color: var(--heading) !important;
+  color: #273242 !important;
   letter-spacing: -0.01em;
 }
 
@@ -2325,7 +2325,7 @@ body.is-product-carousel-dragging {
   grid-row: 1;
   font-size: 0.95rem;
   text-align: left;
-  color: var(--heading);
+  color: #273242;
 }
 
 #urunler .product-model {
@@ -2389,7 +2389,7 @@ body.is-product-carousel-dragging {
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: var(--heading);
+  color: #273242;
 }
 
 #urunler .product-carousel-featured .product-meta-row .card-text {
@@ -2398,7 +2398,7 @@ body.is-product-carousel-dragging {
   letter-spacing: -0.04em;
   text-align: left;
   justify-self: start;
-  color: var(--muted-strong);
+  color: #273242;
 }
 
 .product-price-row {
