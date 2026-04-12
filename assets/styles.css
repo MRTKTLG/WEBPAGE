@@ -1462,8 +1462,11 @@ main > section:not([id]) > .container > h2 {
 
 #hakkimizda .section-title,
 #urunler .section-title,
-#sss .section-title,
 #iletisim .section-title {
+  color: var(--preview-contrast) !important;
+}
+
+#sss .section-title {
   color: var(--preview-contrast) !important;
 }
 
@@ -1491,11 +1494,19 @@ main > section:not([id]) > .container > h2 {
   margin-bottom: var(--section-flow-gap) !important;
 }
 
+#iletisim .section-title + p {
+  color: #5f7288 !important;
+}
+
 #hakkimizda p.lead,
 #urunler p.lead,
 #sss p.lead {
   position: relative;
   z-index: 1;
+}
+
+#sss p.lead {
+  color: #5f7288 !important;
 }
 
 .card-title,
@@ -1726,7 +1737,7 @@ main > section:not([id]) > .container > h2 {
 .testimonial-card p {
   margin-bottom: var(--space-4) !important;
   text-align: left;
-  color: var(--muted) !important;
+  color: #5f7288 !important;
 }
 
 .testimonial-card .card-body > p.mb-0 {
@@ -1762,7 +1773,7 @@ main > section:not([id]) > .container > h2 {
 }
 
 .testimonial-meta .text-body-secondary {
-  color: var(--body-soft) !important;
+  color: #5f7288 !important;
   text-transform: none !important;
   letter-spacing: 0.03em;
 }
@@ -1788,7 +1799,7 @@ main > section:not([id]) > .container > h2 {
 }
 
 #sayaclar .card-body > p:last-child {
-  color: var(--muted);
+  color: var(--hero-caption-text) !important;
 }
 
 .stats-section .stat-digit-face,
@@ -1978,7 +1989,7 @@ textarea.form-control,
 .faq-accordion {
   display: grid;
   gap: var(--rhythm-gap-1);
-  max-width: 58rem;
+  width: min(100%, 68rem);
   margin-inline: auto;
 }
 
@@ -2047,7 +2058,7 @@ textarea.form-control,
 #sss .accordion-body {
   padding: 0 1.5rem 1.4rem;
   margin: 0;
-  color: var(--body-soft);
+  color: #5f7288 !important;
 }
 
 #yorumlar {
@@ -2414,7 +2425,7 @@ body.is-product-carousel-dragging {
   grid-row: 1;
   font-size: 0.95rem;
   text-align: left;
-  color: var(--preview-contrast);
+  color: #5f7288 !important;
 }
 
 #urunler .product-model {
@@ -2478,7 +2489,7 @@ body.is-product-carousel-dragging {
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: var(--preview-contrast);
+  color: #5f7288 !important;
 }
 
 #urunler .product-carousel-featured .product-meta-row .card-text {
@@ -2598,11 +2609,16 @@ footer {
   border-color: transparent !important;
 }
 
+footer .text-body-secondary,
+.footer-signature {
+  color: #5f7288 !important;
+}
+
 .footer-signature {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  color: var(--body-soft);
+  color: #5f7288 !important;
 }
 
 .footer-signature-heart {
