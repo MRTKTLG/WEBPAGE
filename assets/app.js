@@ -10,24 +10,14 @@
       ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
       : null;
     const navbarEl = document.querySelector('.navbar');
+    const navTogglerEl = document.querySelector('.navbar-toggler');
+    const preloaderEl = document.querySelector('.page-preloader');
     const statsSectionEl = document.getElementById('sayaclar');
     const navLinks = Array.from(document.querySelectorAll('a.nav-link[href^="#"]'));
     const heroCarousel = document.getElementById('heroCarousel');
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
-    const currentProductsContainer = document.querySelector('#urunler > .container');
-    const legacyProductsSection = document.getElementById('urunler-eski');
-    const legacyProductsGroups = Array.from(
-      legacyProductsSection?.querySelectorAll('.product-carousel-group') ?? []
-    );
     const faqSectionEl = document.getElementById('sss');
     const feedbackSectionEl = document.getElementById('yorumlar');
-
-    if (currentProductsContainer && legacyProductsSection && legacyProductsGroups.length) {
-      legacyProductsGroups.forEach((group) => {
-        currentProductsContainer.appendChild(group);
-      });
-      legacyProductsSection.remove();
-    }
 
     if (faqSectionEl && feedbackSectionEl && faqSectionEl.compareDocumentPosition(feedbackSectionEl) & Node.DOCUMENT_POSITION_PRECEDING) {
       feedbackSectionEl.before(faqSectionEl);
@@ -66,6 +56,16 @@
 
     const syncNavOffset = () => {
       document.documentElement.style.setProperty('--nav-offset', `${getNavOffset()}px`);
+    };
+
+    const hidePreloader = () => {
+      if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
+
+      preloaderEl.dataset.dismissed = 'true';
+      window.setTimeout(() => {
+        preloaderEl.classList.add('is-hidden');
+        document.body.classList.remove('is-preloading');
+      }, 220);
     };
 
     const syncNavLinkWidths = () => {
@@ -256,7 +256,12 @@
       currentPinkOffsetPx: 0,
       currentBlueOffsetPx: 0
     }));
-    let scrollEffectsFrame = 0;
+    const productCardImageMetrics = Array.from(
+      document.querySelectorAll('.product-card .card-img-top')
+    ).map((imageEl) => ({
+      imageEl,
+      currentOffsetPx: Number.parseFloat(imageEl.dataset.productImageParallaxY ?? '0')
+    }));
     let activeSectionHash = '';
     let lastScrollY = window.scrollY;
     let lastNavbarToggleScrollY = window.scrollY;
@@ -265,8 +270,6 @@
     let syncHeroParallaxLayout = () => {};
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-
-    const lerp = (start, end, amount) => start + (end - start) * amount;
 
     const updateNavbarVisibility = (currentScrollY = window.scrollY) => {
       if (!navbarEl) return;
@@ -403,13 +406,6 @@
       testimonialMarqueeFrame = window.requestAnimationFrame(runTestimonialMarquee);
     };
 
-    const getScrollEase = (delta) => {
-      if (delta <= 0.5) return 1;
-      if (delta <= 14) return 0.24;
-      if (delta <= 40) return 0.18;
-      return 0.14;
-    };
-
     const refreshGhostMetrics = () => {
       if (!ghostSectionMetrics.length) return;
 
@@ -486,19 +482,8 @@
         const progress = clamp((viewportHeight - rect.top) / sectionTravel, 0, 1);
         const normalizedOffset = progress * 2 - 1;
         const orbRangePx = window.innerWidth <= 767 ? 42 : 132;
-        const pinkTargetOffsetPx = normalizedOffset * -orbRangePx;
-        const blueTargetOffsetPx = normalizedOffset * orbRangePx;
-        const pinkDelta = Math.abs(pinkTargetOffsetPx - metric.currentPinkOffsetPx);
-        const blueDelta = Math.abs(blueTargetOffsetPx - metric.currentBlueOffsetPx);
-        const orbEase = window.innerWidth <= 767
-          ? 0.16
-          : getScrollEase(Math.max(pinkDelta, blueDelta));
-        const pinkNextOffsetPx = pinkDelta < 0.08
-          ? pinkTargetOffsetPx
-          : lerp(metric.currentPinkOffsetPx, pinkTargetOffsetPx, orbEase);
-        const blueNextOffsetPx = blueDelta < 0.08
-          ? blueTargetOffsetPx
-          : lerp(metric.currentBlueOffsetPx, blueTargetOffsetPx, orbEase);
+        const pinkNextOffsetPx = normalizedOffset * -orbRangePx;
+        const blueNextOffsetPx = normalizedOffset * orbRangePx;
 
         metric.currentPinkOffsetPx = pinkNextOffsetPx;
         metric.currentBlueOffsetPx = blueNextOffsetPx;
@@ -510,26 +495,16 @@
           '--section-orb-blue-x',
           `${blueNextOffsetPx.toFixed(3)}px`
         );
-
-        if (pinkDelta >= 0.08 || blueDelta >= 0.08) {
-          isStillAnimating = true;
-        }
       });
 
       return isStillAnimating;
     };
 
     const updateProductImageParallax = () => {
-      const productCardImages = Array.from(document.querySelectorAll('.product-card .card-img-top')).map(
-        (imageEl) => ({
-          imageEl,
-          currentOffsetPx: Number.parseFloat(imageEl.dataset.productImageParallaxY ?? '0')
-        })
-      );
-      if (!productCardImages.length) return false;
+      if (!productCardImageMetrics.length) return false;
 
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        productCardImages.forEach((item) => {
+        productCardImageMetrics.forEach((item) => {
           item.currentOffsetPx = 0;
           item.imageEl.dataset.productImageParallaxY = '0';
           item.imageEl.style.setProperty('--product-image-parallax-y', '0px');
@@ -540,23 +515,15 @@
       const viewportCenter = window.innerHeight * 0.5;
       let isStillAnimating = false;
 
-      productCardImages.forEach((item) => {
+      productCardImageMetrics.forEach((item) => {
         const rect = item.imageEl.getBoundingClientRect();
         const imageCenter = rect.top + rect.height * 0.5;
         const normalizedOffset = clamp((imageCenter - viewportCenter) / window.innerHeight, -1, 1);
-        const targetOffsetPx = normalizedOffset * -52;
-        const delta = Math.abs(targetOffsetPx - item.currentOffsetPx);
-        const nextOffsetPx = delta < 0.1
-          ? targetOffsetPx
-          : lerp(item.currentOffsetPx, targetOffsetPx, getScrollEase(delta));
+        const nextOffsetPx = normalizedOffset * -52;
 
         item.currentOffsetPx = nextOffsetPx;
         item.imageEl.dataset.productImageParallaxY = `${nextOffsetPx}`;
         item.imageEl.style.setProperty('--product-image-parallax-y', `${nextOffsetPx.toFixed(3)}px`);
-
-        if (Math.abs(targetOffsetPx - nextOffsetPx) >= 0.1) {
-          isStillAnimating = true;
-        }
       });
 
       return isStillAnimating;
@@ -649,9 +616,6 @@
     if (lenis) {
       const runLenisFrame = (time) => {
         lenis.raf(time);
-        lastScrollY = window.scrollY;
-        updateNavbarVisibility(lastScrollY);
-        performScrollEffects();
         window.requestAnimationFrame(runLenisFrame);
       };
 
@@ -660,6 +624,7 @@
       lenis.on('scroll', () => {
         lastScrollY = window.scrollY;
         updateNavbarVisibility(lastScrollY);
+        performScrollEffects();
       });
     }
 
@@ -944,7 +909,7 @@
           animateHeroMediaCircles(heroItems[event.to], direction);
           animateHeroText(heroItems[event.to], direction);
         }
-        scheduleScrollEffects();
+        performScrollEffects();
       });
     }
 
@@ -1362,44 +1327,23 @@
     function performScrollEffects() {
       lastScrollY = window.scrollY;
       updateActiveSection();
-      const isStatsTitleAnimating = updateStatsTitleReveal();
-      const isGhostAnimating = updateGhostHeadingPosition();
-      const isOrbAnimating = updateSectionOrbParallax();
-      const isProductImageAnimating = updateProductImageParallax();
-      const isHeroAnimating = applyHeroScrollParallax();
-      return (
-        isStatsTitleAnimating ||
-        isGhostAnimating ||
-        isOrbAnimating ||
-        isProductImageAnimating ||
-        isHeroAnimating
+      updateStatsTitleReveal();
+      updateGhostHeadingPosition();
+      updateSectionOrbParallax();
+      updateProductImageParallax();
+      applyHeroScrollParallax();
+    };
+
+    if (!lenis) {
+      window.addEventListener(
+        'scroll',
+        () => {
+          updateNavbarVisibility(window.scrollY);
+          performScrollEffects();
+        },
+        { passive: true }
       );
     }
-
-    const runScrollEffects = () => {
-      scrollEffectsFrame = 0;
-      const isStillAnimating = performScrollEffects();
-      if (
-        isStillAnimating
-      ) {
-        scrollEffectsFrame = window.requestAnimationFrame(runScrollEffects);
-      }
-    };
-
-    const scheduleScrollEffects = () => {
-      if (scrollEffectsFrame) return;
-      scrollEffectsFrame = window.requestAnimationFrame(runScrollEffects);
-    };
-
-    window.addEventListener(
-      'scroll',
-      () => {
-        updateNavbarVisibility(window.scrollY);
-        updateActiveSection();
-        scheduleScrollEffects();
-      },
-      { passive: true }
-    );
     window.addEventListener('resize', () => {
       syncNavOffset();
       syncNavLinkWidths();
@@ -1483,13 +1427,24 @@
       window.history.replaceState(null, '', href);
     });
 
+    navTogglerEl?.addEventListener('click', () => {
+      navbarEl?.classList.remove('is-hidden');
+      lastNavbarToggleScrollY = window.scrollY;
+    });
+
     navCollapseEl?.addEventListener('show.bs.collapse', () => {
       navbarEl?.classList.remove('is-hidden');
       lastNavbarToggleScrollY = window.scrollY;
     });
 
+    navCollapseEl?.addEventListener('hide.bs.collapse', () => {
+      navbarEl?.classList.remove('is-hidden');
+      lastNavbarToggleScrollY = window.scrollY;
+    });
+
     navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
-      updateNavbarVisibility(window.scrollY);
+      navbarEl?.classList.remove('is-hidden');
+      lastNavbarToggleScrollY = window.scrollY;
       updateActiveSection();
     });
 
@@ -1502,5 +1457,11 @@
       }
       form.classList.add('was-validated');
     });
+
+    if (document.readyState === 'complete') {
+      hidePreloader();
+    } else {
+      window.addEventListener('load', hidePreloader, { once: true });
+    }
   });
 })();
