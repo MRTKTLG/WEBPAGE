@@ -24,6 +24,21 @@
     }
 
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
+    const productFullscreenModalEl = document.getElementById('productFullscreenModal');
+    const productFullscreenModal = productFullscreenModalEl
+      ? bootstrap.Modal.getOrCreateInstance(productFullscreenModalEl)
+      : null;
+    const productFullscreenImageEl = document.getElementById('productFullscreenImage');
+    const productFullscreenGhostNameEl = document.getElementById('productFullscreenGhostName');
+    const productFullscreenNameEl = document.getElementById('productFullscreenName');
+    const productFullscreenPriceEl = document.getElementById('productFullscreenPrice');
+    const productFullscreenOldPriceEl = document.getElementById('productFullscreenOldPrice');
+    const productFullscreenModelEl = document.getElementById('productFullscreenModel');
+    const productFullscreenDescriptionEl = document.getElementById('productFullscreenDescription');
+    const productFullscreenRatingEl = document.getElementById('productFullscreenRating');
+    const productFullscreenDetailsEl = productFullscreenModalEl?.querySelector('.product-fullscreen-details');
+    const productFullscreenThumbsWrapEl = document.getElementById('productFullscreenThumbsWrap');
+    const productFullscreenThumbsEl = document.getElementById('productFullscreenThumbs');
     const lenis =
       window.Lenis
         ? new window.Lenis({
@@ -275,6 +290,12 @@
       if (!navbarEl) return;
 
       const safeScrollY = Math.max(currentScrollY, 0);
+      if (isProductModalOpen) {
+        navbarEl.classList.remove('is-hidden');
+        lastNavbarToggleScrollY = safeScrollY;
+        return;
+      }
+
       if (isMobileViewport()) {
         navbarScrollLock = null;
         navbarEl.classList.remove('is-hidden');
@@ -1246,7 +1267,20 @@
       trackEl.addEventListener('transitionend', handleTrackTransitionEnd);
     };
 
+    const stopProductCarousels = () => {
+      productCarouselsState.forEach((slider) => {
+        if (!slider.timerId) return;
+        window.clearInterval(slider.timerId);
+        slider.timerId = null;
+      });
+    };
+
     const startProductCarousels = () => {
+      if (isProductModalOpen) {
+        stopProductCarousels();
+        return;
+      }
+
       productCarouselsState.forEach((slider) => {
         if (slider.timerId) {
           window.clearInterval(slider.timerId);
@@ -1286,6 +1320,437 @@
       });
     };
 
+    const syncProductCardInteractivity = () => {
+      productCarousels.forEach((carouselEl) => {
+        const productCards = Array.from(carouselEl.querySelectorAll('.product-card'));
+        productCards.forEach((cardEl) => {
+          const nameText = cardEl.querySelector('.product-meta-row h3.card-title')?.textContent?.trim();
+          cardEl.setAttribute('role', 'button');
+          cardEl.setAttribute('tabindex', '0');
+          cardEl.setAttribute('aria-label', `${nameText || 'Ürün'} detayını tam ekran aç`);
+        });
+      });
+    };
+
+    const escapeHtml = (value) =>
+      String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+
+    const createProductPreviewKey = (data) =>
+      `${data.name}|${data.currentPrice}|${data.imageSrc}`;
+
+    const getProductPreviewData = (cardEl) => {
+      const imageEl = cardEl.querySelector('.card-img-top');
+      const name = cardEl.querySelector('.product-meta-row h3.card-title')?.textContent?.trim() ?? '';
+      const currentPrice =
+        cardEl.querySelector('.product-price-row .card-title')?.textContent?.trim() ?? '';
+      const oldPrice = cardEl.querySelector('.product-old-price')?.textContent?.trim() ?? '';
+      const model = cardEl.querySelector('.product-model')?.textContent?.trim() ?? '';
+      const description = cardEl.querySelector('.product-description')?.textContent?.trim() ?? '';
+      const rating = cardEl.querySelector('.product-rating-stars')?.textContent?.trim() ?? '';
+      const ratingFill =
+        cardEl.querySelector('.product-rating-stars')?.style?.getPropertyValue('--rating-fill')?.trim() ||
+        '100%';
+
+      return {
+        imageSrc: imageEl?.getAttribute('src') ?? '',
+        imageAlt: imageEl?.getAttribute('alt') || name || 'Ürün görseli',
+        name,
+        currentPrice,
+        oldPrice,
+        model,
+        description,
+        rating,
+        ratingFill
+      };
+    };
+
+    const buildProductPreviewCollection = (carouselEl) => {
+      if (!carouselEl) return [];
+
+      const seenKeys = new Set();
+      const collection = [];
+      const cards = Array.from(carouselEl.querySelectorAll('.product-card'));
+
+      cards.forEach((cardEl) => {
+        const data = getProductPreviewData(cardEl);
+        if (!data.imageSrc || !data.name) return;
+
+        const key = createProductPreviewKey(data);
+        if (seenKeys.has(key)) return;
+        seenKeys.add(key);
+        collection.push({ ...data, key });
+      });
+
+      return collection;
+    };
+
+    const getProductSliderState = (carouselEl) =>
+      productCarouselsState.find((slider) => slider.carouselEl === carouselEl) ?? null;
+
+    const getProductPreviewDataFromMarkup = (cardMarkup) => {
+      const templateEl = document.createElement('template');
+      templateEl.innerHTML = cardMarkup.trim();
+      const cardEl = templateEl.content.querySelector('.product-card');
+      return cardEl ? getProductPreviewData(cardEl) : null;
+    };
+
+    const buildProductPreviewCollectionFromSlider = (carouselEl) => {
+      const slider = getProductSliderState(carouselEl);
+      if (!slider?.sourceCards?.length) return buildProductPreviewCollection(carouselEl);
+
+      const seenKeys = new Set();
+      const collection = [];
+
+      slider.sourceCards.forEach((cardMarkup) => {
+        const data = getProductPreviewDataFromMarkup(cardMarkup);
+        if (!data || !data.imageSrc || !data.name) return;
+
+        const key = createProductPreviewKey(data);
+        if (seenKeys.has(key)) return;
+        seenKeys.add(key);
+        collection.push({ ...data, key });
+      });
+
+      return collection;
+    };
+
+    const setActiveProductThumb = (activeKey) => {
+      if (!productFullscreenThumbsEl) return;
+
+      const thumbButtons = Array.from(productFullscreenThumbsEl.querySelectorAll('.product-fullscreen-thumb'));
+      thumbButtons.forEach((buttonEl) => {
+        const isActive = buttonEl.dataset.productKey === activeKey;
+        buttonEl.classList.toggle('is-active', isActive);
+        buttonEl.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        if (isActive) {
+          buttonEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    };
+
+    const renderProductPreviewThumbs = (collection, activeKey) => {
+      if (!productFullscreenThumbsEl || !productFullscreenThumbsWrapEl) return;
+
+      if (collection.length <= 1) {
+        productFullscreenThumbsEl.innerHTML = '';
+        productFullscreenThumbsWrapEl.hidden = true;
+        return;
+      }
+
+      productFullscreenThumbsWrapEl.hidden = false;
+      productFullscreenThumbsEl.innerHTML = collection
+        .map((item) => {
+          const isActive = item.key === activeKey;
+          return `
+            <button
+              type="button"
+              class="product-fullscreen-thumb${isActive ? ' is-active' : ''}"
+              data-product-key="${escapeHtml(item.key)}"
+              aria-selected="${isActive ? 'true' : 'false'}"
+              role="option"
+              aria-label="${escapeHtml(item.name)} ürününü aç"
+            >
+              <img src="${escapeHtml(item.imageSrc)}" alt="${escapeHtml(item.imageAlt)}" loading="lazy" decoding="async" />
+            </button>
+          `;
+        })
+        .join('');
+    };
+
+    const setProductModalContrastColor = (r, g, b) => {
+      if (!productFullscreenModalEl) return;
+      productFullscreenModalEl.style.setProperty(
+        '--product-modal-contrast-color',
+        `rgb(${clamp(Math.round(r), 0, 255)} ${clamp(Math.round(g), 0, 255)} ${clamp(Math.round(b), 0, 255)})`
+      );
+    };
+
+    const updateProductModalContrastFromImage = () => {
+      if (!productFullscreenImageEl || !productFullscreenDetailsEl) return;
+      if (!productFullscreenImageEl.complete || !productFullscreenImageEl.naturalWidth || !productFullscreenImageEl.naturalHeight) return;
+
+      const imageRect = productFullscreenImageEl.getBoundingClientRect();
+      const detailsRect = productFullscreenDetailsEl.getBoundingClientRect();
+      if (imageRect.width <= 1 || imageRect.height <= 1) return;
+
+      const ix1 = Math.max(imageRect.left, detailsRect.left);
+      const iy1 = Math.max(imageRect.top, detailsRect.top);
+      const ix2 = Math.min(imageRect.right, detailsRect.right);
+      const iy2 = Math.min(imageRect.bottom, detailsRect.bottom);
+
+      const localX = ix2 > ix1 ? ix1 - imageRect.left : 0;
+      const localY = iy2 > iy1 ? iy1 - imageRect.top : 0;
+      const localW = ix2 > ix1 ? ix2 - ix1 : imageRect.width;
+      const localH = iy2 > iy1 ? iy2 - iy1 : imageRect.height;
+
+      const naturalW = productFullscreenImageEl.naturalWidth;
+      const naturalH = productFullscreenImageEl.naturalHeight;
+      const boxW = imageRect.width;
+      const boxH = imageRect.height;
+
+      const scale = Math.max(boxW / naturalW, boxH / naturalH);
+      const renderedW = naturalW * scale;
+      const renderedH = naturalH * scale;
+      const offsetX = (boxW - renderedW) / 2;
+      const offsetY = (boxH - renderedH) / 2;
+
+      const sx = clamp((localX - offsetX) / scale, 0, naturalW - 1);
+      const sy = clamp((localY - offsetY) / scale, 0, naturalH - 1);
+      const sw = clamp(localW / scale, 1, naturalW - sx);
+      const sh = clamp(localH / scale, 1, naturalH - sy);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 32;
+      canvas.height = 32;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return;
+
+      try {
+        ctx.drawImage(productFullscreenImageEl, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let r = 0;
+        let g = 0;
+        let b = 0;
+        let count = 0;
+
+        for (let i = 0; i < pixels.length; i += 4) {
+          r += pixels[i];
+          g += pixels[i + 1];
+          b += pixels[i + 2];
+          count += 1;
+        }
+
+        if (!count) return;
+        const avgR = r / count;
+        const avgG = g / count;
+        const avgB = b / count;
+
+        setProductModalContrastColor(255 - avgR, 255 - avgG, 255 - avgB);
+      } catch {
+        setProductModalContrastColor(255, 255, 255);
+      }
+    };
+
+    let productModalContrastRafId = 0;
+    const scheduleProductModalContrastUpdate = () => {
+      if (productModalContrastRafId) window.cancelAnimationFrame(productModalContrastRafId);
+      productModalContrastRafId = window.requestAnimationFrame(() => {
+        productModalContrastRafId = 0;
+        updateProductModalContrastFromImage();
+      });
+    };
+
+    const applyProductPreviewDataToModal = (data) => {
+      if (productFullscreenImageEl) {
+        productFullscreenImageEl.src = data.imageSrc;
+        productFullscreenImageEl.alt = data.imageAlt;
+        productFullscreenImageEl.onload = scheduleProductModalContrastUpdate;
+      }
+
+      if (productFullscreenNameEl) {
+        productFullscreenNameEl.textContent = data.name;
+      }
+
+      if (productFullscreenGhostNameEl) {
+        productFullscreenGhostNameEl.textContent = data.name;
+      }
+
+      if (productFullscreenPriceEl) {
+        productFullscreenPriceEl.textContent = data.currentPrice;
+      }
+
+      if (productFullscreenOldPriceEl) {
+        productFullscreenOldPriceEl.textContent = data.oldPrice;
+        productFullscreenOldPriceEl.hidden = !data.oldPrice;
+      }
+
+      if (productFullscreenModelEl) {
+        productFullscreenModelEl.textContent = data.model;
+        productFullscreenModelEl.hidden = !data.model;
+      }
+
+      if (productFullscreenDescriptionEl) {
+        productFullscreenDescriptionEl.textContent = data.description;
+        productFullscreenDescriptionEl.hidden = !data.description;
+      }
+
+      if (productFullscreenRatingEl) {
+        productFullscreenRatingEl.textContent = data.rating || '★★★★★';
+      }
+
+      scheduleProductModalContrastUpdate();
+    };
+
+    let activeProductPreviewCollection = [];
+    let activeProductPreviewKey = '';
+    const PRODUCT_MODAL_EXIT_MS = 170;
+    const PRODUCT_MODAL_ENTER_MS = 280;
+    let productModalSwitchTimerId = null;
+    let productModalEnterCleanupTimerId = null;
+    let isProductModalOpen = false;
+
+    const clearProductModalAnimationTimers = () => {
+      if (productModalSwitchTimerId) {
+        window.clearTimeout(productModalSwitchTimerId);
+        productModalSwitchTimerId = null;
+      }
+      if (productModalEnterCleanupTimerId) {
+        window.clearTimeout(productModalEnterCleanupTimerId);
+        productModalEnterCleanupTimerId = null;
+      }
+    };
+
+    const clearProductModalAnimationClasses = () => {
+      if (!productFullscreenModalEl) return;
+      productFullscreenModalEl.classList.remove('is-card-entering', 'is-card-exiting');
+    };
+
+    const runProductModalEnterAnimation = () => {
+      if (!productFullscreenModalEl) return;
+      clearProductModalAnimationClasses();
+      void productFullscreenModalEl.offsetWidth;
+      productFullscreenModalEl.classList.add('is-card-entering');
+      productModalEnterCleanupTimerId = window.setTimeout(() => {
+        productFullscreenModalEl.classList.remove('is-card-entering');
+        productModalEnterCleanupTimerId = null;
+      }, PRODUCT_MODAL_ENTER_MS + 40);
+    };
+
+    const lockPageScrollForProductModal = () => {
+      if (!productFullscreenModalEl) return;
+      if (document.body.classList.contains('is-modal-scroll-locked')) return;
+
+      document.documentElement.classList.add('is-modal-scroll-locked');
+      document.body.classList.add('is-modal-scroll-locked');
+      lenis?.stop();
+    };
+
+    const unlockPageScrollForProductModal = () => {
+      if (!productFullscreenModalEl) return;
+      if (!document.body.classList.contains('is-modal-scroll-locked')) {
+        lenis?.start();
+        return;
+      }
+
+      document.documentElement.classList.remove('is-modal-scroll-locked');
+      document.body.classList.remove('is-modal-scroll-locked');
+      lenis?.start();
+    };
+
+    const switchProductModalPreview = (nextData) => {
+      if (!productFullscreenModalEl) {
+        applyProductPreviewDataToModal(nextData);
+        return;
+      }
+
+      clearProductModalAnimationTimers();
+      productFullscreenModalEl.classList.remove('is-card-entering');
+      void productFullscreenModalEl.offsetWidth;
+      productFullscreenModalEl.classList.add('is-card-exiting');
+
+      productModalSwitchTimerId = window.setTimeout(() => {
+        applyProductPreviewDataToModal(nextData);
+        productFullscreenModalEl.classList.remove('is-card-exiting');
+        runProductModalEnterAnimation();
+        productModalSwitchTimerId = null;
+      }, PRODUCT_MODAL_EXIT_MS);
+    };
+
+    const openProductFullscreenModal = (cardEl) => {
+      if (!productFullscreenModal || !productFullscreenModalEl) return;
+
+      const carouselEl = cardEl.closest('.product-carousel');
+      if (!carouselEl) return;
+      const rawData = getProductPreviewData(cardEl);
+      if (!rawData.imageSrc || !rawData.name) return;
+
+      const selectedKey = createProductPreviewKey(rawData);
+      const collection = buildProductPreviewCollectionFromSlider(carouselEl);
+      const selectedData = collection.find((item) => item.key === selectedKey) ?? {
+        ...rawData,
+        key: selectedKey
+      };
+
+      activeProductPreviewCollection = collection.length ? collection : [selectedData];
+      activeProductPreviewKey = selectedData.key;
+      renderProductPreviewThumbs(activeProductPreviewCollection, activeProductPreviewKey);
+      applyProductPreviewDataToModal(selectedData);
+      setActiveProductThumb(activeProductPreviewKey);
+
+      productFullscreenModal.show();
+    };
+
+    const handleProductCardOpen = (event, cardEl) => {
+      if (!cardEl?.closest('.product-carousel')) return;
+      if (event.defaultPrevented) return;
+      if (document.body.classList.contains('is-product-carousel-dragging')) return;
+      if (cardEl.closest('.product-carousel')?.classList.contains('is-dragging')) return;
+
+      event.preventDefault();
+      openProductFullscreenModal(cardEl);
+    };
+
+    productFullscreenModalEl?.addEventListener('shown.bs.modal', () => {
+      isProductModalOpen = true;
+      stopProductCarousels();
+      lockPageScrollForProductModal();
+      navbarEl?.classList.remove('is-hidden');
+      scheduleProductModalContrastUpdate();
+    });
+
+    productFullscreenModalEl?.addEventListener('hide.bs.modal', () => {
+      clearProductModalAnimationTimers();
+      clearProductModalAnimationClasses();
+    });
+
+    productFullscreenModalEl?.addEventListener('hidden.bs.modal', () => {
+      clearProductModalAnimationTimers();
+      clearProductModalAnimationClasses();
+      unlockPageScrollForProductModal();
+      isProductModalOpen = false;
+      startProductCarousels();
+      updateNavbarVisibility(window.scrollY);
+    });
+
+    window.addEventListener('resize', () => {
+      if (!isProductModalOpen) return;
+      scheduleProductModalContrastUpdate();
+    });
+
+    productFullscreenThumbsEl?.addEventListener('click', (event) => {
+      const thumbButton = event.target.closest('.product-fullscreen-thumb');
+      if (!thumbButton) return;
+
+      const targetKey = thumbButton.dataset.productKey ?? '';
+      if (!targetKey) return;
+      if (targetKey === activeProductPreviewKey) return;
+
+      const selectedData = activeProductPreviewCollection.find((item) => item.key === targetKey);
+      if (!selectedData) return;
+
+      activeProductPreviewKey = selectedData.key;
+      switchProductModalPreview(selectedData);
+      setActiveProductThumb(activeProductPreviewKey);
+    });
+
+    document.addEventListener('click', (event) => {
+      const cardEl = event.target.closest('.product-card');
+      if (!cardEl) return;
+      handleProductCardOpen(event, cardEl);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      const activeCard = document.activeElement?.closest('.product-card');
+      if (!activeCard) return;
+      handleProductCardOpen(event, activeCard);
+    });
+
     buildProductCarousels();
     syncProductCarouselLayout();
     productCarouselsState.forEach((slider) => {
@@ -1297,6 +1762,7 @@
       window.requestAnimationFrame(() => {
         syncProductCarouselLayout();
         syncProductCardHeights();
+        syncProductCardInteractivity();
         updateProductImageParallax();
         startProductCarousels();
       });
@@ -1306,6 +1772,7 @@
         () => {
           syncProductCarouselLayout();
           syncProductCardHeights();
+          syncProductCardInteractivity();
           updateProductImageParallax();
         },
         { once: true }
@@ -1332,7 +1799,7 @@
       updateSectionOrbParallax();
       updateProductImageParallax();
       applyHeroScrollParallax();
-    };
+    }
 
     if (!lenis) {
       window.addEventListener(
@@ -1357,6 +1824,7 @@
       syncHeroParallaxLayout();
       syncProductCarouselLayout();
       syncProductCardHeights();
+      syncProductCardInteractivity();
       updateProductImageParallax();
       lenis?.resize();
     });
@@ -1396,8 +1864,6 @@
       if (isCurrentLinkActive && isCurrentTargetAligned) {
         return;
       }
-
-      const currentScrollY = window.scrollY;
 
       await closeNavMenuIfNeeded();
       syncNavOffset();
