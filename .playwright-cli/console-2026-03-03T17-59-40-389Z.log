@@ -1,1 +1,0 @@
-[      38ms] [ERROR] The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element. @ http://127.0.0.1:8000/:8
