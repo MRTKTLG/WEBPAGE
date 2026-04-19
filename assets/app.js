@@ -10,35 +10,21 @@
       ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
       : null;
     const navbarEl = document.querySelector('.navbar');
-    const navTogglerEl = document.querySelector('.navbar-toggler');
     const preloaderEl = document.querySelector('.page-preloader');
     const statsSectionEl = document.getElementById('sayaclar');
     const navLinks = Array.from(document.querySelectorAll('a.nav-link[href^="#"]'));
     const heroCarousel = document.getElementById('heroCarousel');
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
-    const faqSectionEl = document.getElementById('sss');
-    const feedbackSectionEl = document.getElementById('yorumlar');
-
-    if (faqSectionEl && feedbackSectionEl && faqSectionEl.compareDocumentPosition(feedbackSectionEl) & Node.DOCUMENT_POSITION_PRECEDING) {
-      feedbackSectionEl.before(faqSectionEl);
-    }
 
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
+    const documentEl = document.documentElement;
+    const bodyEl = document.body;
     const productFullscreenModalEl = document.getElementById('productFullscreenModal');
     const productFullscreenModal = productFullscreenModalEl
-      ? bootstrap.Modal.getOrCreateInstance(productFullscreenModalEl)
+      ? bootstrap.Modal.getOrCreateInstance(productFullscreenModalEl, { focus: false })
       : null;
     const productFullscreenImageEl = document.getElementById('productFullscreenImage');
-    const productFullscreenGhostNameEl = document.getElementById('productFullscreenGhostName');
-    const productFullscreenNameEl = document.getElementById('productFullscreenName');
-    const productFullscreenPriceEl = document.getElementById('productFullscreenPrice');
-    const productFullscreenOldPriceEl = document.getElementById('productFullscreenOldPrice');
-    const productFullscreenModelEl = document.getElementById('productFullscreenModel');
-    const productFullscreenDescriptionEl = document.getElementById('productFullscreenDescription');
-    const productFullscreenRatingEl = document.getElementById('productFullscreenRating');
-    const productFullscreenDetailsEl = productFullscreenModalEl?.querySelector('.product-fullscreen-details');
-    const productFullscreenThumbsWrapEl = document.getElementById('productFullscreenThumbsWrap');
-    const productFullscreenThumbsEl = document.getElementById('productFullscreenThumbs');
+    const PRODUCT_FLOW_INTERVAL_MS = 3400;
     const lenis =
       window.Lenis
         ? new window.Lenis({
@@ -50,28 +36,81 @@
             lerp: 0.075
           })
         : null;
-
     const isMobileViewport = () => window.innerWidth < 992;
+
     const isNavMenuExpanded = () =>
       navCollapseEl?.classList.contains('show') || navCollapseEl?.classList.contains('collapsing');
-    const getExpandedNavOffset = () => navbarEl?.offsetHeight ?? 0;
-    const getNavOffset = () => {
+    let frozenNavOffsetPx = null;
+    let navOffsetFreezeTimerId = null;
+    let navScrollSnapTimerId = null;
+    let navScrollUserInterrupted = false;
+    let collapsedNavOffsetPx = 0;
+    const measureNavbarHeight = () => {
       if (!navbarEl) return 0;
-
-      const expandedMenuHeight = isNavMenuExpanded() ? (navCollapseEl?.offsetHeight ?? 0) : 0;
-
-      return Math.max(navbarEl.offsetHeight - expandedMenuHeight, 0);
+      return Math.max(Math.round(navbarEl.getBoundingClientRect().height), 0);
     };
-    const isNavbarHidden = () => navbarEl?.classList.contains('is-hidden');
-    const getActiveNavOffset = () => {
-      const isMenuExpanded = isNavMenuExpanded();
-      if (isNavbarHidden() && !isMenuExpanded) return 0;
-      return isMenuExpanded ? getExpandedNavOffset() : getNavOffset();
+    const refreshCollapsedNavOffset = () => {
+      if (isNavMenuExpanded()) return;
+      collapsedNavOffsetPx = measureNavbarHeight();
     };
+    const getBaseNavOffset = () => {
+      if (!navbarEl) return 0;
+      if (collapsedNavOffsetPx > 0) return collapsedNavOffsetPx;
+      return measureNavbarHeight();
+    };
+    const getNavOffset = () => {
+      if (Number.isFinite(frozenNavOffsetPx)) {
+        return Math.max(Number(frozenNavOffsetPx), 0);
+      }
+      return getBaseNavOffset();
+    };
+    const getActiveNavOffset = () => getNavOffset();
 
     const syncNavOffset = () => {
       document.documentElement.style.setProperty('--nav-offset', `${getNavOffset()}px`);
     };
+
+    const clearFrozenNavOffset = () => {
+      if (navOffsetFreezeTimerId) {
+        window.clearTimeout(navOffsetFreezeTimerId);
+        navOffsetFreezeTimerId = null;
+      }
+      if (navScrollSnapTimerId) {
+        window.clearTimeout(navScrollSnapTimerId);
+        navScrollSnapTimerId = null;
+      }
+      navScrollUserInterrupted = false;
+      frozenNavOffsetPx = null;
+      syncNavOffset();
+    };
+
+    const freezeNavOffset = (offsetPx) => {
+      frozenNavOffsetPx = Math.max(Math.round(offsetPx), 0);
+      syncNavOffset();
+    };
+
+    const scheduleNavOffsetUnfreeze = (delayMs) => {
+      if (navOffsetFreezeTimerId) {
+        window.clearTimeout(navOffsetFreezeTimerId);
+      }
+      navOffsetFreezeTimerId = window.setTimeout(() => {
+        clearFrozenNavOffset();
+      }, delayMs);
+    };
+    window.addEventListener(
+      'wheel',
+      () => {
+        navScrollUserInterrupted = true;
+      },
+      { passive: true }
+    );
+    window.addEventListener(
+      'touchmove',
+      () => {
+        navScrollUserInterrupted = true;
+      },
+      { passive: true }
+    );
 
     const hidePreloader = () => {
       if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
@@ -118,9 +157,17 @@
           return;
         }
 
+        if (isMobileViewport()) {
+          documentEl.classList.add('is-nav-collapsing');
+          bodyEl.classList.add('is-nav-collapsing');
+        }
+
         navCollapseEl.addEventListener(
           'hidden.bs.collapse',
           () => {
+            documentEl.classList.remove('is-nav-collapsing');
+            bodyEl.classList.remove('is-nav-collapsing');
+            refreshCollapsedNavOffset();
             resolve();
           },
           { once: true }
@@ -279,80 +326,10 @@
     }));
     let activeSectionHash = '';
     let lastScrollY = window.scrollY;
-    let lastNavbarToggleScrollY = window.scrollY;
-    let navbarScrollLock = null;
     let applyHeroScrollParallax = () => false;
     let syncHeroParallaxLayout = () => {};
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-
-    const updateNavbarVisibility = (currentScrollY = window.scrollY) => {
-      if (!navbarEl) return;
-
-      const safeScrollY = Math.max(currentScrollY, 0);
-      if (isProductModalOpen) {
-        navbarEl.classList.remove('is-hidden');
-        lastNavbarToggleScrollY = safeScrollY;
-        return;
-      }
-
-      if (isMobileViewport()) {
-        navbarScrollLock = null;
-        navbarEl.classList.remove('is-hidden');
-        lastNavbarToggleScrollY = safeScrollY;
-        return;
-      }
-
-      if (navbarScrollLock) {
-        navbarEl.classList.toggle('is-hidden', navbarScrollLock.hidden);
-        lastNavbarToggleScrollY = safeScrollY;
-
-        if (Math.abs(safeScrollY - navbarScrollLock.targetY) <= 2) {
-          navbarScrollLock = null;
-          return;
-        } else {
-          return;
-        }
-      }
-
-      const deltaY = safeScrollY - lastNavbarToggleScrollY;
-      const isMenuExpanded = navCollapseEl?.classList.contains('show');
-
-      if (safeScrollY <= getNavOffset() || isMenuExpanded) {
-        navbarEl.classList.remove('is-hidden');
-        lastNavbarToggleScrollY = safeScrollY;
-        return;
-      }
-
-      if (Math.abs(deltaY) < 1) return;
-
-      if (deltaY > 0) {
-        navbarEl.classList.add('is-hidden');
-      } else {
-        navbarEl.classList.remove('is-hidden');
-      }
-
-      lastNavbarToggleScrollY = safeScrollY;
-    };
-
-    const lockNavbarDuringNavScroll = (hidden, targetY, durationMs = 1250) => {
-      if (isMobileViewport()) {
-        navbarScrollLock = null;
-        navbarEl?.classList.remove('is-hidden');
-        return;
-      }
-
-      navbarScrollLock = {
-        hidden,
-        targetY: Math.max(targetY, 0)
-      };
-      navbarEl?.classList.toggle('is-hidden', hidden);
-
-      window.setTimeout(() => {
-        if (!navbarScrollLock || navbarScrollLock.targetY !== Math.max(targetY, 0)) return;
-        navbarScrollLock = null;
-      }, durationMs);
-    };
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let testimonialMarqueeFrame = 0;
@@ -537,6 +514,15 @@
       let isStillAnimating = false;
 
       productCardImageMetrics.forEach((item) => {
+        if (item.imageEl.closest('.product-carousel')) {
+          if (item.currentOffsetPx !== 0 || item.imageEl.dataset.productImageParallaxY !== '0') {
+            item.currentOffsetPx = 0;
+            item.imageEl.dataset.productImageParallaxY = '0';
+            item.imageEl.style.setProperty('--product-image-parallax-y', '0px');
+          }
+          return;
+        }
+
         const rect = item.imageEl.getBoundingClientRect();
         const imageCenter = rect.top + rect.height * 0.5;
         const normalizedOffset = clamp((imageCenter - viewportCenter) / window.innerHeight, -1, 1);
@@ -644,14 +630,15 @@
       lenis.resize();
       lenis.on('scroll', () => {
         lastScrollY = window.scrollY;
-        updateNavbarVisibility(lastScrollY);
         performScrollEffects();
       });
     }
 
+    refreshCollapsedNavOffset();
+
     if (heroCarousel) {
       bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
-        interval: 6000,
+        interval: PRODUCT_FLOW_INTERVAL_MS,
         touch: true,
         ride: 'carousel',
         pause: false,
@@ -966,7 +953,8 @@
       if (!trackEl) return getProductGapPx();
 
       const computedGap = Number.parseFloat(window.getComputedStyle(trackEl).gap);
-      return Number.isFinite(computedGap) ? computedGap : getProductGapPx();
+      const resolvedGap = Number.isFinite(computedGap) ? computedGap : getProductGapPx();
+      return Math.round(resolvedGap);
     };
 
     const getProductCloneCount = (carouselEl) => {
@@ -995,10 +983,10 @@
       if (previewTriggerEl.dataset.iconReady !== 'true') {
         previewTriggerEl.innerHTML = `
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-            <path d="M16 3h3a2 2 0 0 1 2 2v3" />
-            <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
-            <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+            <path class="corner-segment corner-tl" d="M8 3H5a2 2 0 0 0-2 2v3" />
+            <path class="corner-segment corner-tr" d="M16 3h3a2 2 0 0 1 2 2v3" />
+            <path class="corner-segment corner-bl" d="M8 21H5a2 2 0 0 1-2-2v-3" />
+            <path class="corner-segment corner-br" d="M16 21h3a2 2 0 0 0 2-2v-3" />
           </svg>
         `;
         previewTriggerEl.dataset.iconReady = 'true';
@@ -1142,9 +1130,10 @@
       const viewportWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth || itemWidthPx;
       const centerShiftPx = isProductPeekViewport() ? Math.max((viewportWidth - itemWidthPx) / 2, 0) : 0;
       const offsetPx = (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
+      const translateXPx = -Math.round(offsetPx);
 
       trackEl.style.transition = useTransition ? 'transform 820ms cubic-bezier(0.76, 0, 0.24, 1)' : 'none';
-      trackEl.style.transform = `translate3d(${-offsetPx.toFixed(3)}px, 0, 0)`;
+      trackEl.style.transform = `translateX(${translateXPx}px)`;
     };
 
     const getProductCarouselOffsetPx = (slider) => {
@@ -1211,7 +1200,8 @@
 
           event.preventDefault();
           const nextOffsetPx = dragState.baseOffsetPx - dragState.deltaX;
-          slider.trackEl.style.transform = `translate3d(${-nextOffsetPx.toFixed(3)}px, 0, 0)`;
+          const swipeTranslateXPx = -Math.round(nextOffsetPx);
+          slider.trackEl.style.transform = `translateX(${swipeTranslateXPx}px)`;
         },
         { passive: false }
       );
@@ -1238,86 +1228,6 @@
 
       slider.carouselInner.addEventListener('touchend', finishSwipe);
       slider.carouselInner.addEventListener('touchcancel', finishSwipe);
-    };
-
-    const bindProductCarouselMouseDrag = (slider) => {
-      let dragState = null;
-
-      const clearDragState = () => {
-        dragState = null;
-        slider.dragState = null;
-        slider.carouselEl.classList.remove('is-dragging');
-        document.body.classList.remove('is-product-carousel-dragging');
-      };
-
-      const finishDrag = () => {
-        if (!dragState) return;
-
-        const dragThresholdPx = Math.min(slider.carouselInner.clientWidth * 0.1, 72);
-        const shouldMove = dragState.hasMoved && Math.abs(dragState.deltaX) >= dragThresholdPx;
-        const direction = dragState.deltaX < 0 ? 1 : -1;
-
-        clearDragState();
-
-        if (shouldMove) {
-          slider.suppressClickUntil = performance.now() + 420;
-          moveProductCarousel(slider, direction);
-        } else {
-          syncProductCarouselPosition(slider, true);
-        }
-
-        startProductCarousels();
-      };
-
-      slider.carouselInner.addEventListener('mousedown', (event) => {
-        if (isProductMobileViewport() || slider.isAnimating || slider.sourceCards.length <= 1) return;
-        if (event.button !== 0 || !slider.trackEl) return;
-
-        if (slider.timerId) {
-          window.clearInterval(slider.timerId);
-          slider.timerId = null;
-        }
-
-        dragState = {
-          startX: event.clientX,
-          deltaX: 0,
-          hasMoved: false,
-          baseOffsetPx: getProductCarouselOffsetPx(slider)
-        };
-        slider.dragState = dragState;
-        slider.trackEl.style.transition = 'none';
-        slider.carouselEl.classList.add('is-dragging');
-        document.body.classList.add('is-product-carousel-dragging');
-        event.preventDefault();
-      });
-
-      window.addEventListener('mousemove', (event) => {
-        if (!dragState || !slider.trackEl) return;
-
-        dragState.deltaX = event.clientX - dragState.startX;
-
-        if (!dragState.hasMoved && Math.abs(dragState.deltaX) >= 6) {
-          dragState.hasMoved = true;
-        }
-
-        if (!dragState.hasMoved) return;
-
-        const nextOffsetPx = dragState.baseOffsetPx - dragState.deltaX;
-        slider.trackEl.style.transform = `translate3d(${-nextOffsetPx.toFixed(3)}px, 0, 0)`;
-      });
-
-      window.addEventListener('mouseup', finishDrag);
-      window.addEventListener('blur', finishDrag);
-
-      slider.carouselInner.addEventListener(
-        'click',
-        (event) => {
-          if (!dragState?.hasMoved) return;
-          event.preventDefault();
-          event.stopPropagation();
-        },
-        true
-      );
     };
 
     const bindProductCarouselAccessibility = (slider) => {
@@ -1380,7 +1290,29 @@
       document.querySelectorAll('.product-carousel-control').forEach((controlEl) => {
         const iconEl = controlEl.querySelector('svg');
         bindOneShotArrowAnimation(controlEl, iconEl);
+        });
+
+      document.querySelectorAll('.product-fullscreen-dismiss').forEach((dismissEl) => {
+        bindOneShotArrowAnimation(dismissEl, dismissEl);
       });
+    };
+
+    const triggerProductPreviewIconAnimation = (triggerEl) => {
+      if (!triggerEl || prefersReducedMotion.matches) return;
+      const sentinelSegmentEl = triggerEl.querySelector('.corner-br');
+      if (!sentinelSegmentEl) return;
+
+      triggerEl.classList.remove('is-expand-animating');
+      void triggerEl.offsetWidth;
+      triggerEl.classList.add('is-expand-animating');
+
+      sentinelSegmentEl.addEventListener(
+        'animationend',
+        () => {
+          triggerEl.classList.remove('is-expand-animating');
+        },
+        { once: true }
+      );
     };
 
     const syncProductCarouselLayout = () => {
@@ -1397,7 +1329,7 @@
 
         const gapPx = getProductTrackGapPx(trackEl);
         const carouselWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth;
-        const itemWidthPx = isProductPeekViewport()
+        const itemWidthPxRaw = isProductPeekViewport()
           ? Math.min(
               Math.max(
                 carouselWidth * (window.innerWidth <= 430 ? 0.82 : 0.78),
@@ -1406,10 +1338,11 @@
               Math.max(carouselWidth - gapPx * 1.15, 0)
             )
           : Math.max((carouselWidth - gapPx * (visibleCount - 1)) / visibleCount, 0);
-        slider.carouselEl.style.setProperty('--product-carousel-item-width', `${itemWidthPx.toFixed(3)}px`);
+        const itemWidthPx = Math.round(itemWidthPxRaw);
+        slider.carouselEl.style.setProperty('--product-carousel-item-width', `${itemWidthPx}px`);
         trackEl.querySelectorAll('.product-carousel-item').forEach((itemEl) => {
-          itemEl.style.flexBasis = `${itemWidthPx.toFixed(3)}px`;
-          itemEl.style.width = `${itemWidthPx.toFixed(3)}px`;
+          itemEl.style.flexBasis = `${itemWidthPx}px`;
+          itemEl.style.width = `${itemWidthPx}px`;
         });
 
         slider.visibleCount = visibleCount;
@@ -1438,18 +1371,20 @@
         if (event.target !== trackEl || event.propertyName !== 'transform') return;
         trackEl.removeEventListener('transitionend', handleTrackTransitionEnd);
         const cloneCount = getProductCloneCount(slider.carouselEl);
+        let needsIndexReset = false;
 
         if (slider.currentIndex <= 0) {
           slider.currentIndex = slider.sourceCards.length;
+          needsIndexReset = true;
         } else if (slider.currentIndex >= slider.sourceCards.length + cloneCount) {
           slider.currentIndex = cloneCount;
+          needsIndexReset = true;
         }
 
-        syncProductCarouselPosition(slider, false);
-        slider.carouselInner.querySelectorAll('.product-card').forEach((cardEl) => {
-          ensureProductPreviewTrigger(cardEl);
-        });
-        void trackEl.offsetWidth;
+        if (needsIndexReset) {
+          syncProductCarouselPosition(slider, false);
+          void trackEl.offsetWidth;
+        }
         slider.isAnimating = false;
       };
 
@@ -1485,8 +1420,14 @@
         }
 
         slider.timerId = window.setInterval(() => {
+          if (
+            slider.carouselEl.matches(':hover') ||
+            slider.carouselEl.querySelector('.product-card:hover')
+          ) {
+            return;
+          }
           moveProductCarousel(slider, 1);
-        }, 3400);
+        }, PRODUCT_FLOW_INTERVAL_MS);
       });
     };
 
@@ -1522,330 +1463,40 @@
       });
     };
 
-    const escapeHtml = (value) =>
-      String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-
-    const createProductPreviewKey = (data) =>
-      `${data.name}|${data.currentPrice}|${data.imageSrc}`;
-
     const getProductPreviewData = (cardEl) => {
       const imageEl = cardEl.querySelector('.card-img-top');
       const name = cardEl.querySelector('.product-meta-row h3.card-title')?.textContent?.trim() ?? '';
-      const currentPrice =
-        cardEl.querySelector('.product-price-row .card-title')?.textContent?.trim() ?? '';
-      const oldPrice = cardEl.querySelector('.product-old-price')?.textContent?.trim() ?? '';
-      const model = cardEl.querySelector('.product-model')?.textContent?.trim() ?? '';
-      const description = cardEl.querySelector('.product-description')?.textContent?.trim() ?? '';
-      const rating = cardEl.querySelector('.product-rating-stars')?.textContent?.trim() ?? '';
-      const ratingFill =
-        cardEl.querySelector('.product-rating-stars')?.style?.getPropertyValue('--rating-fill')?.trim() ||
-        '100%';
 
       return {
         imageSrc: imageEl?.getAttribute('src') ?? '',
         imageAlt: imageEl?.getAttribute('alt') || name || 'Ürün görseli',
-        name,
-        currentPrice,
-        oldPrice,
-        model,
-        description,
-        rating,
-        ratingFill
+        name
       };
-    };
-
-    const buildProductPreviewCollection = (carouselEl) => {
-      if (!carouselEl) return [];
-
-      const seenKeys = new Set();
-      const collection = [];
-      const cards = Array.from(carouselEl.querySelectorAll('.product-card'));
-
-      cards.forEach((cardEl) => {
-        const data = getProductPreviewData(cardEl);
-        if (!data.imageSrc || !data.name) return;
-
-        const key = createProductPreviewKey(data);
-        if (seenKeys.has(key)) return;
-        seenKeys.add(key);
-        collection.push({ ...data, key });
-      });
-
-      return collection;
-    };
-
-    const getProductPreviewDataFromMarkup = (cardMarkup) => {
-      const templateEl = document.createElement('template');
-      templateEl.innerHTML = cardMarkup.trim();
-      const cardEl = templateEl.content.querySelector('.product-card');
-      return cardEl ? getProductPreviewData(cardEl) : null;
-    };
-
-    const buildProductPreviewCollectionFromSlider = (carouselEl) => {
-      const slider = getProductSliderState(carouselEl);
-      if (!slider?.sourceCards?.length) return buildProductPreviewCollection(carouselEl);
-
-      const seenKeys = new Set();
-      const collection = [];
-
-      slider.sourceCards.forEach((cardMarkup) => {
-        const data = getProductPreviewDataFromMarkup(cardMarkup);
-        if (!data || !data.imageSrc || !data.name) return;
-
-        const key = createProductPreviewKey(data);
-        if (seenKeys.has(key)) return;
-        seenKeys.add(key);
-        collection.push({ ...data, key });
-      });
-
-      return collection;
-    };
-
-    const setActiveProductThumb = (activeKey) => {
-      if (!productFullscreenThumbsEl) return;
-
-      const thumbButtons = Array.from(productFullscreenThumbsEl.querySelectorAll('.product-fullscreen-thumb'));
-      thumbButtons.forEach((buttonEl) => {
-        const isActive = buttonEl.dataset.productKey === activeKey;
-        buttonEl.classList.toggle('is-active', isActive);
-        buttonEl.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        if (isActive) {
-          buttonEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }
-      });
-    };
-
-    const renderProductPreviewThumbs = (collection, activeKey) => {
-      if (!productFullscreenThumbsEl || !productFullscreenThumbsWrapEl) return;
-
-      if (collection.length <= 1) {
-        productFullscreenThumbsEl.innerHTML = '';
-        productFullscreenThumbsWrapEl.hidden = true;
-        return;
-      }
-
-      productFullscreenThumbsWrapEl.hidden = false;
-      productFullscreenThumbsEl.innerHTML = collection
-        .map((item) => {
-          const isActive = item.key === activeKey;
-          return `
-            <button
-              type="button"
-              class="product-fullscreen-thumb${isActive ? ' is-active' : ''}"
-              data-product-key="${escapeHtml(item.key)}"
-              aria-selected="${isActive ? 'true' : 'false'}"
-              role="option"
-              aria-label="${escapeHtml(item.name)} ürününü aç"
-            >
-              <img src="${escapeHtml(item.imageSrc)}" alt="${escapeHtml(item.imageAlt)}" loading="lazy" decoding="async" />
-            </button>
-          `;
-        })
-        .join('');
-    };
-
-    const setProductModalContrastColor = (r, g, b) => {
-      if (!productFullscreenModalEl) return;
-      productFullscreenModalEl.style.setProperty(
-        '--product-modal-contrast-color',
-        `rgb(${clamp(Math.round(r), 0, 255)} ${clamp(Math.round(g), 0, 255)} ${clamp(Math.round(b), 0, 255)})`
-      );
-    };
-
-    const updateProductModalContrastFromImage = () => {
-      if (!productFullscreenImageEl || !productFullscreenDetailsEl) return;
-      if (!productFullscreenImageEl.complete || !productFullscreenImageEl.naturalWidth || !productFullscreenImageEl.naturalHeight) return;
-
-      const imageRect = productFullscreenImageEl.getBoundingClientRect();
-      const detailsRect = productFullscreenDetailsEl.getBoundingClientRect();
-      if (imageRect.width <= 1 || imageRect.height <= 1) return;
-
-      const ix1 = Math.max(imageRect.left, detailsRect.left);
-      const iy1 = Math.max(imageRect.top, detailsRect.top);
-      const ix2 = Math.min(imageRect.right, detailsRect.right);
-      const iy2 = Math.min(imageRect.bottom, detailsRect.bottom);
-
-      const localX = ix2 > ix1 ? ix1 - imageRect.left : 0;
-      const localY = iy2 > iy1 ? iy1 - imageRect.top : 0;
-      const localW = ix2 > ix1 ? ix2 - ix1 : imageRect.width;
-      const localH = iy2 > iy1 ? iy2 - iy1 : imageRect.height;
-
-      const naturalW = productFullscreenImageEl.naturalWidth;
-      const naturalH = productFullscreenImageEl.naturalHeight;
-      const boxW = imageRect.width;
-      const boxH = imageRect.height;
-
-      const scale = Math.max(boxW / naturalW, boxH / naturalH);
-      const renderedW = naturalW * scale;
-      const renderedH = naturalH * scale;
-      const offsetX = (boxW - renderedW) / 2;
-      const offsetY = (boxH - renderedH) / 2;
-
-      const sx = clamp((localX - offsetX) / scale, 0, naturalW - 1);
-      const sy = clamp((localY - offsetY) / scale, 0, naturalH - 1);
-      const sw = clamp(localW / scale, 1, naturalW - sx);
-      const sh = clamp(localH / scale, 1, naturalH - sy);
-
-      const canvas = document.createElement('canvas');
-      canvas.width = 32;
-      canvas.height = 32;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      if (!ctx) return;
-
-      try {
-        ctx.drawImage(productFullscreenImageEl, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-        let r = 0;
-        let g = 0;
-        let b = 0;
-        let count = 0;
-
-        for (let i = 0; i < pixels.length; i += 4) {
-          r += pixels[i];
-          g += pixels[i + 1];
-          b += pixels[i + 2];
-          count += 1;
-        }
-
-        if (!count) return;
-        const avgR = r / count;
-        const avgG = g / count;
-        const avgB = b / count;
-
-        setProductModalContrastColor(255 - avgR, 255 - avgG, 255 - avgB);
-      } catch {
-        setProductModalContrastColor(255, 255, 255);
-      }
-    };
-
-    let productModalContrastRafId = 0;
-    const scheduleProductModalContrastUpdate = () => {
-      if (productModalContrastRafId) window.cancelAnimationFrame(productModalContrastRafId);
-      productModalContrastRafId = window.requestAnimationFrame(() => {
-        productModalContrastRafId = 0;
-        updateProductModalContrastFromImage();
-      });
     };
 
     const applyProductPreviewDataToModal = (data) => {
       if (productFullscreenImageEl) {
         productFullscreenImageEl.src = data.imageSrc;
         productFullscreenImageEl.alt = data.imageAlt;
-        productFullscreenImageEl.onload = scheduleProductModalContrastUpdate;
       }
-
-      if (productFullscreenNameEl) {
-        productFullscreenNameEl.textContent = data.name;
-      }
-
-      if (productFullscreenGhostNameEl) {
-        productFullscreenGhostNameEl.textContent = data.name;
-      }
-
-      if (productFullscreenPriceEl) {
-        productFullscreenPriceEl.textContent = data.currentPrice;
-      }
-
-      if (productFullscreenOldPriceEl) {
-        productFullscreenOldPriceEl.textContent = data.oldPrice;
-        productFullscreenOldPriceEl.hidden = !data.oldPrice;
-      }
-
-      if (productFullscreenModelEl) {
-        productFullscreenModelEl.textContent = data.model;
-        productFullscreenModelEl.hidden = !data.model;
-      }
-
-      if (productFullscreenDescriptionEl) {
-        productFullscreenDescriptionEl.textContent = '';
-        productFullscreenDescriptionEl.hidden = true;
-      }
-
-      if (productFullscreenRatingEl) {
-        productFullscreenRatingEl.textContent = data.rating || '★★★★★';
-      }
-
-      scheduleProductModalContrastUpdate();
     };
 
-    let activeProductPreviewCollection = [];
-    let activeProductPreviewKey = '';
-    const PRODUCT_MODAL_EXIT_MS = 170;
-    const PRODUCT_MODAL_ENTER_MS = 280;
-    let productModalSwitchTimerId = null;
-    let productModalEnterCleanupTimerId = null;
     let isProductModalOpen = false;
+    let modalScrollY = 0;
+    let allowImmediateModalHide = false;
+    let modalCloseAnimationTimer = null;
+    let lastProductPreviewTriggerEl = null;
 
-    const clearProductModalAnimationTimers = () => {
-      if (productModalSwitchTimerId) {
-        window.clearTimeout(productModalSwitchTimerId);
-        productModalSwitchTimerId = null;
-      }
-      if (productModalEnterCleanupTimerId) {
-        window.clearTimeout(productModalEnterCleanupTimerId);
-        productModalEnterCleanupTimerId = null;
-      }
+    const lockPageForProductModal = () => {
+      modalScrollY = window.scrollY || window.pageYOffset || 0;
+      documentEl.classList.add('is-modal-scroll-locked');
+      bodyEl.classList.add('is-modal-scroll-locked');
     };
 
-    const clearProductModalAnimationClasses = () => {
-      if (!productFullscreenModalEl) return;
-      productFullscreenModalEl.classList.remove('is-card-entering', 'is-card-exiting');
-    };
-
-    const runProductModalEnterAnimation = () => {
-      if (!productFullscreenModalEl) return;
-      clearProductModalAnimationClasses();
-      void productFullscreenModalEl.offsetWidth;
-      productFullscreenModalEl.classList.add('is-card-entering');
-      productModalEnterCleanupTimerId = window.setTimeout(() => {
-        productFullscreenModalEl.classList.remove('is-card-entering');
-        productModalEnterCleanupTimerId = null;
-      }, PRODUCT_MODAL_ENTER_MS + 40);
-    };
-
-    const lockPageScrollForProductModal = () => {
-      if (!productFullscreenModalEl) return;
-      if (document.body.classList.contains('is-modal-scroll-locked')) return;
-
-      document.documentElement.classList.add('is-modal-scroll-locked');
-      document.body.classList.add('is-modal-scroll-locked');
-      lenis?.stop();
-    };
-
-    const unlockPageScrollForProductModal = () => {
-      if (!productFullscreenModalEl) return;
-      if (!document.body.classList.contains('is-modal-scroll-locked')) {
-        lenis?.start();
-        return;
-      }
-
-      document.documentElement.classList.remove('is-modal-scroll-locked');
-      document.body.classList.remove('is-modal-scroll-locked');
-      lenis?.start();
-    };
-
-    const switchProductModalPreview = (nextData) => {
-      if (!productFullscreenModalEl) {
-        applyProductPreviewDataToModal(nextData);
-        return;
-      }
-
-      clearProductModalAnimationTimers();
-      productFullscreenModalEl.classList.remove('is-card-entering');
-      void productFullscreenModalEl.offsetWidth;
-      productFullscreenModalEl.classList.add('is-card-exiting');
-
-      productModalSwitchTimerId = window.setTimeout(() => {
-        applyProductPreviewDataToModal(nextData);
-        productFullscreenModalEl.classList.remove('is-card-exiting');
-        runProductModalEnterAnimation();
-        productModalSwitchTimerId = null;
-      }, PRODUCT_MODAL_EXIT_MS);
+    const unlockPageForProductModal = () => {
+      documentEl.classList.remove('is-modal-scroll-locked');
+      bodyEl.classList.remove('is-modal-scroll-locked');
+      window.scrollTo(0, modalScrollY);
     };
 
     const openProductFullscreenModal = (cardEl) => {
@@ -1857,6 +1508,7 @@
       if (!rawData.imageSrc || !rawData.name) return;
 
       applyProductPreviewDataToModal(rawData);
+      isProductModalOpen = true;
 
       productFullscreenModal.show();
     };
@@ -1874,47 +1526,89 @@
       openProductFullscreenModal(cardEl);
     };
 
-    productFullscreenModalEl?.addEventListener('shown.bs.modal', () => {
-      isProductModalOpen = true;
-      stopProductCarousels();
-      lockPageScrollForProductModal();
-      navbarEl?.classList.remove('is-hidden');
-      scheduleProductModalContrastUpdate();
-    });
+    productFullscreenModalEl?.classList.remove('fade');
 
-    productFullscreenModalEl?.addEventListener('hide.bs.modal', () => {
-      clearProductModalAnimationTimers();
-      clearProductModalAnimationClasses();
+    productFullscreenModalEl?.addEventListener('show.bs.modal', () => {
+      if (modalCloseAnimationTimer) {
+        window.clearTimeout(modalCloseAnimationTimer);
+        modalCloseAnimationTimer = null;
+      }
+      allowImmediateModalHide = false;
+      lockPageForProductModal();
+      lenis?.stop();
+      stopProductCarousels();
+      productFullscreenModalEl.classList.remove('is-closing');
+      productFullscreenModalEl.classList.remove('is-opening');
+      void productFullscreenModalEl.offsetWidth;
+      productFullscreenModalEl.classList.add('is-opening');
     });
 
     productFullscreenModalEl?.addEventListener('hidden.bs.modal', () => {
-      clearProductModalAnimationTimers();
-      clearProductModalAnimationClasses();
-      unlockPageScrollForProductModal();
+      const clearCarouselFocus = () => {
+        const focusedEl = document.activeElement;
+        if (!(focusedEl instanceof HTMLElement)) return;
+        if (
+          focusedEl.closest('.product-carousel') ||
+          focusedEl.classList.contains('product-preview-trigger')
+        ) {
+          focusedEl.blur();
+        }
+      };
+
+      if (lastProductPreviewTriggerEl) {
+        lastProductPreviewTriggerEl.blur();
+        lastProductPreviewTriggerEl = null;
+      }
+      if (modalCloseAnimationTimer) {
+        window.clearTimeout(modalCloseAnimationTimer);
+        modalCloseAnimationTimer = null;
+      }
+      allowImmediateModalHide = false;
+      clearCarouselFocus();
       isProductModalOpen = false;
-      startProductCarousels();
-      updateNavbarVisibility(window.scrollY);
+      unlockPageForProductModal();
+      if (lenis?.scrollTo) {
+        lenis.scrollTo(modalScrollY, { immediate: true, force: true });
+      }
+      lenis?.start();
+      productFullscreenModalEl.classList.remove('is-closing');
+      productFullscreenModalEl.classList.remove('is-opening');
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          clearCarouselFocus();
+          syncProductCarouselLayout();
+          syncProductCardHeights();
+          syncProductCardInteractivity();
+          updateProductImageParallax();
+          startProductCarousels();
+        });
+      });
     });
 
-    window.addEventListener('resize', () => {
-      if (!isProductModalOpen) return;
-      scheduleProductModalContrastUpdate();
-    });
+    productFullscreenModalEl?.addEventListener('hide.bs.modal', (event) => {
+      if (!allowImmediateModalHide) {
+        const modalIsShown = productFullscreenModalEl.classList.contains('show');
+        if (modalIsShown) {
+          window.clearTimeout(modalCloseAnimationTimer);
+          productFullscreenModalEl.classList.remove('is-opening');
+          productFullscreenModalEl.classList.remove('is-closing');
+          void productFullscreenModalEl.offsetWidth;
+          productFullscreenModalEl.classList.add('is-closing');
+          event.preventDefault();
+          modalCloseAnimationTimer = window.setTimeout(() => {
+            allowImmediateModalHide = true;
+            productFullscreenModal.hide();
+          }, 340);
+          return;
+        }
+      }
 
-    productFullscreenThumbsEl?.addEventListener('click', (event) => {
-      const thumbButton = event.target.closest('.product-fullscreen-thumb');
-      if (!thumbButton) return;
-
-      const targetKey = thumbButton.dataset.productKey ?? '';
-      if (!targetKey) return;
-      if (targetKey === activeProductPreviewKey) return;
-
-      const selectedData = activeProductPreviewCollection.find((item) => item.key === targetKey);
-      if (!selectedData) return;
-
-      activeProductPreviewKey = selectedData.key;
-      switchProductModalPreview(selectedData);
-      setActiveProductThumb(activeProductPreviewKey);
+      allowImmediateModalHide = false;
+      window.requestAnimationFrame(() => {
+        syncProductCarouselLayout();
+        syncProductCardHeights();
+        syncProductCardInteractivity();
+      });
     });
 
     document.addEventListener('click', (event) => {
@@ -1922,6 +1616,10 @@
       if (!triggerEl) return;
       const cardEl = triggerEl.closest('.product-card');
       if (!cardEl) return;
+      if (triggerEl instanceof HTMLElement) {
+        lastProductPreviewTriggerEl = triggerEl;
+      }
+      triggerProductPreviewIconAnimation(triggerEl);
       handleProductCardOpen(event, cardEl);
     });
 
@@ -1963,7 +1661,6 @@
     syncNavLinkWidths();
     updateStatsTitleReveal();
     refreshGhostMetrics();
-    updateNavbarVisibility();
     updateActiveSection();
     updateGhostHeadingPosition();
     updateSectionOrbParallax();
@@ -1983,16 +1680,15 @@
       window.addEventListener(
         'scroll',
         () => {
-          updateNavbarVisibility(window.scrollY);
           performScrollEffects();
         },
         { passive: true }
       );
     }
     window.addEventListener('resize', () => {
+      refreshCollapsedNavOffset();
       syncNavOffset();
       syncNavLinkWidths();
-      updateNavbarVisibility(window.scrollY);
       syncTestimonialMarquee();
       updateStatsTitleReveal();
       refreshGhostMetrics();
@@ -2050,55 +1746,75 @@
         (this.classList.contains('is-active') || href === activeSectionHash);
 
       if (isCurrentLinkActive && isCurrentTargetAligned) {
+        await closeNavMenuIfNeeded();
         return;
       }
 
-      await closeNavMenuIfNeeded();
-      syncNavOffset();
+      freezeNavOffset(getNavOffset());
 
-      const recalculatedScrollY = window.scrollY;
+      const clickScrollY = window.scrollY;
+      if (this instanceof HTMLElement) {
+        this.blur();
+      }
+
+      await closeNavMenuIfNeeded();
+      if (isMobileViewport()) {
+        if (lenis?.scrollTo) {
+          lenis.scrollTo(clickScrollY, { immediate: true, force: true });
+        } else {
+          window.scrollTo(0, clickScrollY);
+        }
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(resolve);
+          });
+        });
+      }
+      syncNavOffset();
+      const focusedEl = document.activeElement;
+      if (
+        focusedEl instanceof HTMLElement &&
+        navCollapseEl?.contains(focusedEl)
+      ) {
+        focusedEl.blur();
+      }
+
       const targetDocumentTop = isHomeTarget
         ? 0
         : getDocumentTop(target);
-      const isScrollingDown = targetDocumentTop > recalculatedScrollY;
-      const targetOffset = isMobileViewport()
-        ? getNavOffset()
-        : (isScrollingDown ? 0 : getNavOffset());
+      const targetOffset = getNavOffset();
       const targetTop = isHomeTarget ? 0 : targetDocumentTop - targetOffset;
       const nextTop = Math.max(targetTop, 0);
 
       activeSectionHash = href;
       setActiveNavLink(href);
-      lockNavbarDuringNavScroll(!isHomeTarget && isScrollingDown, nextTop);
       if (lenis) {
+        const duration = isMobileViewport() ? 0.95 : 1.1;
+        navScrollUserInterrupted = false;
         lenis.scrollTo(nextTop, {
-          duration: 1.1,
+          duration,
           easing: (t) => 1 - Math.pow(1 - t, 3.2)
         });
+        if (navScrollSnapTimerId) {
+          window.clearTimeout(navScrollSnapTimerId);
+        }
+        navScrollSnapTimerId = window.setTimeout(() => {
+          const distanceToTarget = Math.abs(window.scrollY - nextTop);
+          if (!navScrollUserInterrupted && distanceToTarget <= 80) {
+            lenis.scrollTo(nextTop, { immediate: true, force: true });
+          }
+          navScrollSnapTimerId = null;
+        }, Math.round(duration * 1000 + 50));
+        scheduleNavOffsetUnfreeze(Math.round(duration * 1000 + 260));
       } else {
         window.scrollTo({ top: nextTop, behavior: 'smooth' });
+        scheduleNavOffsetUnfreeze(1400);
       }
       window.history.replaceState(null, '', href);
     });
 
-    navTogglerEl?.addEventListener('click', () => {
-      navbarEl?.classList.remove('is-hidden');
-      lastNavbarToggleScrollY = window.scrollY;
-    });
-
-    navCollapseEl?.addEventListener('show.bs.collapse', () => {
-      navbarEl?.classList.remove('is-hidden');
-      lastNavbarToggleScrollY = window.scrollY;
-    });
-
-    navCollapseEl?.addEventListener('hide.bs.collapse', () => {
-      navbarEl?.classList.remove('is-hidden');
-      lastNavbarToggleScrollY = window.scrollY;
-    });
-
     navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
-      navbarEl?.classList.remove('is-hidden');
-      lastNavbarToggleScrollY = window.scrollY;
+      refreshCollapsedNavOffset();
       updateActiveSection();
     });
 
