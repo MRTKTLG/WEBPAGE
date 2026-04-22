@@ -1,10 +1,9 @@
 (() => {
   'use strict';
 
-  const $ = window.jQuery;
-  if (!$ || !window.bootstrap) return;
+  if (!window.bootstrap) return;
 
-  $(function () {
+  document.addEventListener('DOMContentLoaded', () => {
     const navCollapseEl = document.getElementById('menu');
     const navCollapse = navCollapseEl
       ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
@@ -1153,7 +1152,7 @@
       slider.carouselInner.addEventListener(
         'touchstart',
         (event) => {
-          if (!isProductMobileViewport() || slider.isAnimating || slider.sourceCards.length <= 1) return;
+          if (isProductMobileViewport() || slider.isAnimating || slider.sourceCards.length <= 1) return;
 
           const touch = event.touches[0];
           if (!touch) return;
@@ -1485,6 +1484,8 @@
     let modalScrollY = 0;
     let allowImmediateModalHide = false;
     let modalCloseAnimationTimer = null;
+    let modalOpenAnimationTimer = null;
+    let modalDismissAnimationTimer = null;
     let lastProductPreviewTriggerEl = null;
 
     const lockPageForProductModal = () => {
@@ -1514,6 +1515,8 @@
     };
 
     const handleProductCardOpen = (event, cardEl) => {
+      const triggerEl = event.target?.closest?.('.product-preview-trigger');
+      if (!triggerEl) return;
       if (!cardEl?.closest('.product-carousel')) return;
       if (event.defaultPrevented) return;
       if (document.body.classList.contains('is-product-carousel-dragging')) return;
@@ -1529,6 +1532,14 @@
     productFullscreenModalEl?.classList.remove('fade');
 
     productFullscreenModalEl?.addEventListener('show.bs.modal', () => {
+      if (modalOpenAnimationTimer) {
+        window.clearTimeout(modalOpenAnimationTimer);
+        modalOpenAnimationTimer = null;
+      }
+      if (modalDismissAnimationTimer) {
+        window.clearTimeout(modalDismissAnimationTimer);
+        modalDismissAnimationTimer = null;
+      }
       if (modalCloseAnimationTimer) {
         window.clearTimeout(modalCloseAnimationTimer);
         modalCloseAnimationTimer = null;
@@ -1537,10 +1548,15 @@
       lockPageForProductModal();
       lenis?.stop();
       stopProductCarousels();
+      productFullscreenModalEl.classList.remove('is-dismiss-closing');
       productFullscreenModalEl.classList.remove('is-closing');
       productFullscreenModalEl.classList.remove('is-opening');
       void productFullscreenModalEl.offsetWidth;
       productFullscreenModalEl.classList.add('is-opening');
+      modalOpenAnimationTimer = window.setTimeout(() => {
+        productFullscreenModalEl.classList.remove('is-opening');
+        modalOpenAnimationTimer = null;
+      }, 760);
     });
 
     productFullscreenModalEl?.addEventListener('hidden.bs.modal', () => {
@@ -1563,6 +1579,14 @@
         window.clearTimeout(modalCloseAnimationTimer);
         modalCloseAnimationTimer = null;
       }
+      if (modalOpenAnimationTimer) {
+        window.clearTimeout(modalOpenAnimationTimer);
+        modalOpenAnimationTimer = null;
+      }
+      if (modalDismissAnimationTimer) {
+        window.clearTimeout(modalDismissAnimationTimer);
+        modalDismissAnimationTimer = null;
+      }
       allowImmediateModalHide = false;
       clearCarouselFocus();
       isProductModalOpen = false;
@@ -1571,6 +1595,7 @@
         lenis.scrollTo(modalScrollY, { immediate: true, force: true });
       }
       lenis?.start();
+      productFullscreenModalEl.classList.remove('is-dismiss-closing');
       productFullscreenModalEl.classList.remove('is-closing');
       productFullscreenModalEl.classList.remove('is-opening');
       window.requestAnimationFrame(() => {
@@ -1589,16 +1614,31 @@
       if (!allowImmediateModalHide) {
         const modalIsShown = productFullscreenModalEl.classList.contains('show');
         if (modalIsShown) {
+          if (modalOpenAnimationTimer) {
+            window.clearTimeout(modalOpenAnimationTimer);
+            modalOpenAnimationTimer = null;
+          }
+          if (modalDismissAnimationTimer) {
+            window.clearTimeout(modalDismissAnimationTimer);
+            modalDismissAnimationTimer = null;
+          }
           window.clearTimeout(modalCloseAnimationTimer);
+          productFullscreenModalEl.classList.remove('is-dismiss-closing');
           productFullscreenModalEl.classList.remove('is-opening');
           productFullscreenModalEl.classList.remove('is-closing');
           void productFullscreenModalEl.offsetWidth;
-          productFullscreenModalEl.classList.add('is-closing');
           event.preventDefault();
-          modalCloseAnimationTimer = window.setTimeout(() => {
-            allowImmediateModalHide = true;
-            productFullscreenModal.hide();
-          }, 340);
+          productFullscreenModalEl.classList.add('is-dismiss-closing');
+
+          modalDismissAnimationTimer = window.setTimeout(() => {
+            modalDismissAnimationTimer = null;
+            productFullscreenModalEl.classList.remove('is-dismiss-closing');
+            productFullscreenModalEl.classList.add('is-closing');
+            modalCloseAnimationTimer = window.setTimeout(() => {
+              allowImmediateModalHide = true;
+              productFullscreenModal.hide();
+            }, 480);
+          }, 620);
           return;
         }
       }
@@ -1726,8 +1766,15 @@
       startProductCarousels();
     });
 
-    $('a.navbar-brand[href^="#"], a.nav-link[href^="#"]').on('click', async function (event) {
-      const href = $(this).attr('href');
+    const clickableNavAnchors = Array.from(
+      document.querySelectorAll('a.navbar-brand[href^="#"], a.nav-link[href^="#"]')
+    );
+    clickableNavAnchors.forEach((anchor) => {
+      anchor.addEventListener('click', async (event) => {
+        const currentAnchor = event.currentTarget;
+        if (!(currentAnchor instanceof HTMLAnchorElement)) return;
+
+        const href = currentAnchor.getAttribute('href');
       if (!href || href.length < 2) return;
 
       const target = document.querySelector(href);
@@ -1742,8 +1789,8 @@
         ? Math.abs(window.scrollY) <= 6
         : Math.abs(targetViewportTop - currentVisibleNavOffset) <= 6;
       const isCurrentLinkActive =
-        this.classList.contains('nav-link') &&
-        (this.classList.contains('is-active') || href === activeSectionHash);
+        currentAnchor.classList.contains('nav-link') &&
+        (currentAnchor.classList.contains('is-active') || href === activeSectionHash);
 
       if (isCurrentLinkActive && isCurrentTargetAligned) {
         await closeNavMenuIfNeeded();
@@ -1753,8 +1800,8 @@
       freezeNavOffset(getNavOffset());
 
       const clickScrollY = window.scrollY;
-      if (this instanceof HTMLElement) {
-        this.blur();
+      if (currentAnchor instanceof HTMLElement) {
+        currentAnchor.blur();
       }
 
       await closeNavMenuIfNeeded();
@@ -1811,6 +1858,7 @@
         scheduleNavOffsetUnfreeze(1400);
       }
       window.history.replaceState(null, '', href);
+      });
     });
 
     navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
@@ -1819,13 +1867,15 @@
     });
 
 
-    $('form[novalidate]').on('submit', function (event) {
-      const form = this;
-      if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      form.classList.add('was-validated');
+    const forms = Array.from(document.querySelectorAll('form[novalidate]'));
+    forms.forEach((form) => {
+      form.addEventListener('submit', (event) => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      });
     });
 
     if (document.readyState === 'complete') {
