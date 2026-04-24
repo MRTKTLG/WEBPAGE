@@ -139,7 +139,7 @@ body.is-preloading {
 .page-preloader {
   position: fixed;
   inset: 0;
-  z-index: 2000;
+  z-index: 3000;
   display: grid;
   place-items: center;
   background: #ffffff;
@@ -163,7 +163,7 @@ body.is-preloading {
 }
 
 .page-preloader-brand {
-  font-size: clamp(2rem, 2.9vw, 2.6rem);
+  font-size: var(--text-section-title);
   font-weight: 700;
   letter-spacing: 0.01em;
   line-height: 1.2;
@@ -2226,19 +2226,22 @@ textarea.form-control,
 }
 
 #sss .accordion-button::after {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-image: none;
-  content: '';
-  border-right: var(--icon-stroke-thin) solid var(--muted);
-  border-bottom: var(--icon-stroke-thin) solid var(--muted);
-  width: 0.58rem;
-  height: 0.58rem;
-  transform: rotate(45deg);
-  opacity: 0.72;
-  filter: none !important;
-  box-shadow: none !important;
+  display: none;
+}
+
+#sss .accordion-button .faq-chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: #5f7288;
+  transform: rotate(0deg);
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+#sss .accordion-button:not(.collapsed) .faq-chevron {
+  transform: rotate(180deg);
+  color: #2b3442;
 }
 
 #sss .accordion-body {
@@ -3888,6 +3891,13 @@ footer .text-body-secondary,
 /* Final overrides: image-only modal experience */
 .product-fullscreen-modal {
   z-index: 2000 !important;
+  --modal-fx-duration: 360ms;
+  --modal-open-backdrop-duration: var(--modal-fx-duration);
+  --modal-open-dialog-duration: var(--modal-fx-duration);
+  --modal-open-image-duration: var(--modal-fx-duration);
+  --modal-icon-move-duration: var(--preview-icon-motion-duration);
+  --modal-icon-fade-duration: var(--preview-icon-motion-duration);
+  --modal-premium-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .product-fullscreen-modal .modal-dialog {
@@ -3907,25 +3917,25 @@ footer .text-body-secondary,
   border: 0;
   border-radius: 0 !important;
   background: rgba(8, 10, 14, 0.72) !important;
-  backdrop-filter: blur(12px) saturate(125%);
-  -webkit-backdrop-filter: blur(12px) saturate(125%);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
   will-change: opacity, backdrop-filter;
 }
 
 .product-fullscreen-modal.is-opening .modal-content {
-  animation: modalBackdropModern 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: modalBackdropModern var(--modal-open-backdrop-duration) var(--modal-premium-ease) both;
 }
 
 .product-fullscreen-modal.is-closing .modal-content {
-  animation: modalBackdropModern 360ms cubic-bezier(0.22, 1, 0.36, 1) reverse both;
+  animation: modalBackdropModern var(--modal-fx-duration) var(--modal-premium-ease) reverse both;
 }
 
 .product-fullscreen-modal.is-opening .modal-dialog {
-  animation: modalDialogModern 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: modalDialogModern var(--modal-open-dialog-duration) var(--modal-premium-ease) both;
 }
 
 .product-fullscreen-modal.is-closing .modal-dialog {
-  animation: modalDialogModern 360ms cubic-bezier(0.22, 1, 0.36, 1) reverse both;
+  animation: modalDialogModern var(--modal-fx-duration) var(--modal-premium-ease) reverse both;
 }
 
 .product-fullscreen-modal .modal-body {
@@ -3980,17 +3990,18 @@ footer .text-body-secondary,
 }
 
 .product-fullscreen-modal.is-opening .product-fullscreen-image {
-  animation: modalImageModern 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: modalImageModern var(--modal-open-image-duration) var(--modal-premium-ease) both;
+  animation-delay: 20ms;
 }
 
 .product-fullscreen-modal.is-closing .product-fullscreen-image {
-  animation: modalImageModern 360ms cubic-bezier(0.22, 1, 0.36, 1) reverse both;
+  animation: modalImageModern var(--modal-fx-duration) var(--modal-premium-ease) reverse both;
 }
 
 @keyframes modalBackdropModern {
   0% {
     opacity: 0;
-    background: rgba(8, 10, 14, 0.3);
+    background: rgba(8, 10, 14, 0.18);
     backdrop-filter: blur(0) saturate(100%);
     -webkit-backdrop-filter: blur(0) saturate(100%);
   }
@@ -3998,34 +4009,80 @@ footer .text-body-secondary,
   100% {
     opacity: 1;
     background: rgba(8, 10, 14, 0.72);
-    backdrop-filter: blur(12px) saturate(125%);
-    -webkit-backdrop-filter: blur(12px) saturate(125%);
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
   }
 }
 
 @keyframes modalDialogModern {
   0% {
     opacity: 0;
-    transform: translate3d(0, 14px, 0) scale(0.976);
   }
 
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes modalImageModern {
   0% {
     opacity: 0;
-    transform: translate3d(0, 18px, 0) scale(0.962);
-    filter: blur(4px) saturate(0.92) contrast(0.97);
   }
 
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0) saturate(1) contrast(1);
+  }
+}
+
+@keyframes modalActionStaggerIn {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes modalActionStaggerOut {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes modalActionFadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes modalActionFadeOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes modalShareLinkStaggerOut {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(12px, 0, 0);
   }
 }
 
@@ -4060,6 +4117,102 @@ footer .text-body-secondary,
   filter: none !important;
   transform-origin: center;
   transition: none;
+}
+
+.product-fullscreen-modal.is-opening .product-fullscreen-action {
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+  pointer-events: none;
+  animation:
+    modalActionStaggerIn var(--modal-icon-move-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    modalActionFadeIn var(--modal-icon-fade-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.product-fullscreen-modal.is-opening .product-fullscreen-action:nth-of-type(4) {
+  animation-delay: 0ms, 0ms;
+}
+
+.product-fullscreen-modal.is-opening .product-fullscreen-action:nth-of-type(3) {
+  animation-delay: 140ms, 140ms;
+}
+
+.product-fullscreen-modal.is-opening .product-fullscreen-action:nth-of-type(2) {
+  animation-delay: 280ms, 280ms;
+}
+
+.product-fullscreen-modal.is-opening .product-fullscreen-action:nth-of-type(1) {
+  animation-delay: 420ms, 420ms;
+}
+
+.product-fullscreen-modal.is-closing .product-fullscreen-action {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: none;
+  animation:
+    modalActionStaggerOut var(--modal-icon-move-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    modalActionFadeOut var(--modal-icon-fade-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.product-fullscreen-modal.is-closing .product-fullscreen-action:nth-of-type(1) {
+  animation-delay: 0ms, 0ms;
+}
+
+.product-fullscreen-modal.is-closing .product-fullscreen-action:nth-of-type(2) {
+  animation-delay: 140ms, 140ms;
+}
+
+.product-fullscreen-modal.is-closing .product-fullscreen-action:nth-of-type(3) {
+  animation-delay: 280ms, 280ms;
+}
+
+.product-fullscreen-modal.is-closing .product-fullscreen-action:nth-of-type(4) {
+  animation-delay: 420ms, 420ms;
+}
+
+/* If share links are open, close them first, then close toolbar icons. */
+.product-fullscreen-modal.is-closing .product-fullscreen-actions.is-share-open .product-fullscreen-share-link {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: none;
+  animation:
+    modalShareLinkStaggerOut var(--modal-icon-move-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    modalActionFadeOut var(--modal-icon-fade-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.product-fullscreen-modal.is-closing
+  .product-fullscreen-actions.is-share-open
+  .product-fullscreen-share-link.is-whatsapp {
+  animation-delay: 0ms, 0ms;
+}
+
+.product-fullscreen-modal.is-closing
+  .product-fullscreen-actions.is-share-open
+  .product-fullscreen-share-link.is-instagram {
+  animation-delay: 100ms, 100ms;
+}
+
+.product-fullscreen-modal.is-closing
+  .product-fullscreen-actions.is-share-open
+  .product-fullscreen-action:nth-of-type(1) {
+  animation-delay: 280ms, 280ms;
+}
+
+.product-fullscreen-modal.is-closing
+  .product-fullscreen-actions.is-share-open
+  .product-fullscreen-action:nth-of-type(2) {
+  animation-delay: 420ms, 420ms;
+}
+
+.product-fullscreen-modal.is-closing
+  .product-fullscreen-actions.is-share-open
+  .product-fullscreen-action:nth-of-type(3) {
+  animation-delay: 560ms, 560ms;
+}
+
+.product-fullscreen-modal.is-closing
+  .product-fullscreen-actions.is-share-open
+  .product-fullscreen-action:nth-of-type(4) {
+  animation-delay: 700ms, 700ms;
 }
 
 .product-fullscreen-action svg {
@@ -4128,11 +4281,11 @@ footer .text-body-secondary,
   line-height: 0;
   padding: 0;
   margin: 0;
-  transform: translate3d(12px, 0, 0) scale(0.76);
+  transform: translate3d(12px, 0, 0);
   opacity: 0;
   transition:
-    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform var(--modal-icon-move-duration) cubic-bezier(0.22, 1, 0.36, 1),
+    opacity var(--modal-icon-fade-duration) cubic-bezier(0.22, 1, 0.36, 1),
     background-color 160ms ease,
     border-color 160ms ease,
     color 160ms ease;
@@ -4141,7 +4294,7 @@ footer .text-body-secondary,
 
 /* Closed state delays: Instagram closes after WhatsApp (outer to inner on close). */
 .product-fullscreen-share-link.is-instagram {
-  transition-delay: 140ms, 140ms, 0ms, 0ms, 0ms;
+  transition-delay: 100ms, 100ms, 0ms, 0ms, 0ms;
 }
 
 .product-fullscreen-share-link svg {
@@ -4165,9 +4318,9 @@ footer .text-body-secondary,
 }
 
 .product-fullscreen-actions.is-share-open .product-fullscreen-share-link {
-  transform: translate3d(0, 0, 0) scale(1);
+  transform: translate3d(0, 0, 0);
   opacity: 1;
-  transition-delay: 140ms, 140ms, 0ms, 0ms, 0ms;
+  transition-delay: 100ms, 100ms, 0ms, 0ms, 0ms;
   }
 
 /* Open state override: Instagram opens first (inner to outer), then WhatsApp. */
@@ -4198,13 +4351,21 @@ footer .text-body-secondary,
 }
 
 .product-fullscreen-modal.is-closing .product-fullscreen-actions {
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
 }
 
-.product-fullscreen-modal.is-dismiss-closing .product-fullscreen-actions {
-  opacity: 0;
+.product-fullscreen-modal.is-closing.is-dismiss-closing .product-fullscreen-actions {
+  opacity: 1;
   pointer-events: none;
+}
+
+/* Keep main modal action icons static; only social-share icons stay animated. */
+.product-fullscreen-modal.is-opening .product-fullscreen-action,
+.product-fullscreen-modal.is-closing .product-fullscreen-action {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4215,6 +4376,24 @@ footer .text-body-secondary,
   .product-fullscreen-modal.is-closing .modal-content,
   .product-fullscreen-modal.is-closing .product-fullscreen-image {
     animation: none !important;
+  }
+
+  .product-fullscreen-modal.is-opening .product-fullscreen-action {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+  }
+
+  .product-fullscreen-modal.is-closing .product-fullscreen-action {
+    animation: none !important;
+    opacity: 0 !important;
+    transform: translate3d(0, 0, 0) !important;
+  }
+
+  .product-fullscreen-modal.is-closing .product-fullscreen-share-link {
+    animation: none !important;
+    opacity: 0 !important;
+    transform: translate3d(0, 0, 0) !important;
   }
 }
 

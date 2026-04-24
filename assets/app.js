@@ -33,6 +33,9 @@
     const productFullscreenNativeToggleEl = productFullscreenModalEl?.querySelector(
       '.product-fullscreen-native-toggle'
     );
+    const productFullscreenDismissEl = productFullscreenModalEl?.querySelector(
+      '.product-fullscreen-dismiss'
+    );
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
     const lenis =
@@ -489,9 +492,10 @@
         const sectionTravel = Math.max(viewportHeight + rect.height, 1);
         const progress = clamp((viewportHeight - rect.top) / sectionTravel, 0, 1);
         const normalizedOffset = progress * 2 - 1;
-        const orbRangePx = window.innerWidth <= 767 ? 42 : 132;
-        const pinkNextOffsetPx = normalizedOffset * -orbRangePx;
-        const blueNextOffsetPx = normalizedOffset * orbRangePx;
+        const isMobileViewport = window.innerWidth <= 767;
+        const orbRangeXPx = isMobileViewport ? 86 : 132;
+        const pinkNextOffsetPx = normalizedOffset * -orbRangeXPx;
+        const blueNextOffsetPx = normalizedOffset * orbRangeXPx;
 
         metric.currentPinkOffsetPx = pinkNextOffsetPx;
         metric.currentBlueOffsetPx = blueNextOffsetPx;
@@ -1510,7 +1514,9 @@
     let productModalPointerStartX = 0;
     let productModalPointerStartY = 0;
     let productModalNativeFullscreen = false;
+    let closeTriggeredByDismissButton = false;
     const PRODUCT_MODAL_ZOOM_SCALE = 1.4;
+    const PRODUCT_MODAL_TRANSITION_MS = 360;
 
     const getProductModalPanBounds = () => {
       if (!productFullscreenMediaEl) return { maxX: 0, maxY: 0 };
@@ -1682,6 +1688,7 @@
         modalCloseAnimationTimer = null;
       }
       allowImmediateModalHide = false;
+      closeTriggeredByDismissButton = false;
       setProductModalNativeFullscreenState(false);
       setProductModalZoomState(false);
       resetProductModalPan();
@@ -1697,7 +1704,7 @@
       modalOpenAnimationTimer = window.setTimeout(() => {
         productFullscreenModalEl.classList.remove('is-opening');
         modalOpenAnimationTimer = null;
-      }, 420);
+      }, PRODUCT_MODAL_TRANSITION_MS);
     });
 
     productFullscreenModalEl?.addEventListener('hidden.bs.modal', () => {
@@ -1729,6 +1736,7 @@
         modalDismissAnimationTimer = null;
       }
       allowImmediateModalHide = false;
+      closeTriggeredByDismissButton = false;
       clearCarouselFocus();
       isProductModalOpen = false;
       if (document.fullscreenElement === productFullscreenModalEl && document.exitFullscreen) {
@@ -1780,7 +1788,7 @@
           modalCloseAnimationTimer = window.setTimeout(() => {
             allowImmediateModalHide = true;
             productFullscreenModal.hide();
-          }, 420);
+          }, PRODUCT_MODAL_TRANSITION_MS);
           return;
         }
       }
@@ -1792,6 +1800,14 @@
         syncProductCardInteractivity();
       });
     });
+
+    productFullscreenDismissEl?.addEventListener(
+      'click',
+      () => {
+        closeTriggeredByDismissButton = true;
+      },
+      { capture: true }
+    );
 
     document.addEventListener('click', (event) => {
       const triggerEl = event.target.closest('.product-preview-trigger');
@@ -1905,6 +1921,9 @@
       const targetEl = event.target;
       if (!(targetEl instanceof Element)) return;
       if (targetEl.closest('.product-fullscreen-share') || targetEl.closest('.product-fullscreen-share-cluster')) {
+        return;
+      }
+      if (targetEl.closest('.product-fullscreen-dismiss')) {
         return;
       }
       closeProductShareMenu();
