@@ -22,6 +22,10 @@
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/tabler-icons.min.css"
+    />
     <link rel="stylesheet" href="assets/styles.css?v=layout-pass-270" />
   </head>
   <body class="is-preloading">
@@ -69,7 +73,7 @@
             id="heroCarousel"
             class="carousel slide"
             data-bs-ride="carousel"
-            data-bs-interval="3400"
+            data-bs-interval="6000"
           >
             <div class="carousel-inner">
               <div class="carousel-item active bg-forward">
@@ -158,7 +162,9 @@
               data-bs-target="#heroCarousel"
               data-bs-slide="prev"
             >
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <svg class="carousel-control-prev-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
               <span class="visually-hidden">Önceki</span>
             </button>
             <button
@@ -167,7 +173,9 @@
               data-bs-target="#heroCarousel"
               data-bs-slide="next"
             >
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <svg class="carousel-control-next-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
               <span class="visually-hidden">Sonraki</span>
             </button>
             <div class="carousel-indicators">
@@ -1724,13 +1732,7 @@
           <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
             <span class="small text-body-secondary">© 2026 Nova Crafts</span>
             <span class="footer-signature small text-body-secondary">
-              <span class="footer-signature-heart" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
-                  <path
-                    d="M12 20.4 10.55 19.08C5.4 14.41 2 11.34 2 7.58 2 4.5 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 4.5 22 7.58c0 3.76-3.4 6.83-8.55 11.5z"
-                  />
-                </svg>
-              </span>
+              <span class="footer-signature-heart" aria-hidden="true"><i class="ti ti-heart"></i></span>
               <span>Kocası tarafından sevgiyle tasarlandı.</span>
             </span>
           </div>
@@ -1749,18 +1751,100 @@
     >
       <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
-          <button
-            type="button"
-            class="btn-close btn-close-white product-fullscreen-dismiss"
-            data-bs-dismiss="modal"
-            aria-label="Kapat"
-          ></button>
+          <div class="product-fullscreen-actions" role="toolbar" aria-label="Önizleme işlemleri">
+            <button
+              type="button"
+              class="product-fullscreen-action product-fullscreen-share"
+              aria-label="Paylaş"
+              aria-expanded="false"
+              aria-controls="productShareMenu"
+              title="Paylaş"
+            >
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                <path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2" />
+                <path d="M7 9l5 -5l5 5" />
+                <path d="M12 4v12" />
+              </svg>
+            </button>
+            <div class="product-fullscreen-share-cluster" id="productShareMenu" aria-hidden="true">
+              <a
+                class="product-fullscreen-share-link is-whatsapp"
+                id="productShareWhatsApp"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp ile paylaş"
+                title="WhatsApp"
+              >
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                  <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" />
+                  <path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" />
+                </svg>
+                <span class="visually-hidden">WhatsApp</span>
+              </a>
+              <a
+                class="product-fullscreen-share-link is-instagram"
+                id="productShareInstagram"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram ile paylaş"
+                title="Instagram"
+              >
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                  <path d="M4 4m0 4a4 4 0 0 1 4 -4h8a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-8a4 4 0 0 1 -4 -4z" />
+                  <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                  <path d="M16.5 7.5l0 .01" />
+                </svg>
+                <span class="visually-hidden">Instagram</span>
+              </a>
+            </div>
+            <button
+              type="button"
+              class="product-fullscreen-action product-fullscreen-zoom"
+              aria-label="Yakınlaştır"
+              aria-pressed="false"
+              title="Yakınlaştır"
+            >
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                <path d="M21 21l-6 -6" />
+                <path d="M10 7v6" />
+                <path d="M7 10h6" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="product-fullscreen-action product-fullscreen-native-toggle"
+              aria-label="Tam ekran"
+              aria-pressed="false"
+              title="Tam ekran"
+            >
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+                <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+                <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+                <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="product-fullscreen-action product-fullscreen-dismiss"
+              data-bs-dismiss="modal"
+              aria-label="Kapat"
+              title="Kapat"
+            >
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                <path d="M18 6L6 18" />
+                <path d="M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
           <div class="modal-body">
             <div class="product-fullscreen-grid">
               <div class="product-fullscreen-media">
                 <img
-                  src=""
-                  alt=""
+                  alt="Seçilen ürünün büyük önizlemesi"
                   class="product-fullscreen-image"
                   id="productFullscreenImage"
                   loading="lazy"
@@ -1783,6 +1867,6 @@
       integrity="sha384-kdY9hFBPoAPpxcrLihsO3APivFOxtQwSeYdzFD5CIIfLurwhdMrEHhkQxZJDkxgk"
       crossorigin="anonymous"
     ></script>
-    <script src="assets/app.js?v=layout-pass-270"></script>
+    <script src="assets/app.js?v=layout-pass-273"></script>
   </body>
 </html>

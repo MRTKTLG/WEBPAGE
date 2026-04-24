@@ -38,65 +38,17 @@ const SECURITY_HEADERS = {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: https:",
-    "connect-src 'self' https://graph.instagram.com"
+    "connect-src 'self'"
   ].join('; ')
 };
 
-function writeJson(res, status, payload) {
+function writePlainResponse(res, status, message, cacheControl = 'no-store') {
   res.writeHead(status, {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'no-store',
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Cache-Control': cacheControl,
     ...SECURITY_HEADERS
   });
-  res.end(JSON.stringify(payload));
-}
-
-async function handleInstagramFeed(res) {
-  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
-  const userId = process.env.INSTAGRAM_USER_ID;
-
-  if (!token || !userId) {
-    writeJson(res, 200, { items: [] });
-    return;
-  }
-
-  try {
-    const endpoint = new URL(`https://graph.instagram.com/${encodeURIComponent(userId)}/media`);
-    endpoint.searchParams.set('fields', 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp');
-    endpoint.searchParams.set('limit', '12');
-    endpoint.searchParams.set('access_token', token);
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-    const response = await fetch(endpoint, { method: 'GET', signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (!response.ok) {
-      writeJson(res, 502, { error: 'Instagram API request failed.' });
-      return;
-    }
-
-    const payload = await response.json();
-    const items = Array.isArray(payload?.data) ? payload.data : [];
-
-    const normalized = items
-      .filter((item) => item?.permalink && (item?.media_url || item?.thumbnail_url))
-      .map((item) => ({
-        id: item.id,
-        caption: item.caption || '',
-        permalink: item.permalink,
-        media_type: item.media_type || '',
-        image_url: item.media_type === 'VIDEO' ? (item.thumbnail_url || item.media_url) : (item.media_url || item.thumbnail_url),
-        media_url: item.media_url || '',
-        thumbnail_url: item.thumbnail_url || '',
-        timestamp: item.timestamp || ''
-      }));
-
-    writeJson(res, 200, { items: normalized });
-  } catch (error) {
-    writeJson(res, 500, {
-      error: 'Unexpected error while reading Instagram feed.'
-    });
-  }
+  res.end(message);
 }
 
 function safeResolvePath(urlPathname) {
@@ -106,8 +58,19 @@ function safeResolvePath(urlPathname) {
   } catch {
     return null;
   }
-  const normalized = path.normalize(decoded).replace(/^(\.\.(\/|\\|$))+/, '');
-  return path.join(__dirname, normalized);
+
+  if (decoded.includes('\0')) return null;
+
+  const normalized = path.posix.normalize(decoded);
+  const relativePath = normalized.replace(/^\/+/, '');
+  const absolutePath = path.resolve(__dirname, relativePath);
+  const relativeToRoot = path.relative(__dirname, absolutePath);
+
+  if (relativeToRoot.startsWith('..') || path.isAbsolute(relativeToRoot)) {
+    return null;
+  }
+
+  return absolutePath;
 }
 
 function serveStatic(req, res) {
@@ -115,14 +78,12 @@ function serveStatic(req, res) {
   const filePath = safeResolvePath(reqPath);
 
   if (!filePath || !filePath.startsWith(__dirname)) {
-    res.writeHead(403);
-    res.end('Forbidden');
+    writePlainResponse(res, 403, 'Forbidden');
     return;
   }
 
   if (!existsSync(filePath) || !statSync(filePath).isFile()) {
-    res.writeHead(404);
-    res.end('Not Found');
+    writePlainResponse(res, 404, 'Not Found');
     return;
   }
 
@@ -137,28 +98,25 @@ function serveStatic(req, res) {
     return;
   }
 
-  createReadStream(filePath).pipe(res);
-}
-
-const server = http.createServer(async (req, res) => {
-  if (!req.url) {
-    res.writeHead(400);
-    res.end('Bad Request');
-    return;
-  }
-
-  if (req.url.startsWith('/api/instagram-feed')) {
-    if (req.method !== 'GET') {
-      writeJson(res, 405, { error: 'Method Not Allowed' });
+  const stream = createReadStream(filePath);
+  stream.on('error', () => {
+    if (res.headersSent) {
+      res.destroy();
       return;
     }
-    await handleInstagramFeed(res);
+    writePlainResponse(res, 500, 'Internal Server Error');
+  });
+  stream.pipe(res);
+}
+
+const server = http.createServer((req, res) => {
+  if (!req.url) {
+    writePlainResponse(res, 400, 'Bad Request');
     return;
   }
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    res.writeHead(405, SECURITY_HEADERS);
-    res.end('Method Not Allowed');
+    writePlainResponse(res, 405, 'Method Not Allowed');
     return;
   }
 

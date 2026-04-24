@@ -22,8 +22,19 @@
     const productFullscreenModal = productFullscreenModalEl
       ? bootstrap.Modal.getOrCreateInstance(productFullscreenModalEl, { focus: false })
       : null;
+    const productFullscreenMediaEl = productFullscreenModalEl?.querySelector('.product-fullscreen-media');
     const productFullscreenImageEl = document.getElementById('productFullscreenImage');
-    const PRODUCT_FLOW_INTERVAL_MS = 3400;
+    const productFullscreenActionsEl = productFullscreenModalEl?.querySelector('.product-fullscreen-actions');
+    const productFullscreenShareEl = productFullscreenModalEl?.querySelector('.product-fullscreen-share');
+    const productFullscreenShareMenuEl = document.getElementById('productShareMenu');
+    const productFullscreenShareWhatsAppEl = document.getElementById('productShareWhatsApp');
+    const productFullscreenShareInstagramEl = document.getElementById('productShareInstagram');
+    const productFullscreenZoomEl = productFullscreenModalEl?.querySelector('.product-fullscreen-zoom');
+    const productFullscreenNativeToggleEl = productFullscreenModalEl?.querySelector(
+      '.product-fullscreen-native-toggle'
+    );
+    const HERO_CAROUSEL_INTERVAL_MS = 6000;
+    const PRODUCT_FLOW_INTERVAL_MS = 3000;
     const lenis =
       window.Lenis
         ? new window.Lenis({
@@ -637,7 +648,7 @@
 
     if (heroCarousel) {
       bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
-        interval: PRODUCT_FLOW_INTERVAL_MS,
+        interval: HERO_CAROUSEL_INTERVAL_MS,
         touch: true,
         ride: 'carousel',
         pause: false,
@@ -1290,28 +1301,29 @@
         const iconEl = controlEl.querySelector('svg');
         bindOneShotArrowAnimation(controlEl, iconEl);
         });
-
-      document.querySelectorAll('.product-fullscreen-dismiss').forEach((dismissEl) => {
-        bindOneShotArrowAnimation(dismissEl, dismissEl);
-      });
     };
 
+    const PREVIEW_ICON_CLICK_CLOSE_DURATION_MS = 500;
+
     const triggerProductPreviewIconAnimation = (triggerEl) => {
-      if (!triggerEl || prefersReducedMotion.matches) return;
-      const sentinelSegmentEl = triggerEl.querySelector('.corner-br');
-      if (!sentinelSegmentEl) return;
+      if (!triggerEl || prefersReducedMotion.matches) return 0;
 
-      triggerEl.classList.remove('is-expand-animating');
+      const activeTimerId = Number(triggerEl.dataset.previewCloseTimerId || 0);
+      if (activeTimerId) {
+        window.clearTimeout(activeTimerId);
+      }
+
+      triggerEl.classList.remove('is-click-closing');
       void triggerEl.offsetWidth;
-      triggerEl.classList.add('is-expand-animating');
+      triggerEl.classList.add('is-click-closing');
 
-      sentinelSegmentEl.addEventListener(
-        'animationend',
-        () => {
-          triggerEl.classList.remove('is-expand-animating');
-        },
-        { once: true }
-      );
+      const timerId = window.setTimeout(() => {
+        triggerEl.classList.remove('is-click-closing');
+        delete triggerEl.dataset.previewCloseTimerId;
+      }, PREVIEW_ICON_CLICK_CLOSE_DURATION_MS);
+
+      triggerEl.dataset.previewCloseTimerId = String(timerId);
+      return 0;
     };
 
     const syncProductCarouselLayout = () => {
@@ -1478,6 +1490,7 @@
         productFullscreenImageEl.src = data.imageSrc;
         productFullscreenImageEl.alt = data.imageAlt;
       }
+      currentProductPreviewData = data;
     };
 
     let isProductModalOpen = false;
@@ -1487,6 +1500,118 @@
     let modalOpenAnimationTimer = null;
     let modalDismissAnimationTimer = null;
     let lastProductPreviewTriggerEl = null;
+    let currentProductPreviewData = null;
+    let productModalImageZoomed = false;
+    let productModalPanX = 0;
+    let productModalPanY = 0;
+    let productModalIsPanning = false;
+    let productModalPanStartX = 0;
+    let productModalPanStartY = 0;
+    let productModalPointerStartX = 0;
+    let productModalPointerStartY = 0;
+    let productModalNativeFullscreen = false;
+    const PRODUCT_MODAL_ZOOM_SCALE = 1.4;
+
+    const getProductModalPanBounds = () => {
+      if (!productFullscreenMediaEl) return { maxX: 0, maxY: 0 };
+      const mediaRect = productFullscreenMediaEl.getBoundingClientRect();
+      const maxX = Math.max(((mediaRect.width * PRODUCT_MODAL_ZOOM_SCALE) - mediaRect.width) / 2, 0);
+      const maxY = Math.max(((mediaRect.height * PRODUCT_MODAL_ZOOM_SCALE) - mediaRect.height) / 2, 0);
+      return { maxX, maxY };
+    };
+
+    const applyProductModalPan = () => {
+      if (!productFullscreenImageEl) return;
+      productFullscreenImageEl.style.setProperty('--modal-image-pan-x', `${productModalPanX}px`);
+      productFullscreenImageEl.style.setProperty('--modal-image-pan-y', `${productModalPanY}px`);
+    };
+
+    const clampProductModalPan = () => {
+      const { maxX, maxY } = getProductModalPanBounds();
+      productModalPanX = Math.max(-maxX, Math.min(maxX, productModalPanX));
+      productModalPanY = Math.max(-maxY, Math.min(maxY, productModalPanY));
+      applyProductModalPan();
+    };
+
+    const resetProductModalPan = () => {
+      productModalPanX = 0;
+      productModalPanY = 0;
+      productModalIsPanning = false;
+      productFullscreenModalEl?.classList.remove('is-image-panning');
+      applyProductModalPan();
+    };
+
+    const setProductModalZoomState = (zoomed) => {
+      productModalImageZoomed = Boolean(zoomed);
+      productFullscreenModalEl?.classList.toggle('is-image-zoomed', productModalImageZoomed);
+      if (productFullscreenZoomEl) {
+        productFullscreenZoomEl.setAttribute('aria-pressed', productModalImageZoomed ? 'true' : 'false');
+        productFullscreenZoomEl.setAttribute('aria-label', productModalImageZoomed ? 'Uzaklaştır' : 'Yakınlaştır');
+        productFullscreenZoomEl.setAttribute('title', productModalImageZoomed ? 'Uzaklaştır' : 'Yakınlaştır');
+        const zoomIconEl = productFullscreenZoomEl.querySelector('svg');
+        if (zoomIconEl) {
+          zoomIconEl.innerHTML = productModalImageZoomed
+            ? '<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M7 10h6" />'
+            : '<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M10 7v6" /><path d="M7 10h6" />';
+        }
+      }
+      if (!productModalImageZoomed) {
+        resetProductModalPan();
+      } else {
+        clampProductModalPan();
+      }
+    };
+
+    const setProductModalNativeFullscreenState = (active) => {
+      productModalNativeFullscreen = Boolean(active);
+      productFullscreenModalEl?.classList.toggle('is-native-fullscreen', productModalNativeFullscreen);
+      if (!productFullscreenNativeToggleEl) return;
+      productFullscreenNativeToggleEl.setAttribute(
+        'aria-pressed',
+        productModalNativeFullscreen ? 'true' : 'false'
+      );
+      productFullscreenNativeToggleEl.setAttribute(
+        'aria-label',
+        productModalNativeFullscreen ? 'Tam ekrandan çık' : 'Tam ekran'
+      );
+      productFullscreenNativeToggleEl.setAttribute(
+        'title',
+        productModalNativeFullscreen ? 'Tam ekrandan çık' : 'Tam ekran'
+      );
+    };
+
+    const getShareableProductUrl = (rawSrc) => {
+      if (!rawSrc) return window.location.href;
+      try {
+        return new URL(rawSrc, window.location.href).href;
+      } catch {
+        return window.location.href;
+      }
+    };
+
+    const closeProductShareMenu = () => {
+      if (!productFullscreenShareEl) return;
+      productFullscreenActionsEl?.classList.remove('is-share-open');
+      if (productFullscreenShareMenuEl) {
+        productFullscreenShareMenuEl.setAttribute('aria-hidden', 'true');
+      }
+      productFullscreenShareEl.setAttribute('aria-expanded', 'false');
+    };
+
+    const syncProductShareLinks = () => {
+      if (
+        !productFullscreenShareWhatsAppEl ||
+        !productFullscreenShareInstagramEl ||
+        !currentProductPreviewData?.imageSrc
+      ) {
+        return;
+      }
+
+      const shareUrl = getShareableProductUrl(currentProductPreviewData.imageSrc);
+      const shareText = encodeURIComponent(`${currentProductPreviewData.name || 'Ürün'} ${shareUrl}`);
+      productFullscreenShareWhatsAppEl.href = `https://wa.me/?text=${shareText}`;
+      productFullscreenShareInstagramEl.href = 'https://www.instagram.com/';
+    };
 
     const lockPageForProductModal = () => {
       modalScrollY = window.scrollY || window.pageYOffset || 0;
@@ -1514,7 +1639,13 @@
       productFullscreenModal.show();
     };
 
-    const handleProductCardOpen = (event, cardEl) => {
+    const canUseNativeFullscreen = () =>
+      typeof document !== 'undefined' &&
+      typeof document.fullscreenEnabled !== 'undefined' &&
+      document.fullscreenEnabled &&
+      typeof productFullscreenModalEl?.requestFullscreen === 'function';
+
+    const handleProductCardOpen = (event, cardEl, delayMs = 0) => {
       const triggerEl = event.target?.closest?.('.product-preview-trigger');
       if (!triggerEl) return;
       if (!cardEl?.closest('.product-carousel')) return;
@@ -1526,6 +1657,12 @@
       if (slider && slider.suppressClickUntil > performance.now()) return;
 
       event.preventDefault();
+      if (delayMs > 0) {
+        window.setTimeout(() => {
+          openProductFullscreenModal(cardEl);
+        }, delayMs);
+        return;
+      }
       openProductFullscreenModal(cardEl);
     };
 
@@ -1545,6 +1682,10 @@
         modalCloseAnimationTimer = null;
       }
       allowImmediateModalHide = false;
+      setProductModalNativeFullscreenState(false);
+      setProductModalZoomState(false);
+      resetProductModalPan();
+      closeProductShareMenu();
       lockPageForProductModal();
       lenis?.stop();
       stopProductCarousels();
@@ -1556,7 +1697,7 @@
       modalOpenAnimationTimer = window.setTimeout(() => {
         productFullscreenModalEl.classList.remove('is-opening');
         modalOpenAnimationTimer = null;
-      }, 760);
+      }, 420);
     });
 
     productFullscreenModalEl?.addEventListener('hidden.bs.modal', () => {
@@ -1590,6 +1731,13 @@
       allowImmediateModalHide = false;
       clearCarouselFocus();
       isProductModalOpen = false;
+      if (document.fullscreenElement === productFullscreenModalEl && document.exitFullscreen) {
+        void document.exitFullscreen();
+      }
+      setProductModalNativeFullscreenState(false);
+      setProductModalZoomState(false);
+      resetProductModalPan();
+      closeProductShareMenu();
       unlockPageForProductModal();
       if (lenis?.scrollTo) {
         lenis.scrollTo(modalScrollY, { immediate: true, force: true });
@@ -1628,17 +1776,11 @@
           productFullscreenModalEl.classList.remove('is-closing');
           void productFullscreenModalEl.offsetWidth;
           event.preventDefault();
-          productFullscreenModalEl.classList.add('is-dismiss-closing');
-
-          modalDismissAnimationTimer = window.setTimeout(() => {
-            modalDismissAnimationTimer = null;
-            productFullscreenModalEl.classList.remove('is-dismiss-closing');
-            productFullscreenModalEl.classList.add('is-closing');
-            modalCloseAnimationTimer = window.setTimeout(() => {
-              allowImmediateModalHide = true;
-              productFullscreenModal.hide();
-            }, 480);
-          }, 620);
+          productFullscreenModalEl.classList.add('is-closing');
+          modalCloseAnimationTimer = window.setTimeout(() => {
+            allowImmediateModalHide = true;
+            productFullscreenModal.hide();
+          }, 420);
           return;
         }
       }
@@ -1659,8 +1801,118 @@
       if (triggerEl instanceof HTMLElement) {
         lastProductPreviewTriggerEl = triggerEl;
       }
-      triggerProductPreviewIconAnimation(triggerEl);
-      handleProductCardOpen(event, cardEl);
+      const clickAnimationDelayMs = triggerProductPreviewIconAnimation(triggerEl);
+      handleProductCardOpen(event, cardEl, clickAnimationDelayMs);
+    });
+
+    productFullscreenZoomEl?.addEventListener('click', (event) => {
+      event.preventDefault();
+      setProductModalZoomState(!productModalImageZoomed);
+    });
+
+    const startProductModalPan = (event) => {
+      if (!productModalImageZoomed || !productFullscreenMediaEl) return;
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      if (!event.isPrimary) return;
+
+      productModalIsPanning = true;
+      productModalPanStartX = productModalPanX;
+      productModalPanStartY = productModalPanY;
+      productModalPointerStartX = event.clientX;
+      productModalPointerStartY = event.clientY;
+      productFullscreenModalEl?.classList.add('is-image-panning');
+      productFullscreenMediaEl.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    };
+
+    const moveProductModalPan = (event) => {
+      if (!productModalIsPanning || !productModalImageZoomed) return;
+      const deltaX = event.clientX - productModalPointerStartX;
+      const deltaY = event.clientY - productModalPointerStartY;
+      productModalPanX = productModalPanStartX + deltaX;
+      productModalPanY = productModalPanStartY + deltaY;
+      clampProductModalPan();
+      event.preventDefault();
+    };
+
+    const endProductModalPan = (event) => {
+      if (!productModalIsPanning || !productFullscreenMediaEl) return;
+      productModalIsPanning = false;
+      productFullscreenModalEl?.classList.remove('is-image-panning');
+      productFullscreenMediaEl.releasePointerCapture?.(event.pointerId);
+    };
+
+    productFullscreenMediaEl?.addEventListener('pointerdown', startProductModalPan);
+    productFullscreenMediaEl?.addEventListener('pointermove', moveProductModalPan);
+    productFullscreenMediaEl?.addEventListener('pointerup', endProductModalPan);
+    productFullscreenMediaEl?.addEventListener('pointercancel', endProductModalPan);
+    productFullscreenMediaEl?.addEventListener('lostpointercapture', () => {
+      productModalIsPanning = false;
+      productFullscreenModalEl?.classList.remove('is-image-panning');
+    });
+
+    if (!canUseNativeFullscreen() && productFullscreenNativeToggleEl) {
+      productFullscreenNativeToggleEl.hidden = true;
+    }
+
+    productFullscreenNativeToggleEl?.addEventListener('click', async (event) => {
+      event.preventDefault();
+      if (!canUseNativeFullscreen()) return;
+
+      try {
+        const fullscreenActive = document.fullscreenElement === productFullscreenModalEl;
+        if (fullscreenActive) {
+          await document.exitFullscreen();
+        } else {
+          await productFullscreenModalEl.requestFullscreen();
+        }
+      } catch {
+        // Ignore fullscreen permission/capability errors.
+      }
+    });
+
+    productFullscreenShareEl?.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (!productFullscreenShareEl) return;
+      syncProductShareLinks();
+      const nextOpenState = !productFullscreenActionsEl?.classList.contains('is-share-open');
+      productFullscreenActionsEl?.classList.toggle('is-share-open', nextOpenState);
+      if (productFullscreenShareMenuEl) {
+        productFullscreenShareMenuEl.setAttribute('aria-hidden', nextOpenState ? 'false' : 'true');
+      }
+      productFullscreenShareEl.setAttribute('aria-expanded', nextOpenState ? 'true' : 'false');
+    });
+
+    productFullscreenShareInstagramEl?.addEventListener('click', async () => {
+      if (!currentProductPreviewData?.imageSrc) return;
+      const shareUrl = getShareableProductUrl(currentProductPreviewData.imageSrc);
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+        } catch {
+          // Ignore clipboard errors; Instagram link still opens.
+        }
+      }
+      closeProductShareMenu();
+    });
+
+    productFullscreenShareWhatsAppEl?.addEventListener('click', () => {
+      closeProductShareMenu();
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!productFullscreenActionsEl?.classList.contains('is-share-open')) return;
+      const targetEl = event.target;
+      if (!(targetEl instanceof Element)) return;
+      if (targetEl.closest('.product-fullscreen-share') || targetEl.closest('.product-fullscreen-share-cluster')) {
+        return;
+      }
+      closeProductShareMenu();
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      const fullscreenActive = document.fullscreenElement === productFullscreenModalEl;
+      setProductModalNativeFullscreenState(fullscreenActive);
     });
 
     buildProductCarousels();
