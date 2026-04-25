@@ -76,6 +76,10 @@
     };
     const getActiveNavOffset = () => getNavOffset();
 
+    // Prime collapsed navbar height early so first mobile nav click
+    // doesn't use expanded menu height in scroll offset calculations.
+    refreshCollapsedNavOffset();
+
     const syncNavOffset = () => {
       document.documentElement.style.setProperty('--nav-offset', `${getNavOffset()}px`);
     };
@@ -2073,7 +2077,6 @@
       refreshCollapsedNavOffset();
       updateActiveSection();
     });
-
 
     const forms = Array.from(document.querySelectorAll('form[novalidate]'));
     forms.forEach((form) => {

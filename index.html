@@ -22,10 +22,6 @@
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/tabler-icons.min.css"
-    />
     <link rel="stylesheet" href="assets/styles.css?v=layout-pass-270" />
   </head>
   <body class="is-preloading">
@@ -47,11 +43,11 @@
             aria-expanded="false"
             aria-label="Menüyü Aç"
           >
-            <span class="navbar-toggler-icon" aria-hidden="true">
-              <span class="navbar-toggler-bar"></span>
-              <span class="navbar-toggler-bar"></span>
-              <span class="navbar-toggler-bar"></span>
-            </span>
+            <svg class="navbar-toggler-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path class="navbar-line navbar-line-top" d="M4 6h16" />
+              <path class="navbar-line navbar-line-mid" d="M4 12h16" />
+              <path class="navbar-line navbar-line-bottom" d="M4 18h16" />
+            </svg>
           </button>
         </div>
         <div class="collapse navbar-collapse" id="menu">
@@ -1207,7 +1203,7 @@
                   <div class="accordion-item">
                     <h3 class="accordion-header">
                       <button
-                        class="accordion-button fs-6 fw-bold lh-base text-dark"
+                        class="accordion-button fs-6 fw-semibold lh-base text-dark"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#q1"
@@ -1215,7 +1211,9 @@
                         aria-controls="q1"
                       >
                         Siparişim ne kadar sürede hazırlanıyor?
-                        <i class="ti ti-chevron-down faq-chevron" aria-hidden="true"></i>
+                        <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M6 9l6 6l6-6" />
+                        </svg>
                       </button>
                     </h3>
                     <div
@@ -1233,7 +1231,7 @@
                   <div class="accordion-item">
                     <h3 class="accordion-header">
                       <button
-                        class="accordion-button fs-6 fw-bold lh-base text-dark collapsed"
+                        class="accordion-button fs-6 fw-semibold lh-base text-dark collapsed"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#q2"
@@ -1241,7 +1239,9 @@
                         aria-controls="q2"
                       >
                         Kişiye özel renk veya model seçebiliyor muyum?
-                        <i class="ti ti-chevron-down faq-chevron" aria-hidden="true"></i>
+                        <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M6 9l6 6l6-6" />
+                        </svg>
                       </button>
                     </h3>
                     <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
@@ -1255,7 +1255,7 @@
                   <div class="accordion-item">
                     <h3 class="accordion-header">
                       <button
-                        class="accordion-button fs-6 fw-bold lh-base text-dark collapsed"
+                        class="accordion-button fs-6 fw-semibold lh-base text-dark collapsed"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#q3"
@@ -1263,7 +1263,9 @@
                         aria-controls="q3"
                       >
                         Türkiye geneline gönderim yapıyor musunuz?
-                        <i class="ti ti-chevron-down faq-chevron" aria-hidden="true"></i>
+                        <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M6 9l6 6l6-6" />
+                        </svg>
                       </button>
                     </h3>
                     <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
@@ -1277,7 +1279,7 @@
                   <div class="accordion-item">
                     <h3 class="accordion-header">
                       <button
-                        class="accordion-button fs-6 fw-bold lh-base text-dark collapsed"
+                        class="accordion-button fs-6 fw-semibold lh-base text-dark collapsed"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#q4"
@@ -1285,7 +1287,9 @@
                         aria-controls="q4"
                       >
                         Ürünü hediye olarak göndermek istersem yardımcı oluyor musunuz?
-                        <i class="ti ti-chevron-down faq-chevron" aria-hidden="true"></i>
+                        <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M6 9l6 6l6-6" />
+                        </svg>
                       </button>
                     </h3>
                     <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
@@ -1299,7 +1303,7 @@
                   <div class="accordion-item">
                     <h3 class="accordion-header">
                       <button
-                        class="accordion-button fs-6 fw-bold lh-base text-dark collapsed"
+                        class="accordion-button fs-6 fw-semibold lh-base text-dark collapsed"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#q5"
@@ -1307,7 +1311,9 @@
                         aria-controls="q5"
                       >
                         Sipariş vermeden önce süreç hakkında bilgi alabilir miyim?
-                        <i class="ti ti-chevron-down faq-chevron" aria-hidden="true"></i>
+                        <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M6 9l6 6l6-6" />
+                        </svg>
                       </button>
                     </h3>
                     <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
@@ -1737,7 +1743,11 @@
           <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
             <span class="small text-body-secondary">© 2026 Nova Crafts</span>
             <span class="footer-signature small text-body-secondary">
-              <span class="footer-signature-heart" aria-hidden="true"><i class="ti ti-heart"></i></span>
+              <span class="footer-signature-heart" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                  <path d="M19.5 12.572L12 20l-7.5-7.428a5 5 0 0 1 7.5-6.572a5 5 0 0 1 7.5 6.572z" />
+                </svg>
+              </span>
               <span>Kocası tarafından sevgiyle tasarlandı.</span>
             </span>
           </div>
