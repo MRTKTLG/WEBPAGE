@@ -936,7 +936,6 @@
 
     const productCarouselsState = [];
     const isProductMobileViewport = () => window.innerWidth <= 767;
-    const isProductPeekViewport = () => false;
     const shouldRunProductCarouselAutoplay = () =>
       !isProductModalOpen && !prefersReducedMotion.matches && !document.hidden;
 
@@ -972,7 +971,7 @@
 
     const getProductCloneCount = (carouselEl) => {
       const visibleCount = getProductVisibleCount(carouselEl);
-      return isProductPeekViewport() ? visibleCount + 2 : visibleCount;
+      return visibleCount;
     };
 
     const ensureProductPreviewTrigger = (cardEl) => {
@@ -1040,7 +1039,6 @@
           isAnimating: false,
           timerId: null,
           gapPx: 0,
-          dragState: null,
           isPausedByInteraction: false,
           suppressClickUntil: 0
         });
@@ -1140,8 +1138,7 @@
       if (!trackEl?.firstElementChild) return;
 
       const itemWidthPx = trackEl.firstElementChild.offsetWidth;
-      const viewportWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth || itemWidthPx;
-      const centerShiftPx = isProductPeekViewport() ? Math.max((viewportWidth - itemWidthPx) / 2, 0) : 0;
+      const centerShiftPx = 0;
       const offsetPx = (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
       const translateXPx = -Math.round(offsetPx);
 
@@ -1154,8 +1151,7 @@
       if (!trackEl?.firstElementChild) return 0;
 
       const itemWidthPx = trackEl.firstElementChild.offsetWidth;
-      const viewportWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth || itemWidthPx;
-      const centerShiftPx = isProductPeekViewport() ? Math.max((viewportWidth - itemWidthPx) / 2, 0) : 0;
+      const centerShiftPx = 0;
 
       return (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
     };
@@ -1183,7 +1179,6 @@
             isSwiping: false,
             baseOffsetPx: getProductCarouselOffsetPx(slider)
           };
-          slider.dragState = dragState;
           slider.trackEl.style.transition = 'none';
         },
         { passive: true }
@@ -1204,7 +1199,6 @@
             if (Math.abs(dragState.deltaX) < 8) return;
             if (Math.abs(dragState.deltaX) <= Math.abs(deltaY)) {
               dragState = null;
-              slider.dragState = null;
               startProductCarousels();
               return;
             }
@@ -1227,8 +1221,6 @@
         const direction = dragState.deltaX < 0 ? 1 : -1;
 
         dragState = null;
-        slider.dragState = null;
-
         if (shouldMove) {
           slider.suppressClickUntil = performance.now() + 420;
           moveProductCarousel(slider, direction);
@@ -1343,15 +1335,7 @@
 
         const gapPx = getProductTrackGapPx(trackEl);
         const carouselWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth;
-        const itemWidthPxRaw = isProductPeekViewport()
-          ? Math.min(
-              Math.max(
-                carouselWidth * (window.innerWidth <= 430 ? 0.82 : 0.78),
-                window.innerWidth <= 430 ? 252 : 236
-              ),
-              Math.max(carouselWidth - gapPx * 1.15, 0)
-            )
-          : Math.max((carouselWidth - gapPx * (visibleCount - 1)) / visibleCount, 0);
+        const itemWidthPxRaw = Math.max((carouselWidth - gapPx * (visibleCount - 1)) / visibleCount, 0);
         const itemWidthPx = Math.round(itemWidthPxRaw);
         slider.carouselEl.style.setProperty('--product-carousel-item-width', `${itemWidthPx}px`);
         trackEl.querySelectorAll('.product-carousel-item').forEach((itemEl) => {
@@ -1654,9 +1638,7 @@
       if (!triggerEl) return;
       if (!cardEl?.closest('.product-carousel')) return;
       if (event.defaultPrevented) return;
-      if (document.body.classList.contains('is-product-carousel-dragging')) return;
       const carouselEl = cardEl.closest('.product-carousel');
-      if (carouselEl?.classList.contains('is-dragging')) return;
       const slider = getProductSliderState(carouselEl);
       if (slider && slider.suppressClickUntil > performance.now()) return;
 
@@ -2098,12 +2080,20 @@
       activeSectionHash = href;
       setActiveNavLink(href);
       if (isMobileNavInteraction) {
+        const mobileDurationMs = 900;
         navScrollUserInterrupted = false;
-        if (lenis) {
-          lenis.scrollTo(nextTop, { immediate: true, force: true });
-        } else {
-          window.scrollTo({ top: nextTop, behavior: 'auto' });
+        lenis?.stop?.();
+        window.scrollTo({ top: nextTop, behavior: 'smooth' });
+        if (navScrollSnapTimerId) {
+          window.clearTimeout(navScrollSnapTimerId);
         }
+        navScrollSnapTimerId = window.setTimeout(() => {
+          if (!navScrollUserInterrupted) {
+            window.scrollTo({ top: resolveTargetTop(), behavior: 'auto' });
+          }
+          lenis?.start?.();
+          navScrollSnapTimerId = null;
+        }, mobileDurationMs);
         clearFrozenNavOffset();
       } else if (lenis) {
         const duration = 1.1;
