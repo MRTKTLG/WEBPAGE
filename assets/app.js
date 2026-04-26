@@ -41,10 +41,12 @@
         ? new window.Lenis({
             duration: 1.85,
             smoothWheel: true,
-            smoothTouch: true,
             wheelMultiplier: 0.95,
             touchMultiplier: 0.9,
-            lerp: 0.075
+            lerp: 0.075,
+            // Let touch gestures use native scrolling so mobile Safari
+            // can keep pull-to-refresh and top-edge overscroll behavior.
+            virtualScroll: ({ event }) => !event.type.startsWith('touch')
           })
         : null;
     const isMobileViewport = () => window.innerWidth < 992;
