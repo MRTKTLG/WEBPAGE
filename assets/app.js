@@ -111,6 +111,43 @@
         clearFrozenNavOffset();
       }, delayMs);
     };
+    const waitForStableNavbar = async (stableFrameCount = 3, maxFrames = 24) => {
+      let stableFrames = 0;
+      let lastHeight = measureNavbarHeight();
+      for (let frame = 0; frame < maxFrames; frame += 1) {
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(resolve);
+        });
+        refreshCollapsedNavOffset();
+        syncNavOffset();
+        const nextHeight = measureNavbarHeight();
+        if (Math.abs(nextHeight - lastHeight) <= 1) {
+          stableFrames += 1;
+        } else {
+          stableFrames = 0;
+        }
+        lastHeight = nextHeight;
+        if (stableFrames >= stableFrameCount) break;
+      }
+    };
+    const waitForStableElementTop = async (element, stableFrameCount = 3, maxFrames = 24) => {
+      if (!element) return;
+      let stableFrames = 0;
+      let lastTop = getDocumentTop(element);
+      for (let frame = 0; frame < maxFrames; frame += 1) {
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(resolve);
+        });
+        const nextTop = getDocumentTop(element);
+        if (Math.abs(nextTop - lastTop) <= 1) {
+          stableFrames += 1;
+        } else {
+          stableFrames = 0;
+        }
+        lastTop = nextTop;
+        if (stableFrames >= stableFrameCount) break;
+      }
+    };
     window.addEventListener(
       'wheel',
       () => {
@@ -1435,19 +1472,9 @@
       productCarousels.forEach((carouselEl) => {
         const productCards = Array.from(carouselEl.querySelectorAll('.product-card'));
         if (!productCards.length) return;
-
+        carouselEl.style.removeProperty('--product-card-height');
         productCards.forEach((card) => {
-          card.style.height = 'auto';
-        });
-
-        const maxHeight = Math.max(
-          ...productCards.map((card) => Math.ceil(card.getBoundingClientRect().height))
-        );
-
-        carouselEl.style.setProperty('--product-card-height', `${maxHeight}px`);
-
-        productCards.forEach((card) => {
-          card.style.height = `${maxHeight}px`;
+          card.style.removeProperty('height');
         });
       });
     };
@@ -2010,92 +2037,81 @@
         if (!(currentAnchor instanceof HTMLAnchorElement)) return;
 
         const href = currentAnchor.getAttribute('href');
-      if (!href || href.length < 2) return;
+        if (!href || href.length < 2) return;
 
-      const target = document.querySelector(href);
-      if (!target) return;
+        const scrollTargetSelector = currentAnchor.dataset.scrollTarget || href;
+        const target = document.querySelector(scrollTargetSelector);
+        if (!target) return;
 
-      event.preventDefault();
-      syncNavOffset();
-      const isHomeTarget = href === '#anasayfa';
-      const targetViewportTop = isHomeTarget ? 0 : target.getBoundingClientRect().top;
-      const currentVisibleNavOffset = getActiveNavOffset();
-      const isCurrentTargetAligned = isHomeTarget
-        ? Math.abs(window.scrollY) <= 6
-        : Math.abs(targetViewportTop - currentVisibleNavOffset) <= 6;
-      const isCurrentLinkActive =
-        currentAnchor.classList.contains('nav-link') &&
-        (currentAnchor.classList.contains('is-active') || href === activeSectionHash);
+        event.preventDefault();
+        syncNavOffset();
+        const isHomeTarget = href === '#anasayfa';
+        const targetViewportTop = isHomeTarget ? 0 : target.getBoundingClientRect().top;
+        const currentVisibleNavOffset = getActiveNavOffset();
+        const isCurrentTargetAligned = isHomeTarget
+          ? Math.abs(window.scrollY) <= 6
+          : Math.abs(targetViewportTop - currentVisibleNavOffset) <= 6;
+        const isCurrentLinkActive =
+          currentAnchor.classList.contains('nav-link') &&
+          (currentAnchor.classList.contains('is-active') || href === activeSectionHash);
 
-      if (isCurrentLinkActive && isCurrentTargetAligned) {
-        await closeNavMenuIfNeeded();
-        return;
-      }
-
-      const isMobileNavInteraction = isMobileViewport();
-      const clickScrollY = window.scrollY;
-      if (!isMobileNavInteraction) {
-        freezeNavOffset(getNavOffset());
-      } else {
-        clearFrozenNavOffset();
-      }
-
-      if (currentAnchor instanceof HTMLElement) {
-        currentAnchor.blur();
-      }
-
-      await closeNavMenuIfNeeded();
-      refreshCollapsedNavOffset();
-      syncNavOffset();
-      if (isMobileNavInteraction) {
-        if (lenis?.scrollTo) {
-          lenis.scrollTo(clickScrollY, { immediate: true, force: true });
-        } else {
-          window.scrollTo(0, clickScrollY);
+        if (isCurrentLinkActive && isCurrentTargetAligned) {
+          await closeNavMenuIfNeeded();
+          return;
         }
-        await new Promise((resolve) => {
-          window.requestAnimationFrame(() => {
-            window.requestAnimationFrame(resolve);
-          });
-        });
+
+        const isMobileNavInteraction = isMobileViewport();
+        if (!isMobileNavInteraction) {
+          freezeNavOffset(getNavOffset());
+        } else {
+          clearFrozenNavOffset();
+        }
+
+        if (currentAnchor instanceof HTMLElement) {
+          currentAnchor.blur();
+        }
+
+        await closeNavMenuIfNeeded();
         refreshCollapsedNavOffset();
         syncNavOffset();
-      }
-      const focusedEl = document.activeElement;
-      if (
-        focusedEl instanceof HTMLElement &&
-        navCollapseEl?.contains(focusedEl)
-      ) {
-        focusedEl.blur();
-      }
-
-      const resolveTargetTop = () => {
-        if (isHomeTarget) return 0;
-        const targetDocumentTop = getDocumentTop(target);
-        const targetOffset = getNavOffset();
-        return Math.max(targetDocumentTop - targetOffset, 0);
-      };
-      const nextTop = resolveTargetTop();
-
-      activeSectionHash = href;
-      setActiveNavLink(href);
-      if (isMobileNavInteraction) {
-        const mobileDurationMs = 900;
-        navScrollUserInterrupted = false;
-        lenis?.stop?.();
-        window.scrollTo({ top: nextTop, behavior: 'smooth' });
-        if (navScrollSnapTimerId) {
-          window.clearTimeout(navScrollSnapTimerId);
+        if (isMobileNavInteraction) {
+          await waitForStableNavbar();
+          await waitForStableElementTop(target);
         }
-        navScrollSnapTimerId = window.setTimeout(() => {
-          if (!navScrollUserInterrupted) {
-            window.scrollTo({ top: resolveTargetTop(), behavior: 'auto' });
+        const focusedEl = document.activeElement;
+        if (focusedEl instanceof HTMLElement && navCollapseEl?.contains(focusedEl)) {
+          focusedEl.blur();
+        }
+
+        const resolveTargetTop = () => {
+          if (isHomeTarget) return 0;
+          const targetDocumentTop = getDocumentTop(target);
+          const targetOffset = getNavOffset();
+          return Math.max(targetDocumentTop - targetOffset, 0);
+        };
+        const nextTop = resolveTargetTop();
+
+        activeSectionHash = href;
+        setActiveNavLink(href);
+        if (isMobileNavInteraction) {
+          const mobileDuration = 0.95;
+          navScrollUserInterrupted = false;
+          freezeNavOffset(getNavOffset());
+          if (navScrollSnapTimerId) {
+            window.clearTimeout(navScrollSnapTimerId);
+            navScrollSnapTimerId = null;
           }
-          lenis?.start?.();
-          navScrollSnapTimerId = null;
-        }, mobileDurationMs);
-        clearFrozenNavOffset();
-      } else if (lenis) {
+          if (lenis?.scrollTo) {
+            lenis.scrollTo(nextTop, {
+              duration: mobileDuration,
+              easing: (t) => 1 - Math.pow(1 - t, 3.2),
+              force: true
+            });
+          } else {
+            window.scrollTo({ top: nextTop, behavior: 'smooth' });
+          }
+          scheduleNavOffsetUnfreeze(Math.round(mobileDuration * 1000 + 220));
+        } else if (lenis) {
         const duration = 1.1;
         navScrollUserInterrupted = false;
         lenis.scrollTo(nextTop, {

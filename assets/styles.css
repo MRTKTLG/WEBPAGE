@@ -82,6 +82,7 @@
   --content-edge: max(1rem, calc((100vw - 1040px) / 2 + var(--container-gutter)));
   --hero-slide-duration: 600ms;
   --nav-offset: 84px;
+  --product-card-height-fixed: clamp(24rem, 44vw, 29rem);
 }
 
 * {
@@ -214,6 +215,13 @@ html.lenis body {
 
 #smooth-content {
   min-height: 100vh;
+}
+
+@supports (min-height: 100svh) {
+  #smooth-wrapper,
+  #smooth-content {
+    min-height: 100svh;
+  }
 }
 
 button,
@@ -498,6 +506,14 @@ footer .container {
 
 main > section,
 .hero-wrap {
+  scroll-margin-top: var(--nav-offset);
+}
+
+.section-anchor {
+  display: block;
+  height: 0;
+  margin: 0;
+  padding: 0;
   scroll-margin-top: var(--nav-offset);
 }
 
@@ -2352,8 +2368,8 @@ textarea.form-control,
 
 .product-carousel .carousel-inner {
   overflow: hidden;
-  height: var(--product-card-height, auto);
-  min-height: var(--product-card-height, auto);
+  height: var(--product-card-height, var(--product-card-height-fixed));
+  min-height: var(--product-card-height, var(--product-card-height-fixed));
   width: 100%;
   cursor: default;
 }
@@ -2370,7 +2386,7 @@ textarea.form-control,
 .product-carousel-item {
   flex: 0 0 var(--product-carousel-item-width, 240px);
   width: var(--product-carousel-item-width, 240px);
-  height: var(--product-card-height, auto);
+  height: var(--product-card-height, var(--product-card-height-fixed));
   min-width: 0;
   min-height: 100%;
   display: flex;
@@ -3055,6 +3071,10 @@ footer .text-body-secondary,
 }
 
 @media (max-width: 991px) {
+  :root {
+    --product-card-height-fixed: clamp(23rem, 66vw, 28rem);
+  }
+
   #heroCarousel,
   #heroCarousel .carousel-inner,
   #heroCarousel .carousel-item {
@@ -3134,6 +3154,7 @@ footer .text-body-secondary,
 @media (max-width: 767px) {
   :root {
     --mobile-round-control-size: calc(var(--icon-button-size) + 0.9rem);
+    --product-card-height-fixed: clamp(22.5rem, 96vw, 27rem);
   }
 
   main > section {

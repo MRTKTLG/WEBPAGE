@@ -22,7 +22,7 @@
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="assets/styles.css?v=layout-pass-270" />
+    <link rel="stylesheet" href="assets/styles.css?v=layout-pass-273" />
   </head>
   <body class="is-preloading">
     <div class="page-preloader" aria-hidden="true">
@@ -33,7 +33,12 @@
     <nav class="navbar navbar-expand-lg">
       <div class="container">
         <div class="navbar-topbar">
-          <a class="navbar-brand fw-bold" href="#anasayfa">Nova Crafts</a>
+          <a
+            class="navbar-brand fw-bold"
+            href="#anasayfa"
+            data-scroll-target="#anasayfa-anchor"
+            >Nova Crafts</a
+          >
           <button
             class="navbar-toggler"
             type="button"
@@ -52,11 +57,27 @@
         </div>
         <div class="collapse navbar-collapse" id="menu">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="#anasayfa">Anasayfa</a></li>
-            <li class="nav-item"><a class="nav-link" href="#hakkimizda">Hakkımda</a></li>
-            <li class="nav-item"><a class="nav-link" href="#urunler">Ürünler</a></li>
-            <li class="nav-item"><a class="nav-link" href="#sss">SSS</a></li>
-            <li class="nav-item"><a class="nav-link" href="#iletisim">İletişim</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="#anasayfa" data-scroll-target="#anasayfa-anchor"
+                >Anasayfa</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#hakkimizda" data-scroll-target="#hakkimizda-anchor"
+                >Hakkımda</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#urunler" data-scroll-target="#urunler-anchor">Ürünler</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#sss" data-scroll-target="#sss-anchor">SSS</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#iletisim" data-scroll-target="#iletisim-anchor"
+                >İletişim</a
+              >
+            </li>
           </ul>
         </div>
       </div>
@@ -64,6 +85,7 @@
 
     <div id="smooth-wrapper">
       <div id="smooth-content">
+        <div id="anasayfa-anchor" class="section-anchor" aria-hidden="true"></div>
         <header id="anasayfa" class="hero-wrap border-bottom">
           <div
             id="heroCarousel"
@@ -200,6 +222,7 @@
         </header>
 
         <main>
+          <div id="hakkimizda-anchor" class="section-anchor" aria-hidden="true"></div>
           <section id="hakkimizda" class="section-ghost">
             <div class="container">
               <div class="ghost-title-wrap">
@@ -353,6 +376,7 @@
             </div>
           </section>
 
+          <div id="urunler-anchor" class="section-anchor" aria-hidden="true"></div>
           <section id="urunler" class="section-ghost">
             <div class="container">
               <div class="mb-4">
@@ -1187,6 +1211,7 @@
             </div>
           </section>
 
+          <div id="sss-anchor" class="section-anchor" aria-hidden="true"></div>
           <section id="sss" class="section-ghost">
             <div class="container">
               <div class="faq-shell">
@@ -1679,6 +1704,7 @@
             </div>
           </section>
 
+          <div id="iletisim-anchor" class="section-anchor" aria-hidden="true"></div>
           <section id="iletisim" class="bg-light">
             <div class="container">
               <div class="row g-4 align-items-start">
@@ -1882,6 +1908,6 @@
       integrity="sha384-kdY9hFBPoAPpxcrLihsO3APivFOxtQwSeYdzFD5CIIfLurwhdMrEHhkQxZJDkxgk"
       crossorigin="anonymous"
     ></script>
-    <script src="assets/app.js?v=layout-pass-273"></script>
+    <script src="assets/app.js?v=layout-pass-278"></script>
   </body>
 </html>
