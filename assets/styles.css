@@ -3180,8 +3180,8 @@ footer .text-body-secondary,
   #heroCarousel,
   #heroCarousel .carousel-inner,
   #heroCarousel .carousel-item {
-    height: 540px;
-    min-height: 540px;
+    height: max(540px, calc(100dvh - var(--nav-offset)));
+    min-height: max(540px, calc(100dvh - var(--nav-offset)));
   }
 
   .hero-media {
