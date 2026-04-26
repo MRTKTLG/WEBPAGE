@@ -1148,7 +1148,12 @@ main > section {
 }
 
 #hakkimizda {
-  background: rgba(246, 248, 251, 0.92);
+  background: linear-gradient(
+    115deg,
+    rgba(255, 248, 251, 0.94) 0%,
+    rgba(246, 240, 248, 0.94) 46%,
+    rgba(238, 248, 255, 0.94) 100%
+  );
 }
 
 #urunler {
@@ -3342,17 +3347,6 @@ footer .text-body-secondary,
   .journey-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
-  }
-
-  #hakkimizda {
-    margin-top: -1px;
-    padding-top: 1.1rem !important;
-    background: linear-gradient(
-      180deg,
-      rgba(239, 230, 239, 0.97) 0%,
-      rgba(246, 248, 251, 0.92) 18%,
-      rgba(246, 248, 251, 0.92) 100%
-    );
   }
 
   .journey-card {
