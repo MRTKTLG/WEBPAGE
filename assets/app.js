@@ -148,6 +148,41 @@
         if (stableFrames >= stableFrameCount) break;
       }
     };
+    const animateWindowScrollTo = (targetTop, durationMs = 950) =>
+      new Promise((resolve) => {
+        const startTop = window.scrollY;
+        const clampedTarget = Math.max(Math.round(targetTop), 0);
+        const distance = clampedTarget - startTop;
+        if (Math.abs(distance) <= 1 || durationMs <= 0) {
+          window.scrollTo(0, clampedTarget);
+          resolve();
+          return;
+        }
+
+        const startTime = performance.now();
+        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3.2);
+        const step = (now) => {
+          if (navScrollUserInterrupted) {
+            resolve();
+            return;
+          }
+
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / durationMs, 1);
+          const eased = easeOutCubic(progress);
+          const nextTop = Math.round(startTop + distance * eased);
+          window.scrollTo(0, nextTop);
+
+          if (progress >= 1) {
+            window.scrollTo(0, clampedTarget);
+            resolve();
+            return;
+          }
+          window.requestAnimationFrame(step);
+        };
+
+        window.requestAnimationFrame(step);
+      });
     window.addEventListener(
       'wheel',
       () => {
@@ -2101,15 +2136,12 @@
             window.clearTimeout(navScrollSnapTimerId);
             navScrollSnapTimerId = null;
           }
+          lenis?.stop?.();
+          await animateWindowScrollTo(nextTop, Math.round(mobileDuration * 1000));
           if (lenis?.scrollTo) {
-            lenis.scrollTo(nextTop, {
-              duration: mobileDuration,
-              easing: (t) => 1 - Math.pow(1 - t, 3.2),
-              force: true
-            });
-          } else {
-            window.scrollTo({ top: nextTop, behavior: 'smooth' });
+            lenis.scrollTo(window.scrollY, { immediate: true, force: true });
           }
+          lenis?.start?.();
           scheduleNavOffsetUnfreeze(Math.round(mobileDuration * 1000 + 220));
         } else if (lenis) {
         const duration = 1.1;
