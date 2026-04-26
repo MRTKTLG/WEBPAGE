@@ -597,7 +597,7 @@
     if (heroCarousel) {
       bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
         interval: HERO_CAROUSEL_INTERVAL_MS,
-        touch: true,
+        touch: !isMobileViewport(),
         ride: 'carousel',
         pause: false,
         wrap: true
