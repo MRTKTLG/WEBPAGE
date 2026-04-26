@@ -110,7 +110,6 @@ body {
 html {
   scrollbar-gutter: stable;
   overflow-y: auto;
-  overscroll-behavior-y: none;
 }
 
 html.is-modal-scroll-locked,
@@ -3180,8 +3179,8 @@ footer .text-body-secondary,
   #heroCarousel,
   #heroCarousel .carousel-inner,
   #heroCarousel .carousel-item {
-    height: max(540px, calc(100dvh - var(--nav-offset)));
-    min-height: max(540px, calc(100dvh - var(--nav-offset)));
+    height: 540px;
+    min-height: 540px;
   }
 
   .hero-media {
@@ -3337,6 +3336,17 @@ footer .text-body-secondary,
   .journey-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
+  }
+
+  #hakkimizda {
+    margin-top: -1px;
+    padding-top: 2.75rem !important;
+    background: linear-gradient(
+      180deg,
+      rgba(244, 236, 244, 0.96) 0%,
+      rgba(246, 248, 251, 0.92) 22%,
+      rgba(246, 248, 251, 0.92) 100%
+    );
   }
 
   .journey-card {
