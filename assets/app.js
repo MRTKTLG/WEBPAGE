@@ -2153,6 +2153,45 @@
     const clickableNavAnchors = Array.from(
       document.querySelectorAll('a.navbar-brand[href^="#"], a.nav-link[href^="#"]')
     );
+    let navAnchorSettleToken = 0;
+    const alignAnchorTarget = (target, isHomeTarget) => {
+      if (!target) return true;
+      refreshCollapsedNavOffset();
+      syncNavOffset();
+      const desiredTop = isHomeTarget
+        ? 0
+        : Math.max(Math.round(getDocumentTop(target) - getNavOffset()), 0);
+      const delta = desiredTop - window.scrollY;
+      if (Math.abs(delta) <= 1) return true;
+      if (lenis?.scrollTo) {
+        lenis.scrollTo(desiredTop, {
+          immediate: true,
+          force: true
+        });
+      } else {
+        window.scrollTo({
+          top: desiredTop,
+          behavior: 'auto'
+        });
+      }
+      return false;
+    };
+    const scheduleAnchorSettle = ({ target, isHomeTarget, isMobileNavInteraction, durationSeconds }) => {
+      const token = ++navAnchorSettleToken;
+      const startDelayMs = Math.max(Math.round(durationSeconds * 1000) + 120, 240);
+      const maxChecks = isMobileNavInteraction ? 14 : 10;
+      let checks = 0;
+      const runCheck = () => {
+        if (token !== navAnchorSettleToken) return;
+        checks += 1;
+        const settled = alignAnchorTarget(target, isHomeTarget);
+        updateActiveSection();
+        if (settled && checks >= 2) return;
+        if (checks >= maxChecks) return;
+        window.setTimeout(runCheck, isMobileNavInteraction ? 110 : 90);
+      };
+      window.setTimeout(runCheck, startDelayMs);
+    };
     clickableNavAnchors.forEach((anchor) => {
       anchor.addEventListener('click', async (event) => {
         const currentAnchor = event.currentTarget;
@@ -2165,6 +2204,7 @@
         if (!target) return;
 
         event.preventDefault();
+        navAnchorSettleToken += 1;
         syncNavOffset();
         const isHomeTarget = href === '#anasayfa';
         const getLiveNavOffset = () =>
@@ -2207,21 +2247,27 @@
 
         activeSectionHash = href;
         setActiveNavLink(href);
-        const duration = isMobileNavInteraction ? 0.95 : 1.05;
+        const duration = isMobileNavInteraction ? 1 : 1.05;
         if (lenis?.scrollTo) {
           lenis.scrollTo(nextTop, {
             duration,
             easing: (t) => 1 - Math.pow(1 - t, 3.2),
             force: true,
-            immediate: isMobileNavInteraction
+            immediate: false
           });
         } else {
           window.scrollTo({
             top: nextTop,
-            behavior: isMobileNavInteraction ? 'auto' : 'smooth'
+            behavior: 'smooth'
           });
         }
         window.history.replaceState(null, '', href);
+        scheduleAnchorSettle({
+          target,
+          isHomeTarget,
+          isMobileNavInteraction,
+          durationSeconds: duration
+        });
       });
     });
 
