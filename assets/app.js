@@ -562,7 +562,9 @@
     const updateActiveSection = () => {
       const navSections = getNavSections();
       const firstHash = navSections[0]?.hash ?? navLinks[0]?.getAttribute('href') ?? '';
-      const scrollMarker = window.scrollY + getActiveNavOffset() + 1;
+      // Small tolerance avoids boundary flicker when smooth scrolling
+      // lands a few pixels above a section start on mobile.
+      const scrollMarker = window.scrollY + getActiveNavOffset() + 12;
       let currentHash = firstHash;
 
       navSections.forEach((section) => {
@@ -2195,33 +2197,29 @@
           focusedEl.blur();
         }
 
+        const resolveTargetTop = () => {
+          if (isHomeTarget) return 0;
+          const targetDocumentTop = getDocumentTop(target);
+          const targetOffset = getNavOffset();
+          return Math.max(Math.round(targetDocumentTop - targetOffset), 0);
+        };
+        const nextTop = resolveTargetTop();
+
         activeSectionHash = href;
         setActiveNavLink(href);
         const duration = isMobileNavInteraction ? 0.95 : 1.05;
         if (lenis?.scrollTo) {
-          if (isHomeTarget) {
-            lenis.scrollTo(0, {
-              duration,
-              easing: (t) => 1 - Math.pow(1 - t, 3.2),
-              force: true
-            });
-          } else {
-            lenis.scrollTo(target, {
-              offset: getLiveNavOffset() * -1,
-              duration,
-              easing: (t) => 1 - Math.pow(1 - t, 3.2),
-              force: true
-            });
-          }
+          lenis.scrollTo(nextTop, {
+            duration,
+            easing: (t) => 1 - Math.pow(1 - t, 3.2),
+            force: true,
+            immediate: isMobileNavInteraction
+          });
         } else {
-          if (isHomeTarget) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else {
-            const targetDocumentTop = getDocumentTop(target);
-            const targetOffset = getLiveNavOffset();
-            const nextTop = Math.max(targetDocumentTop - targetOffset, 0);
-            window.scrollTo({ top: nextTop, behavior: 'smooth' });
-          }
+          window.scrollTo({
+            top: nextTop,
+            behavior: isMobileNavInteraction ? 'auto' : 'smooth'
+          });
         }
         window.history.replaceState(null, '', href);
       });
