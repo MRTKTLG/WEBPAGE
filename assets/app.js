@@ -97,6 +97,80 @@
         if (stableFrames >= stableFrameCount) break;
       }
     };
+    const nextFrame = () =>
+      new Promise((resolve) => {
+        window.requestAnimationFrame(resolve);
+      });
+    const waitForImageDecode = (imageEl, timeoutMs = 420) =>
+      new Promise((resolve) => {
+        if (!(imageEl instanceof HTMLImageElement)) {
+          resolve();
+          return;
+        }
+        if (imageEl.complete && imageEl.naturalWidth > 0) {
+          if (typeof imageEl.decode === 'function') {
+            imageEl.decode().catch(() => {}).finally(resolve);
+            return;
+          }
+          resolve();
+          return;
+        }
+        let settled = false;
+        const cleanup = () => {
+          imageEl.removeEventListener('load', onSettled);
+          imageEl.removeEventListener('error', onSettled);
+          window.clearTimeout(timeoutId);
+        };
+        const onSettled = () => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          resolve();
+        };
+        imageEl.addEventListener('load', onSettled, { once: true });
+        imageEl.addEventListener('error', onSettled, { once: true });
+        const timeoutId = window.setTimeout(onSettled, timeoutMs);
+      });
+    const waitForPrecedingMediaStability = async (targetEl, timeoutMs = 420) => {
+      if (!targetEl) return;
+      const targetTop = getDocumentTop(targetEl);
+      const candidateImages = Array.from(document.images).filter((imageEl) => {
+        if (!(imageEl instanceof HTMLImageElement)) return false;
+        const rect = imageEl.getBoundingClientRect();
+        const imageTop = rect.top + window.scrollY;
+        const imageBottom = imageTop + Math.max(rect.height, 1);
+        return imageBottom <= targetTop + 2;
+      });
+      if (!candidateImages.length) return;
+      await Promise.race([
+        Promise.all(candidateImages.map((imageEl) => waitForImageDecode(imageEl, timeoutMs))),
+        new Promise((resolve) => window.setTimeout(resolve, timeoutMs))
+      ]);
+      await nextFrame();
+      await nextFrame();
+    };
+    const waitForLayoutStability = async (targetEl, stableFrameCount = 3, maxFrames = 22) => {
+      if (!targetEl) return;
+      let stableFrames = 0;
+      let lastScrollHeight = document.documentElement.scrollHeight;
+      let lastTargetTop = getDocumentTop(targetEl);
+      for (let frame = 0; frame < maxFrames; frame += 1) {
+        await nextFrame();
+        const nextScrollHeight = document.documentElement.scrollHeight;
+        const nextTargetTop = getDocumentTop(targetEl);
+        const isStable =
+          Math.abs(nextScrollHeight - lastScrollHeight) <= 1 &&
+          Math.abs(nextTargetTop - lastTargetTop) <= 1;
+        if (isStable) {
+          stableFrames += 1;
+        } else {
+          stableFrames = 0;
+        }
+        lastScrollHeight = nextScrollHeight;
+        lastTargetTop = nextTargetTop;
+        if (stableFrames >= stableFrameCount) break;
+      }
+    };
 
     const hidePreloader = () => {
       if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
@@ -2232,6 +2306,8 @@
         if (isMobileNavInteraction) {
           await waitForStableNavbar();
         }
+        await waitForPrecedingMediaStability(target);
+        await waitForLayoutStability(target);
         const focusedEl = document.activeElement;
         if (focusedEl instanceof HTMLElement && navCollapseEl?.contains(focusedEl)) {
           focusedEl.blur();
@@ -2270,6 +2346,57 @@
         });
       });
     });
+    const alignFromCurrentHash = async () => {
+      const hash = window.location.hash;
+      if (!hash || hash.length < 2) return;
+      const target = document.querySelector(hash);
+      if (!target) return;
+      const isHomeTarget = hash === '#anasayfa';
+      const isMobileNavInteraction = isMobileViewport();
+      await closeNavMenuIfNeeded();
+      refreshCollapsedNavOffset();
+      syncNavOffset();
+      if (isMobileNavInteraction) {
+        await waitForStableNavbar();
+      }
+      await waitForPrecedingMediaStability(target);
+      await waitForLayoutStability(target);
+      const nextTop = isHomeTarget
+        ? 0
+        : Math.max(Math.round(getDocumentTop(target) - getNavOffset()), 0);
+      const duration = isMobileNavInteraction ? 1 : 1.05;
+      if (lenis?.scrollTo) {
+        lenis.scrollTo(nextTop, {
+          duration,
+          easing: (t) => 1 - Math.pow(1 - t, 3.2),
+          force: true,
+          immediate: false
+        });
+      } else {
+        window.scrollTo({
+          top: nextTop,
+          behavior: 'smooth'
+        });
+      }
+      activeSectionHash = hash;
+      setActiveNavLink(hash);
+      scheduleAnchorSettle({
+        target,
+        isHomeTarget,
+        isMobileNavInteraction,
+        durationSeconds: duration
+      });
+    };
+    window.addEventListener('hashchange', () => {
+      alignFromCurrentHash().catch(() => {});
+    });
+    window.addEventListener(
+      'load',
+      () => {
+        alignFromCurrentHash().catch(() => {});
+      },
+      { once: true }
+    );
 
     navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
       refreshCollapsedNavOffset();
