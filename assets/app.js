@@ -2098,16 +2098,11 @@
       activeSectionHash = href;
       setActiveNavLink(href);
       if (isMobileNavInteraction) {
-        const mobileDuration = 0.95;
         navScrollUserInterrupted = false;
         if (lenis) {
-          lenis.scrollTo(nextTop, {
-            duration: mobileDuration,
-            easing: (t) => 1 - Math.pow(1 - t, 3.2),
-            force: true
-          });
+          lenis.scrollTo(nextTop, { immediate: true, force: true });
         } else {
-          window.scrollTo({ top: nextTop, behavior: 'smooth' });
+          window.scrollTo({ top: nextTop, behavior: 'auto' });
         }
         clearFrozenNavOffset();
       } else if (lenis) {
