@@ -50,10 +50,6 @@
 
     const isNavMenuExpanded = () =>
       navCollapseEl?.classList.contains('show') || navCollapseEl?.classList.contains('collapsing');
-    let frozenNavOffsetPx = null;
-    let navOffsetFreezeTimerId = null;
-    let navScrollSnapTimerId = null;
-    let navScrollUserInterrupted = false;
     let collapsedNavOffsetPx = 0;
     const measureNavbarHeight = () => {
       if (!navbarEl) return 0;
@@ -68,12 +64,7 @@
       if (collapsedNavOffsetPx > 0) return collapsedNavOffsetPx;
       return measureNavbarHeight();
     };
-    const getNavOffset = () => {
-      if (Number.isFinite(frozenNavOffsetPx)) {
-        return Math.max(Number(frozenNavOffsetPx), 0);
-      }
-      return getBaseNavOffset();
-    };
+    const getNavOffset = () => getBaseNavOffset();
     const getActiveNavOffset = () => getNavOffset();
 
     // Prime collapsed navbar height early so first mobile nav click
@@ -84,33 +75,6 @@
       document.documentElement.style.setProperty('--nav-offset', `${getNavOffset()}px`);
     };
 
-    const clearFrozenNavOffset = () => {
-      if (navOffsetFreezeTimerId) {
-        window.clearTimeout(navOffsetFreezeTimerId);
-        navOffsetFreezeTimerId = null;
-      }
-      if (navScrollSnapTimerId) {
-        window.clearTimeout(navScrollSnapTimerId);
-        navScrollSnapTimerId = null;
-      }
-      navScrollUserInterrupted = false;
-      frozenNavOffsetPx = null;
-      syncNavOffset();
-    };
-
-    const freezeNavOffset = (offsetPx) => {
-      frozenNavOffsetPx = Math.max(Math.round(offsetPx), 0);
-      syncNavOffset();
-    };
-
-    const scheduleNavOffsetUnfreeze = (delayMs) => {
-      if (navOffsetFreezeTimerId) {
-        window.clearTimeout(navOffsetFreezeTimerId);
-      }
-      navOffsetFreezeTimerId = window.setTimeout(() => {
-        clearFrozenNavOffset();
-      }, delayMs);
-    };
     const waitForStableNavbar = async (stableFrameCount = 3, maxFrames = 24) => {
       let stableFrames = 0;
       let lastHeight = measureNavbarHeight();
@@ -130,73 +94,6 @@
         if (stableFrames >= stableFrameCount) break;
       }
     };
-    const waitForStableElementTop = async (element, stableFrameCount = 3, maxFrames = 24) => {
-      if (!element) return;
-      let stableFrames = 0;
-      let lastTop = getDocumentTop(element);
-      for (let frame = 0; frame < maxFrames; frame += 1) {
-        await new Promise((resolve) => {
-          window.requestAnimationFrame(resolve);
-        });
-        const nextTop = getDocumentTop(element);
-        if (Math.abs(nextTop - lastTop) <= 1) {
-          stableFrames += 1;
-        } else {
-          stableFrames = 0;
-        }
-        lastTop = nextTop;
-        if (stableFrames >= stableFrameCount) break;
-      }
-    };
-    const animateWindowScrollTo = (targetTop, durationMs = 950) =>
-      new Promise((resolve) => {
-        const startTop = window.scrollY;
-        const clampedTarget = Math.max(Math.round(targetTop), 0);
-        const distance = clampedTarget - startTop;
-        if (Math.abs(distance) <= 1 || durationMs <= 0) {
-          window.scrollTo(0, clampedTarget);
-          resolve();
-          return;
-        }
-
-        const startTime = performance.now();
-        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3.2);
-        const step = (now) => {
-          if (navScrollUserInterrupted) {
-            resolve();
-            return;
-          }
-
-          const elapsed = now - startTime;
-          const progress = Math.min(elapsed / durationMs, 1);
-          const eased = easeOutCubic(progress);
-          const nextTop = Math.round(startTop + distance * eased);
-          window.scrollTo(0, nextTop);
-
-          if (progress >= 1) {
-            window.scrollTo(0, clampedTarget);
-            resolve();
-            return;
-          }
-          window.requestAnimationFrame(step);
-        };
-
-        window.requestAnimationFrame(step);
-      });
-    window.addEventListener(
-      'wheel',
-      () => {
-        navScrollUserInterrupted = true;
-      },
-      { passive: true }
-    );
-    window.addEventListener(
-      'touchmove',
-      () => {
-        navScrollUserInterrupted = true;
-      },
-      { passive: true }
-    );
 
     const hidePreloader = () => {
       if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
@@ -2074,21 +1971,20 @@
         const href = currentAnchor.getAttribute('href');
         if (!href || href.length < 2) return;
 
-        const scrollTargetSelector = currentAnchor.dataset.scrollTarget || href;
-        const target = document.querySelector(scrollTargetSelector);
+        const target = document.querySelector(href);
         if (!target) return;
 
         event.preventDefault();
         syncNavOffset();
         const isHomeTarget = href === '#anasayfa';
+        const getLiveNavOffset = () =>
+          Math.max(Math.round(navbarEl?.getBoundingClientRect().height || 0), 0);
         const targetViewportTop = isHomeTarget ? 0 : target.getBoundingClientRect().top;
-        const currentVisibleNavOffset = getActiveNavOffset();
+        const currentVisibleNavOffset = getLiveNavOffset();
         const isCurrentTargetAligned = isHomeTarget
           ? Math.abs(window.scrollY) <= 6
           : Math.abs(targetViewportTop - currentVisibleNavOffset) <= 6;
-        const isCurrentLinkActive =
-          currentAnchor.classList.contains('nav-link') &&
-          (currentAnchor.classList.contains('is-active') || href === activeSectionHash);
+        const isCurrentLinkActive = currentAnchor.classList.contains('is-active') || href === activeSectionHash;
 
         if (isCurrentLinkActive && isCurrentTargetAligned) {
           await closeNavMenuIfNeeded();
@@ -2096,12 +1992,6 @@
         }
 
         const isMobileNavInteraction = isMobileViewport();
-        if (!isMobileNavInteraction) {
-          freezeNavOffset(getNavOffset());
-        } else {
-          clearFrozenNavOffset();
-        }
-
         if (currentAnchor instanceof HTMLElement) {
           currentAnchor.blur();
         }
@@ -2111,7 +2001,6 @@
         syncNavOffset();
         if (isMobileNavInteraction) {
           await waitForStableNavbar();
-          await waitForStableElementTop(target);
         }
         const focusedEl = document.activeElement;
         if (focusedEl instanceof HTMLElement && navCollapseEl?.contains(focusedEl)) {
@@ -2121,60 +2010,24 @@
         const resolveTargetTop = () => {
           if (isHomeTarget) return 0;
           const targetDocumentTop = getDocumentTop(target);
-          const targetOffset = getNavOffset();
+          const targetOffset = getLiveNavOffset();
           return Math.max(targetDocumentTop - targetOffset, 0);
         };
         const nextTop = resolveTargetTop();
 
         activeSectionHash = href;
         setActiveNavLink(href);
-        if (isMobileNavInteraction) {
-          const mobileDuration = 0.95;
-          navScrollUserInterrupted = false;
-          freezeNavOffset(getNavOffset());
-          if (navScrollSnapTimerId) {
-            window.clearTimeout(navScrollSnapTimerId);
-            navScrollSnapTimerId = null;
-          }
-          lenis?.stop?.();
-          await animateWindowScrollTo(nextTop, Math.round(mobileDuration * 1000));
-          if (lenis?.scrollTo) {
-            lenis.scrollTo(window.scrollY, { immediate: true, force: true });
-          }
-          lenis?.start?.();
-          scheduleNavOffsetUnfreeze(Math.round(mobileDuration * 1000 + 220));
-        } else if (lenis) {
-        const duration = 1.1;
-        navScrollUserInterrupted = false;
-        lenis.scrollTo(nextTop, {
-          duration,
-          easing: (t) => 1 - Math.pow(1 - t, 3.2)
-        });
-        if (navScrollSnapTimerId) {
-          window.clearTimeout(navScrollSnapTimerId);
+        const duration = isMobileNavInteraction ? 0.95 : 1.05;
+        if (lenis?.scrollTo) {
+          lenis.scrollTo(nextTop, {
+            duration,
+            easing: (t) => 1 - Math.pow(1 - t, 3.2),
+            force: true
+          });
+        } else {
+          window.scrollTo({ top: nextTop, behavior: 'smooth' });
         }
-        navScrollSnapTimerId = window.setTimeout(() => {
-          const correctedTop = resolveTargetTop();
-          if (!navScrollUserInterrupted) {
-            lenis.scrollTo(correctedTop, { immediate: true, force: true });
-          }
-          navScrollSnapTimerId = null;
-        }, Math.round(duration * 1000 + 50));
-        scheduleNavOffsetUnfreeze(Math.round(duration * 1000 + 260));
-      } else {
-        window.scrollTo({ top: nextTop, behavior: 'smooth' });
-        if (navScrollSnapTimerId) {
-          window.clearTimeout(navScrollSnapTimerId);
-        }
-        navScrollSnapTimerId = window.setTimeout(() => {
-          if (!navScrollUserInterrupted) {
-            window.scrollTo({ top: resolveTargetTop(), behavior: 'auto' });
-          }
-          navScrollSnapTimerId = null;
-        }, 430);
-        scheduleNavOffsetUnfreeze(1400);
-      }
-      window.history.replaceState(null, '', href);
+        window.history.replaceState(null, '', href);
       });
     });
 

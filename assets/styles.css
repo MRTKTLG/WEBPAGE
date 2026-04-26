@@ -509,14 +509,6 @@ main > section,
   scroll-margin-top: var(--nav-offset);
 }
 
-.section-anchor {
-  display: block;
-  height: 0;
-  margin: 0;
-  padding: 0;
-  scroll-margin-top: var(--nav-offset);
-}
-
 #heroCarousel,
 #heroCarousel .carousel-inner,
 #heroCarousel .carousel-item {
@@ -2368,8 +2360,8 @@ textarea.form-control,
 
 .product-carousel .carousel-inner {
   overflow: hidden;
-  height: var(--product-card-height, var(--product-card-height-fixed));
-  min-height: var(--product-card-height, var(--product-card-height-fixed));
+  height: auto;
+  min-height: 0;
   width: 100%;
   cursor: default;
 }
@@ -2386,9 +2378,9 @@ textarea.form-control,
 .product-carousel-item {
   flex: 0 0 var(--product-carousel-item-width, 240px);
   width: var(--product-carousel-item-width, 240px);
-  height: var(--product-card-height, var(--product-card-height-fixed));
+  height: auto;
   min-width: 0;
-  min-height: 100%;
+  min-height: 0;
   display: flex;
   align-self: stretch;
 }
@@ -2401,9 +2393,8 @@ textarea.form-control,
   --product-card-radius: var(--surface-radius);
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 100%;
-  min-height: 19.5rem;
+  height: auto;
+  min-height: 0;
   width: 100%;
   position: relative;
   border: 0;
@@ -2848,6 +2839,10 @@ textarea.form-control,
   color: var(--hero-caption-text) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  line-height: 1.35;
 }
 
 #urunler .product-meta-row .product-old-price {
