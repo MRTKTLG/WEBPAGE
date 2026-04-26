@@ -3174,7 +3174,7 @@ footer .text-body-secondary,
     align-items: center;
     justify-content: center;
     gap: var(--rhythm-gap-2);
-    padding: 4.8rem var(--container-gutter) calc(var(--container-gutter) + var(--rhythm-gap-2));
+    padding: 0 var(--container-gutter) calc(0.75rem + 0.86rem);
   }
 
   #heroCarousel .carousel-item.active,
