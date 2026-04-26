@@ -2195,25 +2195,33 @@
           focusedEl.blur();
         }
 
-        const resolveTargetTop = () => {
-          if (isHomeTarget) return 0;
-          const targetDocumentTop = getDocumentTop(target);
-          const targetOffset = getLiveNavOffset();
-          return Math.max(targetDocumentTop - targetOffset, 0);
-        };
-        const nextTop = resolveTargetTop();
-
         activeSectionHash = href;
         setActiveNavLink(href);
         const duration = isMobileNavInteraction ? 0.95 : 1.05;
         if (lenis?.scrollTo) {
-          lenis.scrollTo(nextTop, {
-            duration,
-            easing: (t) => 1 - Math.pow(1 - t, 3.2),
-            force: true
-          });
+          if (isHomeTarget) {
+            lenis.scrollTo(0, {
+              duration,
+              easing: (t) => 1 - Math.pow(1 - t, 3.2),
+              force: true
+            });
+          } else {
+            lenis.scrollTo(target, {
+              offset: getLiveNavOffset() * -1,
+              duration,
+              easing: (t) => 1 - Math.pow(1 - t, 3.2),
+              force: true
+            });
+          }
         } else {
-          window.scrollTo({ top: nextTop, behavior: 'smooth' });
+          if (isHomeTarget) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            const targetDocumentTop = getDocumentTop(target);
+            const targetOffset = getLiveNavOffset();
+            const nextTop = Math.max(targetDocumentTop - targetOffset, 0);
+            window.scrollTo({ top: nextTop, behavior: 'smooth' });
+          }
         }
         window.history.replaceState(null, '', href);
       });
