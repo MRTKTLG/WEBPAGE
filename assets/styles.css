@@ -214,12 +214,17 @@ html.lenis body {
 }
 
 #smooth-content {
-  min-height: 100vh;
+  min-height: 0;
 }
 
-@supports (min-height: 100svh) {
-  #smooth-wrapper,
-  #smooth-content {
+@supports (min-height: 100dvh) {
+  #smooth-wrapper {
+    min-height: 100dvh;
+  }
+}
+
+@supports not (min-height: 100dvh) and (min-height: 100svh) {
+  #smooth-wrapper {
     min-height: 100svh;
   }
 }
