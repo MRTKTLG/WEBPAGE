@@ -617,7 +617,23 @@
         wrap: true
       });
       const heroItems = Array.from(heroCarousel.querySelectorAll('.carousel-item'));
+      const heroIndicatorButtons = Array.from(
+        heroCarousel.querySelectorAll('.carousel-indicators [data-bs-slide-to]')
+      );
+      let isHeroTransitionLocked = false;
       const revealTimers = new WeakMap();
+      const setHeroIndicatorLock = (isLocked) => {
+        isHeroTransitionLocked = isLocked;
+        heroIndicatorButtons.forEach((buttonEl) => {
+          buttonEl.disabled = isLocked;
+          buttonEl.setAttribute('aria-disabled', isLocked ? 'true' : 'false');
+          if (isLocked) {
+            buttonEl.setAttribute('tabindex', '-1');
+          } else {
+            buttonEl.removeAttribute('tabindex');
+          }
+        });
+      };
 
       const setBackgroundDirection = (item, isReverse) => {
         if (!item) return;
@@ -863,8 +879,18 @@
           }, INITIAL_MEDIA_ENTRY_MS);
         });
       }
+      setHeroIndicatorLock(false);
+
+      heroIndicatorButtons.forEach((buttonEl) => {
+        buttonEl.addEventListener('click', (event) => {
+          if (!isHeroTransitionLocked) return;
+          event.preventDefault();
+          event.stopPropagation();
+        });
+      });
 
       heroCarousel.addEventListener('slide.bs.carousel', (event) => {
+        setHeroIndicatorLock(true);
         const currentItem = heroItems[event.from];
         const targetItem = heroItems[event.to];
         const direction = event.direction === 'right' ? 'down' : 'up';
@@ -879,6 +905,7 @@
       });
 
       heroCarousel.addEventListener('slid.bs.carousel', (event) => {
+        setHeroIndicatorLock(false);
         resetHeroRevealClasses();
         heroItems.forEach((item, index) => {
           setHeroVisibleState(item, index === event.to);
@@ -2038,12 +2065,13 @@
         focusedEl.blur();
       }
 
-      const targetDocumentTop = isHomeTarget
-        ? 0
-        : getDocumentTop(target);
-      const targetOffset = getNavOffset();
-      const targetTop = isHomeTarget ? 0 : targetDocumentTop - targetOffset;
-      const nextTop = Math.max(targetTop, 0);
+      const resolveTargetTop = () => {
+        if (isHomeTarget) return 0;
+        const targetDocumentTop = getDocumentTop(target);
+        const targetOffset = getNavOffset();
+        return Math.max(targetDocumentTop - targetOffset, 0);
+      };
+      const nextTop = resolveTargetTop();
 
       activeSectionHash = href;
       setActiveNavLink(href);
@@ -2058,15 +2086,24 @@
           window.clearTimeout(navScrollSnapTimerId);
         }
         navScrollSnapTimerId = window.setTimeout(() => {
-          const distanceToTarget = Math.abs(window.scrollY - nextTop);
-          if (!navScrollUserInterrupted && distanceToTarget <= 80) {
-            lenis.scrollTo(nextTop, { immediate: true, force: true });
+          const correctedTop = resolveTargetTop();
+          if (!navScrollUserInterrupted) {
+            lenis.scrollTo(correctedTop, { immediate: true, force: true });
           }
           navScrollSnapTimerId = null;
         }, Math.round(duration * 1000 + 50));
         scheduleNavOffsetUnfreeze(Math.round(duration * 1000 + 260));
       } else {
         window.scrollTo({ top: nextTop, behavior: 'smooth' });
+        if (navScrollSnapTimerId) {
+          window.clearTimeout(navScrollSnapTimerId);
+        }
+        navScrollSnapTimerId = window.setTimeout(() => {
+          if (!navScrollUserInterrupted) {
+            window.scrollTo({ top: resolveTargetTop(), behavior: 'auto' });
+          }
+          navScrollSnapTimerId = null;
+        }, 430);
         scheduleNavOffsetUnfreeze(1400);
       }
       window.history.replaceState(null, '', href);

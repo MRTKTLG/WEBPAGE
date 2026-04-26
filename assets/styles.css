@@ -363,15 +363,11 @@ footer .container {
 .navbar-toggler-icon .navbar-line {
   transform-box: fill-box;
   transform-origin: center;
-  transition:
-    transform var(--icon-motion-duration) var(--icon-motion-ease),
-    opacity var(--icon-motion-duration) var(--icon-motion-ease);
+  transition: transform var(--icon-motion-duration) var(--icon-motion-ease);
 }
 
 .navbar-toggler-icon .navbar-line-mid {
-  transition:
-    transform var(--icon-motion-duration) var(--icon-motion-ease),
-    opacity var(--icon-motion-duration) var(--icon-motion-ease);
+  transition: transform var(--icon-motion-duration) var(--icon-motion-ease);
 }
 
 .navbar-toggler[aria-expanded='true'] .navbar-line-top {
@@ -379,8 +375,7 @@ footer .container {
 }
 
 .navbar-toggler[aria-expanded='true'] .navbar-line-mid {
-  transform: translateX(-16px);
-  opacity: 0;
+  transform: translateX(-24px);
 }
 
 .navbar-toggler[aria-expanded='true'] .navbar-line-bottom {
@@ -957,7 +952,7 @@ main > section,
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 1rem;
+  bottom: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2064,9 +2059,9 @@ textarea.form-control,
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: calc(var(--icon-size-control) * 0.5);
-  width: calc(var(--icon-size-control) * 0.5);
-  height: calc(var(--icon-size-control) * 0.5);
+  font-size: var(--icon-size-control);
+  width: var(--icon-size-control);
+  height: var(--icon-size-control);
   line-height: 1;
   color: #5f7288;
   transform: translateZ(0) rotate(0deg);
@@ -2825,6 +2820,8 @@ textarea.form-control,
   font-size: 0.95rem;
   text-align: left;
   color: var(--preview-contrast) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 #urunler .product-model {
@@ -2833,8 +2830,8 @@ textarea.form-control,
   margin: 0;
   text-align: left;
   color: var(--hero-caption-text) !important;
-  text-transform: none !important;
-  letter-spacing: 0.03em;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em;
 }
 
 #urunler .product-meta-row .product-old-price {
@@ -2935,7 +2932,7 @@ textarea.form-control,
   order: 2;
   font-size: 0.82rem;
   letter-spacing: 0.04em;
-  text-transform: none !important;
+  text-transform: uppercase !important;
   color: var(--hero-caption-text) !important;
 }
 
@@ -3286,7 +3283,7 @@ footer .text-body-secondary,
   }
 
   .carousel-indicators {
-    bottom: 1.25rem;
+    bottom: 0.75rem;
   }
 
   .carousel-control-prev,
@@ -3621,9 +3618,9 @@ footer .text-body-secondary,
   }
 
   #sss .accordion-button .faq-chevron {
-    font-size: calc(var(--icon-size-control-mobile) * 0.5);
-    width: calc(var(--icon-size-control-mobile) * 0.5);
-    height: calc(var(--icon-size-control-mobile) * 0.5);
+    font-size: var(--icon-size-control-mobile);
+    width: var(--icon-size-control-mobile);
+    height: var(--icon-size-control-mobile);
   }
 
   #sss .accordion-body {
