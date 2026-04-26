@@ -89,12 +89,8 @@
   box-sizing: border-box;
 }
 
+html,
 body {
-  font-family: var(--font-sans);
-  font-size: var(--text-body);
-  font-weight: var(--text-body-weight);
-  line-height: 1.6;
-  color: var(--muted);
   background: linear-gradient(
     115deg,
     var(--body-left) 0%,
@@ -103,9 +99,18 @@ body {
   );
 }
 
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--text-body-weight);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 html {
   scrollbar-gutter: stable;
-  overflow-y: scroll;
+  overflow-y: auto;
+  overscroll-behavior-y: none;
 }
 
 html.is-modal-scroll-locked,
