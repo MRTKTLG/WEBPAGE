@@ -2037,6 +2037,7 @@
       }
 
       const isMobileNavInteraction = isMobileViewport();
+      const clickScrollY = window.scrollY;
       if (!isMobileNavInteraction) {
         freezeNavOffset(getNavOffset());
       } else {
@@ -2050,6 +2051,20 @@
       await closeNavMenuIfNeeded();
       refreshCollapsedNavOffset();
       syncNavOffset();
+      if (isMobileNavInteraction) {
+        if (lenis?.scrollTo) {
+          lenis.scrollTo(clickScrollY, { immediate: true, force: true });
+        } else {
+          window.scrollTo(0, clickScrollY);
+        }
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(resolve);
+          });
+        });
+        refreshCollapsedNavOffset();
+        syncNavOffset();
+      }
       const focusedEl = document.activeElement;
       if (
         focusedEl instanceof HTMLElement &&
@@ -2068,44 +2083,49 @@
 
       activeSectionHash = href;
       setActiveNavLink(href);
-      if (lenis) {
-        const duration = isMobileNavInteraction ? 0.95 : 1.1;
+      if (isMobileNavInteraction) {
+        const mobileDuration = 0.95;
+        navScrollUserInterrupted = false;
+        if (lenis) {
+          lenis.scrollTo(nextTop, {
+            duration: mobileDuration,
+            easing: (t) => 1 - Math.pow(1 - t, 3.2),
+            force: true
+          });
+        } else {
+          window.scrollTo({ top: nextTop, behavior: 'smooth' });
+        }
+        clearFrozenNavOffset();
+      } else if (lenis) {
+        const duration = 1.1;
         navScrollUserInterrupted = false;
         lenis.scrollTo(nextTop, {
           duration,
           easing: (t) => 1 - Math.pow(1 - t, 3.2)
         });
-        if (!isMobileNavInteraction) {
-          if (navScrollSnapTimerId) {
-            window.clearTimeout(navScrollSnapTimerId);
-          }
-          navScrollSnapTimerId = window.setTimeout(() => {
-            const correctedTop = resolveTargetTop();
-            if (!navScrollUserInterrupted) {
-              lenis.scrollTo(correctedTop, { immediate: true, force: true });
-            }
-            navScrollSnapTimerId = null;
-          }, Math.round(duration * 1000 + 50));
-          scheduleNavOffsetUnfreeze(Math.round(duration * 1000 + 260));
-        } else {
-          clearFrozenNavOffset();
+        if (navScrollSnapTimerId) {
+          window.clearTimeout(navScrollSnapTimerId);
         }
+        navScrollSnapTimerId = window.setTimeout(() => {
+          const correctedTop = resolveTargetTop();
+          if (!navScrollUserInterrupted) {
+            lenis.scrollTo(correctedTop, { immediate: true, force: true });
+          }
+          navScrollSnapTimerId = null;
+        }, Math.round(duration * 1000 + 50));
+        scheduleNavOffsetUnfreeze(Math.round(duration * 1000 + 260));
       } else {
         window.scrollTo({ top: nextTop, behavior: 'smooth' });
-        if (!isMobileNavInteraction) {
-          if (navScrollSnapTimerId) {
-            window.clearTimeout(navScrollSnapTimerId);
-          }
-          navScrollSnapTimerId = window.setTimeout(() => {
-            if (!navScrollUserInterrupted) {
-              window.scrollTo({ top: resolveTargetTop(), behavior: 'auto' });
-            }
-            navScrollSnapTimerId = null;
-          }, 430);
-          scheduleNavOffsetUnfreeze(1400);
-        } else {
-          clearFrozenNavOffset();
+        if (navScrollSnapTimerId) {
+          window.clearTimeout(navScrollSnapTimerId);
         }
+        navScrollSnapTimerId = window.setTimeout(() => {
+          if (!navScrollUserInterrupted) {
+            window.scrollTo({ top: resolveTargetTop(), behavior: 'auto' });
+          }
+          navScrollSnapTimerId = null;
+        }, 430);
+        scheduleNavOffsetUnfreeze(1400);
       }
       window.history.replaceState(null, '', href);
       });
