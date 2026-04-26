@@ -36,6 +36,8 @@
     );
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
+    const isMobileViewport = () => window.innerWidth < 992;
+    const isHeroTouchEnabled = () => !isMobileViewport();
     const lenis =
       window.Lenis
         ? new window.Lenis({
@@ -49,8 +51,6 @@
             virtualScroll: ({ event }) => !event.type.startsWith('touch')
           })
         : null;
-    const isMobileViewport = () => window.innerWidth < 992;
-
     const isNavMenuExpanded = () =>
       navCollapseEl?.classList.contains('show') || navCollapseEl?.classList.contains('collapsing');
     let collapsedNavOffsetPx = 0;
@@ -595,9 +595,16 @@
     refreshCollapsedNavOffset();
 
     if (heroCarousel) {
-      bootstrap.Carousel.getOrCreateInstance(heroCarousel, {
+      // Re-create the carousel instance so our touch config wins even when
+      // Bootstrap data API auto-initialized it earlier from markup attributes.
+      const existingHeroCarousel = bootstrap.Carousel.getInstance(heroCarousel);
+      if (existingHeroCarousel) {
+        existingHeroCarousel.dispose();
+      }
+      heroCarousel.setAttribute('data-bs-touch', isHeroTouchEnabled() ? 'true' : 'false');
+      new bootstrap.Carousel(heroCarousel, {
         interval: HERO_CAROUSEL_INTERVAL_MS,
-        touch: !isMobileViewport(),
+        touch: isHeroTouchEnabled(),
         ride: 'carousel',
         pause: false,
         wrap: true

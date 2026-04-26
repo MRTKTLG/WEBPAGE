@@ -3181,6 +3181,7 @@ footer .text-body-secondary,
   #heroCarousel .carousel-item {
     height: 540px;
     min-height: 540px;
+    touch-action: pan-y;
   }
 
   .hero-media {
