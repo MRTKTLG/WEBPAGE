@@ -166,8 +166,22 @@
 
     const closeNavMenuIfNeeded = () =>
       new Promise((resolve) => {
-        if (!navCollapseEl?.classList.contains('show') || !navCollapse) {
+        if (!isNavMenuExpanded() || !navCollapse || !navCollapseEl) {
           resolve();
+          return;
+        }
+
+        const isOpeningTransition =
+          navCollapseEl.classList.contains('collapsing') &&
+          !navCollapseEl.classList.contains('show');
+        if (isOpeningTransition) {
+          navCollapseEl.addEventListener(
+            'shown.bs.collapse',
+            () => {
+              closeNavMenuIfNeeded().then(resolve);
+            },
+            { once: true }
+          );
           return;
         }
 
