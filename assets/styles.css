@@ -611,18 +611,6 @@ main > section,
   animation: heroMediaEnterInitial var(--hero-slide-duration) ease-in-out both;
 }
 
-#heroCarousel .carousel-item.active::after {
-  content: none;
-  position: absolute;
-  right: min(10vw, 140px);
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: clamp(160px, 21vw, 320px);
-  line-height: 1;
-  z-index: 2;
-  filter: drop-shadow(0 18px 30px rgba(64, 75, 89, 0.16));
-}
-
 .carousel-caption {
   --title-circle-anchor-x: -1.35rem;
   --title-circle-anchor-y: calc(var(--text-section-title) * 0.48);
@@ -3119,11 +3107,6 @@ footer .text-body-secondary,
     display: none;
   }
 
-  #heroCarousel .carousel-item.active::after {
-    right: 6%;
-    font-size: 180px;
-  }
-
   .carousel-caption {
     left: var(--content-edge);
     right: auto;
@@ -3236,10 +3219,6 @@ footer .text-body-secondary,
   #heroCarousel .carousel-item-next,
   #heroCarousel .carousel-item-prev {
     display: flex;
-  }
-
-  #heroCarousel .carousel-item.active::after {
-    content: none;
   }
 
   .carousel-caption {

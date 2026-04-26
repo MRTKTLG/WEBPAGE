@@ -1033,42 +1033,6 @@
       const visibleCount = getProductVisibleCount(carouselEl);
       return visibleCount;
     };
-    const supportsWebP = (() => {
-      try {
-        const canvas = document.createElement('canvas');
-        return canvas.toDataURL('image/webp').startsWith('data:image/webp');
-      } catch {
-        return false;
-      }
-    })();
-    const toWebPUrl = (value) => String(value ?? '').replace(/\.(jpe?g)(?=($|[?#]))/i, '.webp');
-    const toWebPSrcset = (srcset) =>
-      String(srcset ?? '')
-        .split(',')
-        .map((entry) => {
-          const trimmed = entry.trim();
-          if (!trimmed) return '';
-          const match = trimmed.match(/^(\S+)(\s+\d+w)?$/);
-          if (!match) return trimmed;
-          const url = toWebPUrl(match[1]);
-          const descriptor = match[2] ?? '';
-          return `${url}${descriptor}`;
-        })
-        .filter(Boolean)
-        .join(', ');
-    const switchProductImagesToWebP = () => {
-      if (!supportsWebP) return;
-      document.querySelectorAll('.product-carousel .card-img-top').forEach((imageEl) => {
-        if (!(imageEl instanceof HTMLImageElement)) return;
-        const src = imageEl.getAttribute('src') ?? '';
-        if (!/\.jpe?g(\?|#|$)/i.test(src)) return;
-        imageEl.setAttribute('src', toWebPUrl(src));
-        const srcset = imageEl.getAttribute('srcset');
-        if (srcset) {
-          imageEl.setAttribute('srcset', toWebPSrcset(srcset));
-        }
-      });
-    };
 
     const ensureProductPreviewTrigger = (cardEl) => {
       if (!cardEl) return;
@@ -2124,7 +2088,6 @@
       setProductModalNativeFullscreenState(fullscreenActive);
     });
 
-    switchProductImagesToWebP();
     buildProductCarousels();
     observeProductSectionImagePriming();
     productCarouselsState.forEach((slider) => {
