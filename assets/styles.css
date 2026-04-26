@@ -2364,6 +2364,7 @@ textarea.form-control,
   min-height: 0;
   width: 100%;
   cursor: default;
+  touch-action: pan-y;
 }
 
 .product-carousel-track {
