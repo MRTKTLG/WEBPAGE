@@ -37,7 +37,7 @@
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
     const isMobileViewport = () => window.innerWidth < 992;
-    const isHeroTouchEnabled = () => !isMobileViewport();
+    const isHeroTouchEnabled = () => true;
     const lenis =
       window.Lenis
         ? new window.Lenis({
@@ -171,15 +171,39 @@
         if (stableFrames >= stableFrameCount) break;
       }
     };
+    const preloadAllPageImages = async (timeoutMs = 7000) => {
+      const imageNodes = Array.from(document.images).filter(
+        (imageEl) => imageEl instanceof HTMLImageElement && Boolean(imageEl.currentSrc || imageEl.src)
+      );
+      if (!imageNodes.length) return;
+
+      imageNodes.forEach((imageEl) => {
+        imageEl.loading = 'eager';
+        imageEl.decoding = 'async';
+        imageEl.fetchPriority = 'high';
+      });
+
+      await Promise.race([
+        Promise.all(imageNodes.map((imageEl) => waitForImageDecode(imageEl, timeoutMs))),
+        new Promise((resolve) => window.setTimeout(resolve, timeoutMs))
+      ]);
+    };
+    let preloaderHidePromise = null;
 
     const hidePreloader = () => {
-      if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
+      if (preloaderHidePromise) return preloaderHidePromise;
 
-      preloaderEl.dataset.dismissed = 'true';
-      window.setTimeout(() => {
-        preloaderEl.classList.add('is-hidden');
-        document.body.classList.remove('is-preloading');
-      }, 220);
+      preloaderHidePromise = (async () => {
+        if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
+        await preloadAllPageImages();
+        preloaderEl.dataset.dismissed = 'true';
+        window.setTimeout(() => {
+          preloaderEl.classList.add('is-hidden');
+          document.body.classList.remove('is-preloading');
+        }, 220);
+      })();
+
+      return preloaderHidePromise;
     };
 
     const syncNavLinkWidths = () => {
@@ -689,10 +713,14 @@
       const heroIndicatorButtons = Array.from(
         heroCarousel.querySelectorAll('.carousel-indicators [data-bs-slide-to]')
       );
+      const heroControlButtons = Array.from(
+        heroCarousel.querySelectorAll('.carousel-control-prev, .carousel-control-next')
+      );
       let isHeroTransitionLocked = false;
+      let isHeroInteractionLocked = true;
       const revealTimers = new WeakMap();
-      const setHeroIndicatorLock = (isLocked) => {
-        isHeroTransitionLocked = isLocked;
+      const syncHeroControlLock = () => {
+        const isLocked = isHeroTransitionLocked || isHeroInteractionLocked;
         heroIndicatorButtons.forEach((buttonEl) => {
           buttonEl.disabled = isLocked;
           buttonEl.setAttribute('aria-disabled', isLocked ? 'true' : 'false');
@@ -702,6 +730,23 @@
             buttonEl.removeAttribute('tabindex');
           }
         });
+        heroControlButtons.forEach((buttonEl) => {
+          buttonEl.classList.toggle('disabled', isLocked);
+          buttonEl.setAttribute('aria-disabled', isLocked ? 'true' : 'false');
+          if (isLocked) {
+            buttonEl.setAttribute('tabindex', '-1');
+          } else {
+            buttonEl.removeAttribute('tabindex');
+          }
+        });
+      };
+      const setHeroIndicatorLock = (isLocked) => {
+        isHeroTransitionLocked = isLocked;
+        syncHeroControlLock();
+      };
+      const setHeroInteractionLock = (isLocked) => {
+        isHeroInteractionLocked = isLocked;
+        syncHeroControlLock();
       };
 
       const setBackgroundDirection = (item, isReverse) => {
@@ -949,16 +994,51 @@
         });
       }
       setHeroIndicatorLock(false);
+      setHeroInteractionLock(true);
+
+      const unlockHeroInteractionsAfterReady = async () => {
+        const heroImages = Array.from(heroCarousel.querySelectorAll('img'));
+        await Promise.all(heroImages.map((imageEl) => waitForImageDecode(imageEl, 1200)));
+        window.setTimeout(() => {
+          setHeroInteractionLock(false);
+        }, 1000);
+      };
+      unlockHeroInteractionsAfterReady().catch(() => {
+        window.setTimeout(() => {
+          setHeroInteractionLock(false);
+        }, 1000);
+      });
 
       heroIndicatorButtons.forEach((buttonEl) => {
         buttonEl.addEventListener('click', (event) => {
-          if (!isHeroTransitionLocked) return;
+          if (!isHeroTransitionLocked && !isHeroInteractionLocked) return;
           event.preventDefault();
           event.stopPropagation();
         });
       });
 
+      heroControlButtons.forEach((buttonEl) => {
+        buttonEl.addEventListener('click', (event) => {
+          if (!isHeroInteractionLocked) return;
+          event.preventDefault();
+          event.stopPropagation();
+        });
+      });
+
+      heroCarousel.addEventListener(
+        'touchstart',
+        (event) => {
+          if (!isHeroInteractionLocked) return;
+          event.preventDefault();
+        },
+        { passive: false }
+      );
+
       heroCarousel.addEventListener('slide.bs.carousel', (event) => {
+        if (isHeroInteractionLocked) {
+          event.preventDefault();
+          return;
+        }
         setHeroIndicatorLock(true);
         const currentItem = heroItems[event.from];
         const targetItem = heroItems[event.to];
@@ -1101,6 +1181,18 @@
 
     const setProductImagePriority = (imageEl, priority = 'lazy') => {
       if (!(imageEl instanceof HTMLImageElement)) return;
+      const isProductCarouselImage = Boolean(imageEl.closest('.product-carousel'));
+      if (isProductCarouselImage) {
+        imageEl.loading = 'eager';
+        imageEl.decoding = 'async';
+        imageEl.fetchPriority = 'high';
+        if (!imageEl.complete && typeof imageEl.decode === 'function') {
+          imageEl.decode().catch(() => {
+            // Ignore decode rejections from browser timing/race conditions.
+          });
+        }
+        return;
+      }
       const shouldPrioritize = priority === 'high';
       imageEl.loading = shouldPrioritize ? 'eager' : 'lazy';
       imageEl.decoding = 'async';
@@ -1312,6 +1404,7 @@
       });
     };
 
+
     const renderProductCarousel = (slider) => {
       const visibleCount = getProductVisibleCount(slider.carouselEl);
       const cloneCount = getProductCloneCount(slider.carouselEl);
@@ -1349,7 +1442,7 @@
       const offsetPx = (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
       const translateXPx = -Math.round(offsetPx);
 
-      trackEl.style.transition = useTransition ? 'transform 820ms cubic-bezier(0.76, 0, 0.24, 1)' : 'none';
+      trackEl.style.transition = useTransition ? 'transform 560ms cubic-bezier(0.76, 0, 0.24, 1)' : 'none';
       trackEl.style.transform = `translateX(${translateXPx}px)`;
     };
 
@@ -1426,7 +1519,7 @@
           const deltaY = touch.clientY - dragState.startY;
 
           if (!dragState.isSwiping) {
-            if (Math.abs(dragState.deltaX) < 2) return;
+            if (Math.abs(dragState.deltaX) < 0.5) return;
             if (Math.abs(dragState.deltaX) <= Math.abs(deltaY)) {
               dragState = null;
               startProductCarousels();
@@ -1437,7 +1530,7 @@
 
           event.preventDefault();
           const nextOffsetPx = dragState.baseOffsetPx - dragState.deltaX;
-          const swipeTranslateXPx = -Math.round(nextOffsetPx);
+          const swipeTranslateXPx = -nextOffsetPx;
           slider.trackEl.style.transform = `translateX(${swipeTranslateXPx}px)`;
         },
         { passive: false }
@@ -1455,7 +1548,7 @@
           slider.suppressClickUntil = performance.now() + 420;
           moveProductCarousel(slider, direction);
         } else {
-          syncProductCarouselPosition(slider, false);
+          syncProductCarouselPosition(slider, true);
         }
 
         startProductCarousels();
@@ -1659,7 +1752,7 @@
       trackEl.addEventListener('transitionend', slider.transitionEndHandler);
       slider.transitionFallbackTimerId = window.setTimeout(() => {
         settleTrackPosition();
-      }, 960);
+      }, 700);
     };
 
     const stopProductCarousels = () => {
@@ -2174,16 +2267,16 @@
     });
 
     buildProductCarousels();
-    observeProductSectionImagePriming();
     productCarouselsState.forEach((slider) => {
       mountProductCarouselControls(slider);
     });
-    bindArrowAnimations();
     syncProductCarouselLayout();
     productCarouselsState.forEach((slider) => {
       bindProductCarouselSwipe(slider);
       bindProductCarouselAccessibility(slider);
     });
+    observeProductSectionImagePriming();
+    bindArrowAnimations();
 
     if (productCarouselsState.length) {
       window.requestAnimationFrame(() => {
@@ -2275,6 +2368,18 @@
     const clickableNavAnchors = Array.from(
       document.querySelectorAll('a.navbar-brand[href^="#"], a.nav-link[href^="#"]')
     );
+    let userInteractedBeforeInitialHashAlign = false;
+    const markUserInteractedBeforeInitialHashAlign = () => {
+      userInteractedBeforeInitialHashAlign = true;
+    };
+    window.addEventListener('touchstart', markUserInteractedBeforeInitialHashAlign, {
+      passive: true,
+      once: true
+    });
+    window.addEventListener('wheel', markUserInteractedBeforeInitialHashAlign, {
+      passive: true,
+      once: true
+    });
     let navAnchorSettleToken = 0;
     const alignAnchorTarget = (target, isHomeTarget) => {
       if (!target) return true;
@@ -2437,6 +2542,7 @@
     window.addEventListener(
       'load',
       () => {
+        if (isMobileViewport() && userInteractedBeforeInitialHashAlign) return;
         alignFromCurrentHash().catch(() => {});
       },
       { once: true }
