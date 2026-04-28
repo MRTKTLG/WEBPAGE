@@ -1311,7 +1311,7 @@
           transitionEndHandler: null,
           transitionFallbackTimerId: null,
           animatingSinceTs: 0,
-          pendingDirection: 0
+          pendingMoves: 0
         });
       });
     };
@@ -1680,7 +1680,7 @@
       syncProductCarouselPosition(slider, false);
       slider.isAnimating = false;
       slider.animatingSinceTs = 0;
-      slider.pendingDirection = 0;
+      slider.pendingMoves = 0;
       resetProductCarouselTransientState(slider);
       hydrateSliderImagePriorities(slider);
       updateProductCarouselMobileState(slider);
@@ -1689,10 +1689,25 @@
       syncProductCardInteractivity();
     };
 
+    const flushQueuedProductMove = (slider) => {
+      if (!slider || slider.isAnimating || !slider.pendingMoves) return;
+      const nextDirection = slider.pendingMoves > 0 ? 1 : -1;
+      slider.pendingMoves += nextDirection > 0 ? -1 : 1;
+      window.requestAnimationFrame(() => {
+        moveProductCarousel(slider, nextDirection);
+      });
+    };
+
+    const enqueueProductCarouselMove = (slider, direction) => {
+      if (!slider || !direction) return;
+      slider.pendingMoves = clamp((slider.pendingMoves || 0) + direction, -4, 4);
+      flushQueuedProductMove(slider);
+    };
+
     const moveProductCarousel = (slider, direction) => {
       const { trackEl } = slider;
       if (slider.isAnimating) {
-        slider.pendingDirection = direction;
+        enqueueProductCarouselMove(slider, direction);
         return;
       }
       if (!trackEl?.firstElementChild || slider.sourceCards.length <= 1) return;
@@ -1746,13 +1761,7 @@
         hydrateSliderImagePriorities(slider);
         updateProductCarouselMobileState(slider);
         unmarkProductCarouselSilentSwap(slider);
-        if (slider.pendingDirection) {
-          const queuedDirection = slider.pendingDirection;
-          slider.pendingDirection = 0;
-          window.requestAnimationFrame(() => {
-            moveProductCarousel(slider, queuedDirection);
-          });
-        }
+        flushQueuedProductMove(slider);
       };
 
       const handleTrackTransitionEnd = (event) => {

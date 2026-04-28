@@ -127,6 +127,17 @@ body.is-preloading {
   overflow: hidden;
 }
 
+@media (max-width: 991px) {
+  body.is-preloading {
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+  }
+
+  .page-preloader {
+    pointer-events: none;
+  }
+}
+
 .page-preloader {
   position: fixed;
   inset: 0;
