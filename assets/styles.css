@@ -125,17 +125,7 @@ body.is-nav-collapsing {
 
 body.is-preloading {
   overflow: hidden;
-}
-
-@media (max-width: 991px) {
-  body.is-preloading {
-    overflow-y: auto;
-    overscroll-behavior-y: auto;
-  }
-
-  .page-preloader {
-    pointer-events: none;
-  }
+  overscroll-behavior: none;
 }
 
 .page-preloader {
@@ -155,6 +145,8 @@ body.is-preloading {
   transition:
     opacity 680ms cubic-bezier(0.22, 1, 0.36, 1),
     visibility 680ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: auto;
+  touch-action: none;
 }
 
 .page-preloader.is-hidden {
@@ -1083,6 +1075,11 @@ main > section,
 
 .carousel-control-next-icon.is-arrow-animating {
   animation: arrowSlideRight var(--icon-motion-duration) var(--icon-motion-ease) 1;
+}
+
+.hero-wrap .carousel-control-prev,
+.hero-wrap .carousel-control-next {
+  display: none !important;
 }
 
 @keyframes arrowSlideLeft {

@@ -700,10 +700,10 @@
       if (existingHeroCarousel) {
         existingHeroCarousel.dispose();
       }
-      heroCarousel.setAttribute('data-bs-touch', 'true');
-      new bootstrap.Carousel(heroCarousel, {
+      heroCarousel.setAttribute('data-bs-touch', 'false');
+      const heroCarouselInstance = new bootstrap.Carousel(heroCarousel, {
         interval: HERO_CAROUSEL_INTERVAL_MS,
-        touch: true,
+        touch: false,
         ride: 'carousel',
         pause: false,
         wrap: true
@@ -712,25 +712,14 @@
       const heroIndicatorButtons = Array.from(
         heroCarousel.querySelectorAll('.carousel-indicators [data-bs-slide-to]')
       );
-      const heroControlButtons = Array.from(
-        heroCarousel.querySelectorAll('.carousel-control-prev, .carousel-control-next')
-      );
       let isHeroTransitionLocked = false;
       let isHeroInteractionLocked = true;
+      let heroInteractionUnlockTimerId = null;
       const revealTimers = new WeakMap();
       const syncHeroControlLock = () => {
         const isLocked = isHeroTransitionLocked || isHeroInteractionLocked;
         heroIndicatorButtons.forEach((buttonEl) => {
           buttonEl.disabled = isLocked;
-          buttonEl.setAttribute('aria-disabled', isLocked ? 'true' : 'false');
-          if (isLocked) {
-            buttonEl.setAttribute('tabindex', '-1');
-          } else {
-            buttonEl.removeAttribute('tabindex');
-          }
-        });
-        heroControlButtons.forEach((buttonEl) => {
-          buttonEl.classList.toggle('disabled', isLocked);
           buttonEl.setAttribute('aria-disabled', isLocked ? 'true' : 'false');
           if (isLocked) {
             buttonEl.setAttribute('tabindex', '-1');
@@ -746,6 +735,17 @@
       const setHeroInteractionLock = (isLocked) => {
         isHeroInteractionLocked = isLocked;
         syncHeroControlLock();
+      };
+      const scheduleHeroInteractionUnlock = (delayMs = 1000) => {
+        if (heroInteractionUnlockTimerId) {
+          window.clearTimeout(heroInteractionUnlockTimerId);
+          heroInteractionUnlockTimerId = null;
+        }
+        setHeroInteractionLock(true);
+        heroInteractionUnlockTimerId = window.setTimeout(() => {
+          setHeroInteractionLock(false);
+          heroInteractionUnlockTimerId = null;
+        }, delayMs);
       };
 
       const setBackgroundDirection = (item, isReverse) => {
@@ -998,14 +998,10 @@
       const unlockHeroInteractionsAfterReady = async () => {
         const heroImages = Array.from(heroCarousel.querySelectorAll('img'));
         await Promise.all(heroImages.map((imageEl) => waitForImageDecode(imageEl, 1200)));
-        window.setTimeout(() => {
-          setHeroInteractionLock(false);
-        }, 1000);
+        scheduleHeroInteractionUnlock(1000);
       };
       unlockHeroInteractionsAfterReady().catch(() => {
-        window.setTimeout(() => {
-          setHeroInteractionLock(false);
-        }, 1000);
+        scheduleHeroInteractionUnlock(1000);
       });
 
       heroIndicatorButtons.forEach((buttonEl) => {
@@ -1016,28 +1012,75 @@
         });
       });
 
-      heroControlButtons.forEach((buttonEl) => {
-        buttonEl.addEventListener('click', (event) => {
-          if (!isHeroInteractionLocked) return;
-          event.preventDefault();
-          event.stopPropagation();
-        });
-      });
-
       heroCarousel.addEventListener(
         'touchstart',
         (event) => {
-          if (!isHeroInteractionLocked) return;
+          if (isHeroInteractionLocked) {
+            event.preventDefault();
+          }
+        },
+        { passive: false }
+      );
+
+      let heroTouchState = null;
+      heroCarousel.addEventListener(
+        'touchstart',
+        (event) => {
+          if (isHeroInteractionLocked || isHeroTransitionLocked) return;
+          const touch = event.touches[0];
+          if (!touch) return;
+          heroTouchState = {
+            startX: touch.clientX,
+            startY: touch.clientY,
+            deltaX: 0,
+            isSwiping: false
+          };
+        },
+        { passive: true }
+      );
+
+      heroCarousel.addEventListener(
+        'touchmove',
+        (event) => {
+          if (!heroTouchState || isHeroInteractionLocked || isHeroTransitionLocked) return;
+          const touch = event.touches[0];
+          if (!touch) return;
+
+          heroTouchState.deltaX = touch.clientX - heroTouchState.startX;
+          const deltaY = touch.clientY - heroTouchState.startY;
+          if (!heroTouchState.isSwiping) {
+            if (Math.abs(heroTouchState.deltaX) < 6) return;
+            if (Math.abs(heroTouchState.deltaX) <= Math.abs(deltaY)) {
+              heroTouchState = null;
+              return;
+            }
+            heroTouchState.isSwiping = true;
+          }
           event.preventDefault();
         },
         { passive: false }
       );
 
-      heroCarousel.addEventListener('slide.bs.carousel', (event) => {
-        if (isHeroInteractionLocked) {
-          event.preventDefault();
+      const finishHeroTouchSwipe = () => {
+        if (!heroTouchState) return;
+        if (isHeroInteractionLocked || isHeroTransitionLocked) {
+          heroTouchState = null;
           return;
         }
+        const thresholdPx = Math.min(heroCarousel.clientWidth * 0.12, 56);
+        if (heroTouchState.isSwiping && Math.abs(heroTouchState.deltaX) >= thresholdPx) {
+          if (heroTouchState.deltaX < 0) {
+            heroCarouselInstance.next();
+          } else {
+            heroCarouselInstance.prev();
+          }
+        }
+        heroTouchState = null;
+      };
+      heroCarousel.addEventListener('touchend', finishHeroTouchSwipe);
+      heroCarousel.addEventListener('touchcancel', finishHeroTouchSwipe);
+
+      heroCarousel.addEventListener('slide.bs.carousel', (event) => {
         setHeroIndicatorLock(true);
         const currentItem = heroItems[event.from];
         const targetItem = heroItems[event.to];
@@ -1054,6 +1097,7 @@
 
       heroCarousel.addEventListener('slid.bs.carousel', (event) => {
         setHeroIndicatorLock(false);
+        scheduleHeroInteractionUnlock(1000);
         resetHeroRevealClasses();
         heroItems.forEach((item, index) => {
           setHeroVisibleState(item, index === event.to);
@@ -2387,6 +2431,13 @@
       passive: true,
       once: true
     });
+    window.addEventListener('pointerdown', markUserInteractedBeforeInitialHashAlign, {
+      passive: true,
+      once: true
+    });
+    window.addEventListener('keydown', markUserInteractedBeforeInitialHashAlign, {
+      once: true
+    });
     window.addEventListener(
       'scroll',
       () => {
@@ -2558,8 +2609,10 @@
     window.addEventListener(
       'load',
       () => {
-        if (isMobileViewport()) return;
+        const hash = window.location.hash;
+        if (!hash || hash === '#anasayfa') return;
         if (userInteractedBeforeInitialHashAlign) return;
+        if (window.scrollY > 2) return;
         alignFromCurrentHash().catch(() => {});
       },
       { once: true }

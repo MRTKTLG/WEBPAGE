@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
+    "assets:version": "node scripts/bump-asset-version.cjs",
     "format": "prettier --write \"index.html\" \"assets/**/*.{css,js}\"",
     "lint:js": "eslint assets/app.js",
     "lint:css": "stylelint \"assets/styles.css\"",

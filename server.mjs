@@ -54,7 +54,7 @@ function writePlainResponse(res, status, message, cacheControl = 'no-store') {
 function safeResolvePath(urlPathname) {
   let decoded = '/';
   try {
-    decoded = decodeURIComponent(urlPathname.split('?')[0]);
+    decoded = decodeURIComponent(urlPathname);
   } catch {
     return null;
   }
@@ -74,7 +74,8 @@ function safeResolvePath(urlPathname) {
 }
 
 function serveStatic(req, res) {
-  const reqPath = req.url === '/' ? '/index.html' : req.url;
+  const requestUrl = new URL(req.url, `http://${req.headers.host || '127.0.0.1'}`);
+  const reqPath = requestUrl.pathname === '/' ? '/index.html' : requestUrl.pathname;
   const filePath = safeResolvePath(reqPath);
 
   if (!filePath || !filePath.startsWith(__dirname)) {
@@ -88,9 +89,54 @@ function serveStatic(req, res) {
   }
 
   const ext = path.extname(filePath).toLowerCase();
+  const stat = statSync(filePath);
+  const etag = `W/"${stat.size}-${Math.trunc(stat.mtimeMs)}"`;
+  const lastModified = stat.mtime.toUTCString();
+  const ifNoneMatch = req.headers['if-none-match'];
+  const ifModifiedSince = req.headers['if-modified-since'];
+  const isNotModifiedByEtag = typeof ifNoneMatch === 'string' && ifNoneMatch === etag;
+  const isNotModifiedByTime =
+    typeof ifModifiedSince === 'string' &&
+    Number.isFinite(Date.parse(ifModifiedSince)) &&
+    stat.mtime.getTime() <= new Date(ifModifiedSince).getTime();
+  if (isNotModifiedByEtag || isNotModifiedByTime) {
+    res.writeHead(304, {
+      ETag: etag,
+      'Last-Modified': lastModified,
+      ...SECURITY_HEADERS
+    });
+    res.end();
+    return;
+  }
+
+  const staticAssetExtensions = new Set([
+    '.css',
+    '.js',
+    '.mjs',
+    '.svg',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.webp',
+    '.ico'
+  ]);
+  const isStaticAsset = staticAssetExtensions.has(ext);
+  const hasVersionToken =
+    isStaticAsset &&
+    (requestUrl.searchParams.has('v') || requestUrl.searchParams.has('ver'));
+  const cacheControl =
+    ext === '.html'
+      ? 'no-cache'
+      : hasVersionToken
+        ? 'public, max-age=31536000, immutable'
+        : isStaticAsset
+        ? 'public, max-age=2592000, stale-while-revalidate=86400'
+        : 'public, max-age=3600';
   res.writeHead(200, {
     'Content-Type': MIME[ext] || 'application/octet-stream',
-    'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600',
+    'Cache-Control': cacheControl,
+    ETag: etag,
+    'Last-Modified': lastModified,
     ...SECURITY_HEADERS
   });
   if (req.method === 'HEAD') {
