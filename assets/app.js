@@ -37,7 +37,6 @@
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
     const isMobileViewport = () => window.innerWidth < 992;
-    const isHeroTouchEnabled = () => true;
     const lenis =
       window.Lenis
         ? new window.Lenis({
@@ -701,10 +700,10 @@
       if (existingHeroCarousel) {
         existingHeroCarousel.dispose();
       }
-      heroCarousel.setAttribute('data-bs-touch', isHeroTouchEnabled() ? 'true' : 'false');
+      heroCarousel.setAttribute('data-bs-touch', 'true');
       new bootstrap.Carousel(heroCarousel, {
         interval: HERO_CAROUSEL_INTERVAL_MS,
-        touch: isHeroTouchEnabled(),
+        touch: true,
         ride: 'carousel',
         pause: false,
         wrap: true
@@ -1311,7 +1310,8 @@
           suppressClickUntil: 0,
           transitionEndHandler: null,
           transitionFallbackTimerId: null,
-          animatingSinceTs: 0
+          animatingSinceTs: 0,
+          pendingDirection: 0
         });
       });
     };
@@ -1677,12 +1677,13 @@
           slider.sourceCards.length + cloneCount
         );
         slider.gapPx = gapPx;
-        syncProductCarouselPosition(slider, false);
-        slider.isAnimating = false;
-        slider.animatingSinceTs = 0;
-        resetProductCarouselTransientState(slider);
-        hydrateSliderImagePriorities(slider);
-        updateProductCarouselMobileState(slider);
+      syncProductCarouselPosition(slider, false);
+      slider.isAnimating = false;
+      slider.animatingSinceTs = 0;
+      slider.pendingDirection = 0;
+      resetProductCarouselTransientState(slider);
+      hydrateSliderImagePriorities(slider);
+      updateProductCarouselMobileState(slider);
       });
 
       syncProductCardInteractivity();
@@ -1690,7 +1691,11 @@
 
     const moveProductCarousel = (slider, direction) => {
       const { trackEl } = slider;
-      if (slider.isAnimating || !trackEl?.firstElementChild || slider.sourceCards.length <= 1) return;
+      if (slider.isAnimating) {
+        slider.pendingDirection = direction;
+        return;
+      }
+      if (!trackEl?.firstElementChild || slider.sourceCards.length <= 1) return;
       setProductCarouselMotionReady(slider, true);
 
       if (slider.transitionFallbackTimerId) {
@@ -1741,6 +1746,13 @@
         hydrateSliderImagePriorities(slider);
         updateProductCarouselMobileState(slider);
         unmarkProductCarouselSilentSwap(slider);
+        if (slider.pendingDirection) {
+          const queuedDirection = slider.pendingDirection;
+          slider.pendingDirection = 0;
+          window.requestAnimationFrame(() => {
+            moveProductCarousel(slider, queuedDirection);
+          });
+        }
       };
 
       const handleTrackTransitionEnd = (event) => {
@@ -1799,19 +1811,6 @@
           }
           moveProductCarousel(slider, 1);
         }, PRODUCT_FLOW_INTERVAL_MS);
-      });
-    };
-
-    const syncProductCardHeights = () => {
-      if (!productCarousels.length) return;
-
-      productCarousels.forEach((carouselEl) => {
-        const productCards = Array.from(carouselEl.querySelectorAll('.product-card'));
-        if (!productCards.length) return;
-        carouselEl.style.removeProperty('--product-card-height');
-        productCards.forEach((card) => {
-          card.style.removeProperty('height');
-        });
       });
     };
 
@@ -2099,7 +2098,6 @@
         window.requestAnimationFrame(() => {
           clearCarouselFocus();
           syncProductCarouselLayout();
-          syncProductCardHeights();
           syncProductCardInteractivity();
           startProductCarousels();
         });
@@ -2136,7 +2134,6 @@
       allowImmediateModalHide = false;
       window.requestAnimationFrame(() => {
         syncProductCarouselLayout();
-        syncProductCardHeights();
         syncProductCardInteractivity();
       });
     });
@@ -2281,7 +2278,6 @@
     if (productCarouselsState.length) {
       window.requestAnimationFrame(() => {
         syncProductCarouselLayout();
-        syncProductCardHeights();
         syncProductCardInteractivity();
         startProductCarousels();
       });
@@ -2290,7 +2286,6 @@
         'load',
         () => {
           syncProductCarouselLayout();
-          syncProductCardHeights();
           syncProductCardInteractivity();
         },
         { once: true }
@@ -2337,7 +2332,6 @@
       updateSectionOrbParallax();
       syncHeroParallaxLayout();
       syncProductCarouselLayout();
-      syncProductCardHeights();
       syncProductCardInteractivity();
       lenis?.resize();
     });
@@ -2376,10 +2370,23 @@
       passive: true,
       once: true
     });
+    window.addEventListener('touchmove', markUserInteractedBeforeInitialHashAlign, {
+      passive: true,
+      once: true
+    });
     window.addEventListener('wheel', markUserInteractedBeforeInitialHashAlign, {
       passive: true,
       once: true
     });
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (window.scrollY > 2) {
+          markUserInteractedBeforeInitialHashAlign();
+        }
+      },
+      { passive: true, once: true }
+    );
     let navAnchorSettleToken = 0;
     const alignAnchorTarget = (target, isHomeTarget) => {
       if (!target) return true;
@@ -2542,7 +2549,8 @@
     window.addEventListener(
       'load',
       () => {
-        if (isMobileViewport() && userInteractedBeforeInitialHashAlign) return;
+        if (isMobileViewport()) return;
+        if (userInteractedBeforeInitialHashAlign) return;
         alignFromCurrentHash().catch(() => {});
       },
       { once: true }
