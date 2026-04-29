@@ -922,6 +922,22 @@
         lastScrollY = window.scrollY;
         performScrollEffects();
       });
+
+      const syncLenisScrollState = () => {
+        const hash = window.location.hash;
+        if (hash && hash !== '#anasayfa') return;
+        const currentY = window.scrollY;
+        if (!Number.isFinite(currentY) || currentY <= 1) return;
+        // After reload, the browser may restore scroll position after Lenis has
+        // initialized. Sync Lenis' internal state so the next wheel scroll does
+        // not snap back to the top.
+        window.requestAnimationFrame(() => {
+          lenis.scrollTo(currentY, { immediate: true, force: true });
+        });
+      };
+
+      window.addEventListener('pageshow', syncLenisScrollState);
+      window.addEventListener('load', syncLenisScrollState, { once: true });
     }
 
     refreshCollapsedNavOffset();
