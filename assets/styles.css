@@ -3642,11 +3642,6 @@ footer .text-body-secondary,
     margin: 0 !important;
   }
 
-  .product-carousel .carousel-inner {
-    overflow: hidden;
-    touch-action: pan-y;
-  }
-
   .product-carousel-track {
     gap: 0.9rem;
   }
