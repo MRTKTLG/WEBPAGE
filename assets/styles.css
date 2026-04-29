@@ -463,6 +463,10 @@ footer .container {
   background: transparent;
 }
 
+.lang-switch-mobile {
+  display: none;
+}
+
 .lang-btn {
   border: 0;
   border-radius: 999px;
@@ -550,12 +554,21 @@ footer .container {
 
   .navbar-collapse .navbar-nav {
     padding-top: 0.55rem;
+    gap: 0.5rem;
+  }
+
+  .navbar-collapse .navbar-nav .nav-link {
+    padding-block: 0.55rem !important;
   }
 
   .nav-lang-item {
-    justify-content: flex-start;
-    margin-top: 0.45rem;
-    padding-inline: 0.8rem;
+    display: none;
+  }
+
+  .lang-switch-mobile {
+    display: inline-flex;
+    margin-left: auto;
+    margin-right: 0.5rem;
   }
 }
 
