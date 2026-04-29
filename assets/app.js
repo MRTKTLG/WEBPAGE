@@ -13,6 +13,8 @@
     const statsSectionEl = document.getElementById('sayaclar');
     const productsSectionEl = document.getElementById('urunler');
     const navLinks = Array.from(document.querySelectorAll('a.nav-link[href^="#"]'));
+    const i18nNodes = Array.from(document.querySelectorAll('[data-i18n]'));
+    const languageButtons = Array.from(document.querySelectorAll('[data-lang-btn]'));
     const heroCarousel = document.getElementById('heroCarousel');
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
 
@@ -34,6 +36,237 @@
     const productFullscreenNativeToggleEl = productFullscreenModalEl?.querySelector(
       '.product-fullscreen-native-toggle'
     );
+    const LANGUAGE_STORAGE_KEY = 'nova-language';
+    const i18nDictionary = {
+      tr: {
+        'hero.slide1.desc':
+          'Yumuşak dokulu ipliklerle hazırlanan sevimli ayıcıklar, hediye ve oda dekoru için sıcak bir seçim.',
+        'hero.slide2.desc':
+          'Renk, ifade ve detayları özenle çalışılmış amigurumi kedi tasarımları her siparişte ayrı karakter taşır.',
+        'hero.slide3.desc':
+          'Sıcacık renk paleti ve dengeli formuyla hazırlanan özel figürler, koleksiyonluk ve anlamlı bir hatıraya dönüşür.',
+        'nav.home': 'Anasayfa',
+        'nav.about': 'Hakkımda',
+        'nav.products': 'Ürünler',
+        'nav.faq': 'SSS',
+        'nav.contact': 'İletişim',
+        'about.ghost': 'Hakkımda',
+        'about.title': 'Hakkımda',
+        'about.lead':
+          'Her amigurumi tasarımında estetik görünümü, temiz işçiliği ve özenli detayları bir araya getiriyorum. Hazırladığım her ürünün, ilk bakışta özen hissi veren ve uzun süre keyifle kullanılabilecek özel bir parça olmasını önemsiyorum.',
+        'about.qualityTitle': 'Kalite ve Üretim Anlayışım',
+        'about.qualityDesc':
+          'Malzeme seçiminden son kontrole kadar her aşamada kaliteyi ön planda tutuyorum. Yumuşak dokulu iplikler, dengeli form ve titiz işçilikle her modelin düzenli, sağlam ve güven veren bir standartta hazırlanmasına özen gösteriyorum. Sipariş öncesinde tüm detayları netleştiriyor, üretim sürecini başından teslimata kadar özenle takip ediyorum.',
+        'about.designTitle': 'Tasarım Yaklaşımım',
+        'about.designDesc':
+          'Tasarımlarımı zamansız, sade ve sıcak bir çizgide hazırlıyor; çocuklara keyifle eşlik edecek, ailelerin ise güvenle tercih edebileceği ürünler ortaya koyuyorum. Her tasarımın sevimli görünmenin ötesinde, özenli ve özel hissettiren bir bütün olmasını önemsiyorum.',
+        'journey.title': 'Bir siparişin incelikle tamamlanan hikâyesi',
+        'journey.step1.title': 'Siparişin Alınması',
+        'journey.step1.desc':
+          'Model, renk ve özel detaylar netleştiğinde hazırlık süreci özenle planlanır.',
+        'journey.step2.title': 'Hazırlık Süreci',
+        'journey.step2.desc':
+          'Tasarım, belirlenen detaylara göre özenle hazırlanır ve karakterini kazanmaya başlar.',
+        'journey.step3.title': 'Kargoya Teslim',
+        'journey.step3.desc':
+          'Son kontroller tamamlandığında ürün özenli bir sunumla kargoya teslim edilir.',
+        'journey.step4.title': 'Teslimat Anı',
+        'journey.step4.desc':
+          'Teslimatla birlikte özenle hazırlanan tasarım, özel ve anlamlı bir hediyeye dönüşür.',
+        'counter.title': 'Her ilmekte özen, her siparişte mutluluk',
+        'counter.item1': 'Özel Tasarım',
+        'counter.item2': 'Tamamlanan Sipariş',
+        'counter.item3': 'Mutlu Müşteri',
+        'products.ghost': 'Ürünler',
+        'products.title': 'Ürünler',
+        'products.lead':
+          'El emeğiyle hazırlanan amigurumi tasarımları arasından en sevilen modelleri ve avantajlı fiyatlarla sunduğum seçili ürünleri burada inceleyebilirsin.',
+        'products.popular': 'Popüler Ürünler',
+        'products.sale': 'Kampanyalı Ürünler',
+        'products.other': 'Diğer Ürünler',
+        'faq.ghost': 'Sık Sorulan Sorular',
+        'faq.title': 'Sık Sorulan Sorular',
+        'faq.lead':
+          'Sipariş süreci, teslimat ve kişiye özel hazırlıklarla ilgili en çok sorulan konuları burada topladım. Aklına takılan farklı bir detay olursa iletişim bölümünden her zaman yazabilirsin.',
+        'faq.q1.title': 'Siparişim ne kadar sürede hazırlanıyor?',
+        'faq.q1.body':
+          'Hazır modellerde ortalama 3-6 iş günü içinde üretimi tamamlıyorum. Kişiye özel siparişlerde modelin detayına göre net hazırlık süresini sipariş öncesinde birlikte belirtiyorum.',
+        'faq.q2.title': 'Kişiye özel renk veya model seçebiliyor muyum?',
+        'faq.q2.body':
+          'Evet. Renk, boyut ve bazı tasarım detaylarını birlikte netleştirerek sana özel bir çalışma hazırlayabiliyorum. Referans görsel veya fikir paylaşman süreci daha da kolaylaştırıyor.',
+        'faq.q3.title': 'Türkiye geneline gönderim yapıyor musunuz?',
+        'faq.q3.body':
+          "Evet, Türkiye'nin tüm şehirlerine kargo gönderimi yapıyorum. Paketleme sırasında ürünün formunu koruyacak şekilde özenli bir hazırlık yapıyor, gönderi bilgisini de seninle paylaşıyorum.",
+        'faq.q4.title': 'Ürünü hediye olarak göndermek istersem yardımcı oluyor musunuz?',
+        'faq.q4.body':
+          'Tabii. Hediye notu eklemek, daha özenli bir paketleme hazırlamak veya teslimat zamanını planlamak gibi detaylarda yardımcı oluyorum. Sipariş sırasında bunu belirtmen yeterli.',
+        'faq.q5.title': 'Sipariş vermeden önce süreç hakkında bilgi alabilir miyim?',
+        'faq.q5.body':
+          'Elbette. Sipariş vermeden önce model, fiyat aralığı, hazırlık süresi ve uygunluk hakkında mesaj atabilirsin. Önce tüm detayları netleştirip ardından üretime geçmeyi tercih ediyorum.',
+        'testimonials.title': 'Her emeğin ilhamı müşteri memnuniyetidir',
+        'testimonials.aria': 'Müşteri yorumları',
+        'testimonials.t1':
+          'Sipariş öncesinde tüm detayları sabırla konuştuk, süreç boyunca düzenli bilgilendirme aldım ve ürün elime ulaştığında fotoğraftakinden bile daha özenli ve kaliteli olduğunu görmek beni gerçekten çok mutlu etti.',
+        'testimonials.t2':
+          'Renk ve model seçiminde her ayrıntı tek tek konuşuldu. Sonuç tam hayal ettiğim gibi oldu ve kutuyu açar açmaz emeğin ne kadar özenli olduğunu hissettim.',
+        'testimonials.t3':
+          'Dikişlerin temizliği, dolgunun dengesi ve genel görünüm gerçekten çok başarılıydı. Fotoğrafta güzel görünüyordu ama canlı hali çok daha etkileyiciydi.',
+        'testimonials.t4':
+          'İstediğim renkleri ve modeli birebir uygulamış olması harikaydı; ayrıca paketleme o kadar özenliydi ki ürünü hem kendim için çok keyifle açtım hem de hediye etmeden önce içim tamamen rahattı.',
+        'testimonials.t5':
+          'Üretim süreci boyunca sürekli bilgilendirildim. Sanki hazır ürün almıyormuşum da benim için özel bir hikaye hazırlanıyormuş gibi hissettirdi.',
+        'testimonials.t6':
+          'Hediye ettiğim kişi ilk bakışta çok etkilendi. Hem sevimli hem kaliteli bir iş çıkmıştı; uzun süre saklanacak özel bir hediye oldu.',
+        'testimonials.t7':
+          'İletişim baştan sona çok hızlı ve güven vericiydi, her soruma hemen dönüş aldım ve teslimat da konuştuğumuz tarihte sorunsuz şekilde gerçekleştiği için tüm deneyim beklediğimden çok daha rahattı.',
+        'testimonials.t8':
+          'Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.',
+        'testimonials.t9':
+          'Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.',
+        'contact.title': 'İletişim',
+        'contact.lead':
+          'Yeni model talebi, özel renk isteği veya hediye siparişi için doğrudan yazabilirsiniz.',
+        'contact.name': 'Ad Soyad',
+        'contact.email': 'E-posta',
+        'contact.phone': 'Telefon',
+        'contact.message': 'Mesaj',
+        'contact.submit': 'Gönder',
+        'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
+      },
+      en: {
+        'hero.slide1.desc':
+          'Cute bears crafted with soft-texture yarn are a warm choice for gifts and room décor.',
+        'hero.slide2.desc':
+          'Amigurumi cat designs with carefully refined colors, expressions, and details bring a unique character to every order.',
+        'hero.slide3.desc':
+          'With a cozy color palette and balanced form, these special figures become collectible and meaningful keepsakes.',
+        'nav.home': 'Home',
+        'nav.about': 'About',
+        'nav.products': 'Products',
+        'nav.faq': 'FAQ',
+        'nav.contact': 'Contact',
+        'about.ghost': 'About',
+        'about.title': 'About',
+        'about.lead':
+          'In every amigurumi design, I bring together aesthetic appearance, clean craftsmanship, and thoughtful details. I care that each piece feels special at first glance and can be enjoyed for a long time.',
+        'about.qualityTitle': 'My Quality & Production Approach',
+        'about.qualityDesc':
+          'From material selection to final checks, I prioritize quality at every stage. With soft-texture yarns, balanced form, and meticulous workmanship, I ensure each model is prepared to a consistent, durable, and trustworthy standard. Before production, I clarify all details and carefully follow the process from start to delivery.',
+        'about.designTitle': 'My Design Approach',
+        'about.designDesc':
+          'I design in a timeless, simple, and warm style—creating products children can enjoy and families can choose with confidence. Beyond being cute, I care that every design feels thoughtful and truly special as a whole.',
+        'journey.title': 'The carefully completed story of an order',
+        'journey.step1.title': 'Order Received',
+        'journey.step1.desc':
+          'Once the model, colors, and special details are finalized, the preparation process is planned with care.',
+        'journey.step2.title': 'Preparation Process',
+        'journey.step2.desc':
+          'The design is crafted according to the agreed details and begins to gain its character.',
+        'journey.step3.title': 'Shipped',
+        'journey.step3.desc':
+          'After final checks, the product is handed over to shipping with careful presentation.',
+        'journey.step4.title': 'Delivery Moment',
+        'journey.step4.desc':
+          'With delivery, the carefully crafted design turns into a special and meaningful gift.',
+        'counter.title': 'Care in every stitch, happiness in every order',
+        'counter.item1': 'Custom Designs',
+        'counter.item2': 'Completed Orders',
+        'counter.item3': 'Happy Customers',
+        'products.ghost': 'Products',
+        'products.title': 'Products',
+        'products.lead':
+          'Here you can explore the most loved handmade amigurumi designs and selected pieces offered at great prices.',
+        'products.popular': 'Popular Products',
+        'products.sale': 'Discounted Products',
+        'products.other': 'More Products',
+        'faq.ghost': 'Frequently Asked Questions',
+        'faq.title': 'Frequently Asked Questions',
+        'faq.lead':
+          'I gathered the most frequently asked topics about ordering, delivery, and personalized preparation here. If you have another question in mind, you can always message me via the contact section.',
+        'faq.q1.title': 'How long does it take to prepare my order?',
+        'faq.q1.body':
+          'For ready models, I complete production in about 3–6 business days. For custom orders, I share a clear preparation timeline based on the model details before confirming the order.',
+        'faq.q2.title': 'Can I choose custom colors or a custom model?',
+        'faq.q2.body':
+          'Yes. We can finalize color, size, and certain design details together to prepare a custom piece for you. Sharing a reference image or idea makes the process even easier.',
+        'faq.q3.title': 'Do you ship across all of Turkey?',
+        'faq.q3.body':
+          'Yes, I ship to all cities in Turkey. I package each product carefully to preserve its form and share shipment details with you.',
+        'faq.q4.title': 'Can you help if I want to send it as a gift?',
+        'faq.q4.body':
+          'Of course. I can help with details like adding a gift note, preparing extra-careful packaging, or planning delivery timing. Just mention this during the order.',
+        'faq.q5.title': 'Can I get information before placing an order?',
+        'faq.q5.body':
+          'Absolutely. Before ordering, you can message me about the model, price range, preparation time, and availability. I prefer clarifying all details first, then starting production.',
+        'testimonials.title': 'Customer satisfaction inspires every piece',
+        'testimonials.aria': 'Customer reviews',
+        'testimonials.t1':
+          'Before ordering, we discussed every detail patiently. I received regular updates throughout the process, and when the product arrived, seeing it even more careful and higher quality than the photos made me truly happy.',
+        'testimonials.t2':
+          'Every detail was discussed one by one during color and model selection. The result was exactly as I imagined, and the care in the craftsmanship was clear the moment I opened the box.',
+        'testimonials.t3':
+          'The stitching quality, stuffing balance, and overall appearance were truly impressive. It looked great in photos, but in person it was even better.',
+        'testimonials.t4':
+          'It was amazing that my requested colors and model were followed exactly. The packaging was so thoughtful that I enjoyed opening it myself and felt completely confident before gifting it.',
+        'testimonials.t5':
+          'I was informed continuously throughout the production process. It felt less like buying a ready product and more like a special story made just for me.',
+        'testimonials.t6':
+          'The person I gifted it to was impressed at first glance. It was both cute and high quality, and became a special gift to keep for a long time.',
+        'testimonials.t7':
+          'Communication was fast and reassuring from start to finish. Every question was answered quickly, and delivery happened smoothly on the date we agreed, so the whole experience felt easier than I expected.',
+        'testimonials.t8':
+          'Both the warm communication and the precision in craftsmanship were clearly noticeable. This amigurumi gift made the recipient very happy and turned out even more special than I expected.',
+        'testimonials.t9':
+          'The fabric, yarn, and overall form quality were far better than I expected. You could feel the handmade care in every detail, and it genuinely made me smile on delivery.',
+        'contact.title': 'Contact',
+        'contact.lead':
+          'You can directly message me for new model requests, custom color preferences, or gift orders.',
+        'contact.name': 'Full Name',
+        'contact.email': 'Email',
+        'contact.phone': 'Phone',
+        'contact.message': 'Message',
+        'contact.submit': 'Send',
+        'footer.signature': 'Lovingly crafted by her husband.'
+      }
+    };
+    const getStoredLanguage = () => {
+      const storedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      return storedLanguage === 'en' ? 'en' : 'tr';
+    };
+    const applyLanguage = (languageCode) => {
+      const dictionary = i18nDictionary[languageCode] || i18nDictionary.tr;
+      document.documentElement.lang = languageCode;
+      i18nNodes.forEach((node) => {
+        const key = node.getAttribute('data-i18n');
+        if (!key || !dictionary[key]) return;
+        const translatedText = dictionary[key];
+        const targetAttribute = node.getAttribute('data-i18n-attr');
+        if (targetAttribute) {
+          node.setAttribute(targetAttribute, translatedText);
+        }
+        if (!targetAttribute) {
+          node.textContent = translatedText;
+        }
+        if (node.hasAttribute('data-text')) {
+          node.setAttribute('data-text', translatedText);
+        }
+      });
+      languageButtons.forEach((buttonEl) => {
+        const isActive = buttonEl.getAttribute('data-lang-btn') === languageCode;
+        buttonEl.classList.toggle('is-active', isActive);
+        buttonEl.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    };
+    const initialLanguage = getStoredLanguage();
+    applyLanguage(initialLanguage);
+    languageButtons.forEach((buttonEl) => {
+      buttonEl.addEventListener('click', () => {
+        const languageCode = buttonEl.getAttribute('data-lang-btn');
+        if (languageCode !== 'tr' && languageCode !== 'en') return;
+        applyLanguage(languageCode);
+        window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageCode);
+      });
+    });
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
     const isMobileViewport = () => window.innerWidth < 992;

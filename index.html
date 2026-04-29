@@ -52,11 +52,17 @@
         </div>
         <div class="collapse navbar-collapse" id="menu">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="#anasayfa">Anasayfa</a></li>
-            <li class="nav-item"><a class="nav-link" href="#hakkimizda">Hakkımda</a></li>
-            <li class="nav-item"><a class="nav-link" href="#urunler">Ürünler</a></li>
-            <li class="nav-item"><a class="nav-link" href="#sss">SSS</a></li>
-            <li class="nav-item"><a class="nav-link" href="#iletisim">İletişim</a></li>
+            <li class="nav-item"><a class="nav-link" href="#anasayfa" data-i18n="nav.home">Anasayfa</a></li>
+            <li class="nav-item"><a class="nav-link" href="#hakkimizda" data-i18n="nav.about">Hakkımda</a></li>
+            <li class="nav-item"><a class="nav-link" href="#urunler" data-i18n="nav.products">Ürünler</a></li>
+            <li class="nav-item"><a class="nav-link" href="#sss" data-i18n="nav.faq">SSS</a></li>
+            <li class="nav-item"><a class="nav-link" href="#iletisim" data-i18n="nav.contact">İletişim</a></li>
+            <li class="nav-item nav-lang-item">
+              <div class="lang-switch" role="group" aria-label="Dil seçimi">
+                <button type="button" class="lang-btn is-active" data-lang-btn="tr">TR</button>
+                <button type="button" class="lang-btn" data-lang-btn="en">EN</button>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
@@ -79,7 +85,7 @@
                       <span class="hero-title-front">Düşü</span>
                     </h1>
                   </div>
-                  <p>
+                  <p data-i18n="hero.slide1.desc">
                     Yumuşak dokulu ipliklerle hazırlanan sevimli ayıcıklar, hediye ve oda dekoru
                     için sıcak bir seçim.
                   </p>
@@ -105,7 +111,7 @@
                       <span class="hero-title-front">Masalı</span>
                     </h2>
                   </div>
-                  <p>
+                  <p data-i18n="hero.slide2.desc">
                     Renk, ifade ve detayları özenle çalışılmış amigurumi kedi tasarımları her
                     siparişte ayrı karakter taşır.
                   </p>
@@ -131,7 +137,7 @@
                       <span class="hero-title-front">Neşesi</span>
                     </h2>
                   </div>
-                  <p>
+                  <p data-i18n="hero.slide3.desc">
                     Sıcacık renk paleti ve dengeli formuyla hazırlanan özel figürler, koleksiyonluk
                     ve anlamlı bir hatıraya dönüşür.
                   </p>
@@ -201,26 +207,26 @@
           <section id="hakkimizda" class="section-ghost">
             <div class="container">
               <div class="ghost-title-wrap">
-                <span class="ghost-heading" aria-hidden="true">Hakkımda</span>
-                <h2 class="section-title mb-3">Hakkımda</h2>
+                <span class="ghost-heading" aria-hidden="true" data-i18n="about.ghost">Hakkımda</span>
+                <h2 class="section-title mb-3" data-i18n="about.title">Hakkımda</h2>
               </div>
-              <p class="lead mb-3">
+              <p class="lead mb-3" data-i18n="about.lead">
                 Her amigurumi tasarımında estetik görünümü, temiz işçiliği ve özenli detayları bir
                 araya getiriyorum. Hazırladığım her ürünün, ilk bakışta özen hissi veren ve uzun
                 süre keyifle kullanılabilecek özel bir parça olmasını önemsiyorum.
               </p>
-              <h3 class="fs-6 fw-semibold lh-base text-dark mt-4 mb-3">
+              <h3 class="fs-6 fw-semibold lh-base text-dark mt-4 mb-3" data-i18n="about.qualityTitle">
                 Kalite ve Üretim Anlayışım
               </h3>
-              <p>
+              <p data-i18n="about.qualityDesc">
                 Malzeme seçiminden son kontrole kadar her aşamada kaliteyi ön planda tutuyorum.
                 Yumuşak dokulu iplikler, dengeli form ve titiz işçilikle her modelin düzenli, sağlam
                 ve güven veren bir standartta hazırlanmasına özen gösteriyorum. Sipariş öncesinde
                 tüm detayları netleştiriyor, üretim sürecini başından teslimata kadar özenle takip
                 ediyorum.
               </p>
-              <h3 class="fs-6 fw-semibold lh-base text-dark mt-4 mb-3">Tasarım Yaklaşımım</h3>
-              <p class="mb-0">
+              <h3 class="fs-6 fw-semibold lh-base text-dark mt-4 mb-3" data-i18n="about.designTitle">Tasarım Yaklaşımım</h3>
+              <p class="mb-0" data-i18n="about.designDesc">
                 Tasarımlarımı zamansız, sade ve sıcak bir çizgide hazırlıyor; çocuklara keyifle
                 eşlik edecek, ailelerin ise güvenle tercih edebileceği ürünler ortaya koyuyorum. Her
                 tasarımın sevimli görünmenin ötesinde, özenli ve özel hissettiren bir bütün olmasını
@@ -242,6 +248,7 @@
                   <span
                     class="stats-title-line stats-title-line-1"
                     data-text="Bir siparişin incelikle tamamlanan hikâyesi"
+                    data-i18n="journey.title"
                     >Bir siparişin incelikle tamamlanan hikâyesi</span
                   >
                 </h2>
@@ -266,10 +273,10 @@
                       />
                     </div>
                   </div>
-                  <h3 class="fs-6 fw-semibold lh-base text-dark" data-step="1">
+                  <h3 class="fs-6 fw-semibold lh-base text-dark" data-step="1" data-i18n="journey.step1.title">
                     Siparişin Alınması
                   </h3>
-                  <p>
+                  <p data-i18n="journey.step1.desc">
                     Model, renk ve özel detaylar netleştiğinde hazırlık süreci özenle planlanır.
                   </p>
                 </article>
@@ -292,8 +299,8 @@
                       />
                     </div>
                   </div>
-                  <h3 class="fs-6 fw-semibold lh-base text-dark" data-step="2">Hazırlık Süreci</h3>
-                  <p>
+                  <h3 class="fs-6 fw-semibold lh-base text-dark" data-step="2" data-i18n="journey.step2.title">Hazırlık Süreci</h3>
+                  <p data-i18n="journey.step2.desc">
                     Tasarım, belirlenen detaylara göre özenle hazırlanır ve karakterini kazanmaya
                     başlar.
                   </p>
@@ -317,8 +324,8 @@
                       />
                     </div>
                   </div>
-                  <h3 class="fs-6 fw-semibold lh-base text-dark" data-step="3">Kargoya Teslim</h3>
-                  <p>
+                  <h3 class="fs-6 fw-semibold lh-base text-dark" data-step="3" data-i18n="journey.step3.title">Kargoya Teslim</h3>
+                  <p data-i18n="journey.step3.desc">
                     Son kontroller tamamlandığında ürün özenli bir sunumla kargoya teslim edilir.
                   </p>
                 </article>
@@ -341,8 +348,8 @@
                       />
                     </div>
                   </div>
-                  <h3 class="fs-6 fw-semibold lh-base text-dark" data-step="4">Teslimat Anı</h3>
-                  <p>
+                  <h3 class="fs-6 fw-semibold lh-base text-dark" data-step="4" data-i18n="journey.step4.title">Teslimat Anı</h3>
+                  <p data-i18n="journey.step4.desc">
                     Teslimatla birlikte özenle hazırlanan tasarım, özel ve anlamlı bir hediyeye
                     dönüşür.
                   </p>
@@ -355,16 +362,16 @@
             <div class="container">
               <div class="mb-4">
                 <div class="ghost-title-wrap">
-                  <span class="ghost-heading" aria-hidden="true">Ürünler</span>
-                  <h2 class="section-title mb-0">Ürünler</h2>
+                  <span class="ghost-heading" aria-hidden="true" data-i18n="products.ghost">Ürünler</span>
+                  <h2 class="section-title mb-0" data-i18n="products.title">Ürünler</h2>
                 </div>
-                <p class="lead mb-0">
+                <p class="lead mb-0" data-i18n="products.lead">
                   El emeğiyle hazırlanan amigurumi tasarımları arasından en sevilen modelleri ve
                   avantajlı fiyatlarla sunduğum seçili ürünleri burada inceleyebilirsin.
                 </p>
               </div>
               <div class="product-carousel-group">
-                <h3 class="fs-6 fw-semibold lh-base text-dark mb-4">Popüler Ürünler</h3>
+                <h3 class="fs-6 fw-semibold lh-base text-dark mb-4" data-i18n="products.popular">Popüler Ürünler</h3>
                 <div
                   class="product-carousel product-carousel-featured"
                   aria-label="Popüler ürün carousel"
@@ -607,7 +614,7 @@
                 </div>
               </div>
               <div class="product-carousel-group">
-                <h3 class="fs-6 fw-semibold lh-base text-dark mb-4">Kampanyalı Ürünler</h3>
+                <h3 class="fs-6 fw-semibold lh-base text-dark mb-4" data-i18n="products.sale">Kampanyalı Ürünler</h3>
                 <div
                   class="product-carousel product-carousel-featured"
                   aria-label="Kampanyalı ürün carousel"
@@ -880,7 +887,7 @@
                 </div>
               </div>
               <div class="product-carousel-group">
-                <h3 class="fs-6 fw-semibold lh-base text-dark mb-4">Diğer Ürünler</h3>
+                <h3 class="fs-6 fw-semibold lh-base text-dark mb-4" data-i18n="products.other">Diğer Ürünler</h3>
                 <div
                   class="product-carousel product-carousel-compact"
                   aria-label="Diğer ürünler carousel"
@@ -1133,6 +1140,7 @@
                 <span
                   class="stats-title-line stats-title-line-1"
                   data-text="Her ilmekte özen, her siparişte mutluluk"
+                  data-i18n="counter.title"
                   >Her ilmekte özen, her siparişte mutluluk</span
                 >
               </h2>
@@ -1147,7 +1155,7 @@
                       >
                         684+
                       </p>
-                      <p class="fs-6 fw-medium lh-base text-body-secondary mb-0">Özel Tasarım</p>
+                      <p class="fs-6 fw-medium lh-base text-body-secondary mb-0" data-i18n="counter.item1">Özel Tasarım</p>
                     </div>
                   </div>
                 </div>
@@ -1161,7 +1169,7 @@
                       >
                         1376+
                       </p>
-                      <p class="fs-6 fw-medium lh-base text-body-secondary mb-0">
+                      <p class="fs-6 fw-medium lh-base text-body-secondary mb-0" data-i18n="counter.item2">
                         Tamamlanan Sipariş
                       </p>
                     </div>
@@ -1177,7 +1185,7 @@
                       >
                         825+
                       </p>
-                      <p class="fs-6 fw-medium lh-base text-body-secondary mb-0">Mutlu Müşteri</p>
+                      <p class="fs-6 fw-medium lh-base text-body-secondary mb-0" data-i18n="counter.item3">Mutlu Müşteri</p>
                     </div>
                   </div>
                 </div>
@@ -1189,10 +1197,10 @@
             <div class="container">
               <div class="faq-shell">
                 <div class="ghost-title-wrap">
-                  <span class="ghost-heading" aria-hidden="true">Sık Sorulan Sorular</span>
-                  <h2 class="section-title mb-3">Sık Sorulan Sorular</h2>
+                  <span class="ghost-heading" aria-hidden="true" data-i18n="faq.ghost">Sık Sorulan Sorular</span>
+                  <h2 class="section-title mb-3" data-i18n="faq.title">Sık Sorulan Sorular</h2>
                 </div>
-                <p class="lead mb-4">
+                <p class="lead mb-4" data-i18n="faq.lead">
                   Sipariş süreci, teslimat ve kişiye özel hazırlıklarla ilgili en çok sorulan
                   konuları burada topladım. Aklına takılan farklı bir detay olursa iletişim
                   bölümünden her zaman yazabilirsin.
@@ -1208,7 +1216,7 @@
                         aria-expanded="true"
                         aria-controls="q1"
                       >
-                        Siparişim ne kadar sürede hazırlanıyor?
+                        <span data-i18n="faq.q1.title">Siparişim ne kadar sürede hazırlanıyor?</span>
                         <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                           <path d="M6 9l6 6l6-6" />
                         </svg>
@@ -1219,7 +1227,7 @@
                       class="accordion-collapse collapse show"
                       data-bs-parent="#faqAccordion"
                     >
-                      <div class="accordion-body fs-6 lh-base text-body-secondary">
+                      <div class="accordion-body fs-6 lh-base text-body-secondary" data-i18n="faq.q1.body">
                         Hazır modellerde ortalama 3-6 iş günü içinde üretimi tamamlıyorum. Kişiye
                         özel siparişlerde modelin detayına göre net hazırlık süresini sipariş
                         öncesinde birlikte belirtiyorum.
@@ -1236,14 +1244,14 @@
                         aria-expanded="false"
                         aria-controls="q2"
                       >
-                        Kişiye özel renk veya model seçebiliyor muyum?
+                        <span data-i18n="faq.q2.title">Kişiye özel renk veya model seçebiliyor muyum?</span>
                         <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                           <path d="M6 9l6 6l6-6" />
                         </svg>
                       </button>
                     </h3>
                     <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                      <div class="accordion-body fs-6 lh-base text-body-secondary">
+                      <div class="accordion-body fs-6 lh-base text-body-secondary" data-i18n="faq.q2.body">
                         Evet. Renk, boyut ve bazı tasarım detaylarını birlikte netleştirerek sana
                         özel bir çalışma hazırlayabiliyorum. Referans görsel veya fikir paylaşman
                         süreci daha da kolaylaştırıyor.
@@ -1260,14 +1268,14 @@
                         aria-expanded="false"
                         aria-controls="q3"
                       >
-                        Türkiye geneline gönderim yapıyor musunuz?
+                        <span data-i18n="faq.q3.title">Türkiye geneline gönderim yapıyor musunuz?</span>
                         <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                           <path d="M6 9l6 6l6-6" />
                         </svg>
                       </button>
                     </h3>
                     <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                      <div class="accordion-body fs-6 lh-base text-body-secondary">
+                      <div class="accordion-body fs-6 lh-base text-body-secondary" data-i18n="faq.q3.body">
                         Evet, Türkiye'nin tüm şehirlerine kargo gönderimi yapıyorum. Paketleme
                         sırasında ürünün formunu koruyacak şekilde özenli bir hazırlık yapıyor,
                         gönderi bilgisini de seninle paylaşıyorum.
@@ -1284,14 +1292,14 @@
                         aria-expanded="false"
                         aria-controls="q4"
                       >
-                        Ürünü hediye olarak göndermek istersem yardımcı oluyor musunuz?
+                        <span data-i18n="faq.q4.title">Ürünü hediye olarak göndermek istersem yardımcı oluyor musunuz?</span>
                         <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                           <path d="M6 9l6 6l6-6" />
                         </svg>
                       </button>
                     </h3>
                     <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                      <div class="accordion-body fs-6 lh-base text-body-secondary">
+                      <div class="accordion-body fs-6 lh-base text-body-secondary" data-i18n="faq.q4.body">
                         Tabii. Hediye notu eklemek, daha özenli bir paketleme hazırlamak veya
                         teslimat zamanını planlamak gibi detaylarda yardımcı oluyorum. Sipariş
                         sırasında bunu belirtmen yeterli.
@@ -1308,14 +1316,14 @@
                         aria-expanded="false"
                         aria-controls="q5"
                       >
-                        Sipariş vermeden önce süreç hakkında bilgi alabilir miyim?
+                        <span data-i18n="faq.q5.title">Sipariş vermeden önce süreç hakkında bilgi alabilir miyim?</span>
                         <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                           <path d="M6 9l6 6l6-6" />
                         </svg>
                       </button>
                     </h3>
                     <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                      <div class="accordion-body fs-6 lh-base text-body-secondary">
+                      <div class="accordion-body fs-6 lh-base text-body-secondary" data-i18n="faq.q5.body">
                         Elbette. Sipariş vermeden önce model, fiyat aralığı, hazırlık süresi ve
                         uygunluk hakkında mesaj atabilirsin. Önce tüm detayları netleştirip ardından
                         üretime geçmeyi tercih ediyorum.
@@ -1335,16 +1343,17 @@
                 <span
                   class="stats-title-line stats-title-line-1"
                   data-text="Her emeğin ilhamı müşteri memnuniyetidir"
+                  data-i18n="testimonials.title"
                   >Her emeğin ilhamı müşteri memnuniyetidir</span
                 >
               </h2>
-              <div class="testimonial-marquee" aria-label="Müşteri yorumları">
+              <div class="testimonial-marquee" aria-label="Müşteri yorumları" data-i18n-attr="aria-label" data-i18n="testimonials.aria">
                 <div class="testimonial-column">
                   <div class="testimonial-track">
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t1">
                           Sipariş öncesinde tüm detayları sabırla konuştuk, süreç boyunca düzenli
                           bilgilendirme aldım ve ürün elime ulaştığında fotoğraftakinden bile daha
                           özenli ve kaliteli olduğunu görmek beni gerçekten çok mutlu etti.
@@ -1362,7 +1371,7 @@
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t2">
                           Renk ve model seçiminde her ayrıntı tek tek konuşuldu. Sonuç tam hayal
                           ettiğim gibi oldu ve kutuyu açar açmaz emeğin ne kadar özenli olduğunu
                           hissettim.
@@ -1380,7 +1389,7 @@
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t3">
                           Dikişlerin temizliği, dolgunun dengesi ve genel görünüm gerçekten çok
                           başarılıydı. Fotoğrafta güzel görünüyordu ama canlı hali çok daha
                           etkileyiciydi.
@@ -1398,7 +1407,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t1">
                           Sipariş öncesinde tüm detayları sabırla konuştuk, süreç boyunca düzenli
                           bilgilendirme aldım ve ürün elime ulaştığında fotoğraftakinden bile daha
                           özenli ve kaliteli olduğunu görmek beni gerçekten çok mutlu etti.
@@ -1416,7 +1425,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t2">
                           Renk ve model seçiminde her ayrıntı tek tek konuşuldu. Sonuç tam hayal
                           ettiğim gibi oldu ve kutuyu açar açmaz emeğin ne kadar özenli olduğunu
                           hissettim.
@@ -1434,7 +1443,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t3">
                           Dikişlerin temizliği, dolgunun dengesi ve genel görünüm gerçekten çok
                           başarılıydı. Fotoğrafta güzel görünüyordu ama canlı hali çok daha
                           etkileyiciydi.
@@ -1456,7 +1465,7 @@
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t4">
                           İstediğim renkleri ve modeli birebir uygulamış olması harikaydı; ayrıca
                           paketleme o kadar özenliydi ki ürünü hem kendim için çok keyifle açtım hem
                           de hediye etmeden önce içim tamamen rahattı.
@@ -1474,7 +1483,7 @@
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t5">
                           Üretim süreci boyunca sürekli bilgilendirildim. Sanki hazır ürün
                           almıyormuşum da benim için özel bir hikaye hazırlanıyormuş gibi
                           hissettirdi.
@@ -1492,7 +1501,7 @@
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t6">
                           Hediye ettiğim kişi ilk bakışta çok etkilendi. Hem sevimli hem kaliteli
                           bir iş çıkmıştı; uzun süre saklanacak özel bir hediye oldu.
                         </p>
@@ -1509,7 +1518,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t4">
                           İstediğim renkleri ve modeli birebir uygulamış olması harikaydı; ayrıca
                           paketleme o kadar özenliydi ki ürünü hem kendim için çok keyifle açtım hem
                           de hediye etmeden önce içim tamamen rahattı.
@@ -1527,7 +1536,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t5">
                           Üretim süreci boyunca sürekli bilgilendirildim. Sanki hazır ürün
                           almıyormuşum da benim için özel bir hikaye hazırlanıyormuş gibi
                           hissettirdi.
@@ -1545,7 +1554,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t6">
                           Hediye ettiğim kişi ilk bakışta çok etkilendi. Hem sevimli hem kaliteli
                           bir iş çıkmıştı; uzun süre saklanacak özel bir hediye oldu.
                         </p>
@@ -1566,7 +1575,7 @@
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t7">
                           İletişim baştan sona çok hızlı ve güven vericiydi, her soruma hemen dönüş
                           aldım ve teslimat da konuştuğumuz tarihte sorunsuz şekilde gerçekleştiği
                           için tüm deneyim beklediğimden çok daha rahattı.
@@ -1584,7 +1593,7 @@
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t8">
                           Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark
                           ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok
                           mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.
@@ -1602,7 +1611,7 @@
                     <article class="card testimonial-card">
                       <div class="card-body">
                         <div class="testimonial-rating" aria-label="5 üzerinden 5 puan">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t9">
                           Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği
                           olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten
                           gülümsedim.
@@ -1620,7 +1629,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t7">
                           İletişim baştan sona çok hızlı ve güven vericiydi, her soruma hemen dönüş
                           aldım ve teslimat da konuştuğumuz tarihte sorunsuz şekilde gerçekleştiği
                           için tüm deneyim beklediğimden çok daha rahattı.
@@ -1638,7 +1647,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t8">
                           Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark
                           ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok
                           mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.
@@ -1656,7 +1665,7 @@
                     <article class="card testimonial-card" aria-hidden="true">
                       <div class="card-body">
                         <div class="testimonial-rating">★★★★★</div>
-                        <p class="mb-0 text-body-secondary">
+                        <p class="mb-0 text-body-secondary" data-i18n="testimonials.t9">
                           Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği
                           olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten
                           gülümsedim.
@@ -1681,8 +1690,8 @@
             <div class="container">
               <div class="row g-4 align-items-start">
                 <div class="col-12 col-lg-6">
-                  <h2 class="section-title mb-3">İletişim</h2>
-                  <p class="fs-6 lh-base text-body-secondary mb-4">
+                  <h2 class="section-title mb-3" data-i18n="contact.title">İletişim</h2>
+                  <p class="fs-6 lh-base text-body-secondary mb-4" data-i18n="contact.lead">
                     Yeni model talebi, özel renk isteği veya hediye siparişi için doğrudan
                     yazabilirsiniz.
                   </p>
@@ -1706,19 +1715,19 @@
                 <div class="col-12 col-lg-6">
                   <form class="row g-3" novalidate>
                     <div class="col-12">
-                      <label for="name" class="form-label fw-medium text-dark mb-2">Ad Soyad</label>
+                      <label for="name" class="form-label fw-medium text-dark mb-2" data-i18n="contact.name">Ad Soyad</label>
                       <input id="name" name="name" type="text" class="form-control" required />
                     </div>
                     <div class="col-12 col-md-6">
-                      <label for="email" class="form-label fw-medium text-dark mb-2">E-posta</label>
+                      <label for="email" class="form-label fw-medium text-dark mb-2" data-i18n="contact.email">E-posta</label>
                       <input id="email" name="email" type="email" class="form-control" required />
                     </div>
                     <div class="col-12 col-md-6">
-                      <label for="phone" class="form-label fw-medium text-dark mb-2">Telefon</label>
+                      <label for="phone" class="form-label fw-medium text-dark mb-2" data-i18n="contact.phone">Telefon</label>
                       <input id="phone" name="phone" type="tel" class="form-control" />
                     </div>
                     <div class="col-12">
-                      <label for="message" class="form-label fw-medium text-dark mb-2">Mesaj</label>
+                      <label for="message" class="form-label fw-medium text-dark mb-2" data-i18n="contact.message">Mesaj</label>
                       <textarea
                         id="message"
                         name="message"
@@ -1728,7 +1737,7 @@
                       ></textarea>
                     </div>
                     <div class="col-12">
-                      <button type="submit" class="btn btn-primary">Gönder</button>
+                      <button type="submit" class="btn btn-primary" data-i18n="contact.submit">Gönder</button>
                     </div>
                   </form>
                 </div>
@@ -1746,7 +1755,7 @@
                   <path d="M19.5 12.572L12 20l-7.5-7.428a5 5 0 0 1 7.5-6.572a5 5 0 0 1 7.5 6.572z" />
                 </svg>
               </span>
-              <span>Kocası tarafından sevgiyle tasarlandı.</span>
+              <span data-i18n="footer.signature">Kocası tarafından sevgiyle tasarlandı.</span>
             </span>
           </div>
         </footer>
