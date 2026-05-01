@@ -25,14 +25,22 @@
     const productFullscreenModal = productFullscreenModalEl
       ? bootstrap.Modal.getOrCreateInstance(productFullscreenModalEl, { focus: false })
       : null;
-    const productFullscreenMediaEl = productFullscreenModalEl?.querySelector('.product-fullscreen-media');
+    const productFullscreenMediaEl = productFullscreenModalEl?.querySelector(
+      '.product-fullscreen-media'
+    );
     const productFullscreenImageEl = document.getElementById('productFullscreenImage');
-    const productFullscreenActionsEl = productFullscreenModalEl?.querySelector('.product-fullscreen-actions');
-    const productFullscreenShareEl = productFullscreenModalEl?.querySelector('.product-fullscreen-share');
+    const productFullscreenActionsEl = productFullscreenModalEl?.querySelector(
+      '.product-fullscreen-actions'
+    );
+    const productFullscreenShareEl = productFullscreenModalEl?.querySelector(
+      '.product-fullscreen-share'
+    );
     const productFullscreenShareMenuEl = document.getElementById('productShareMenu');
     const productFullscreenShareWhatsAppEl = document.getElementById('productShareWhatsApp');
     const productFullscreenShareInstagramEl = document.getElementById('productShareInstagram');
-    const productFullscreenZoomEl = productFullscreenModalEl?.querySelector('.product-fullscreen-zoom');
+    const productFullscreenZoomEl = productFullscreenModalEl?.querySelector(
+      '.product-fullscreen-zoom'
+    );
     const productFullscreenNativeToggleEl = productFullscreenModalEl?.querySelector(
       '.product-fullscreen-native-toggle'
     );
@@ -270,19 +278,18 @@
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
     const isMobileViewport = () => window.innerWidth < 992;
-    const lenis =
-      window.Lenis
-        ? new window.Lenis({
-            duration: 1.85,
-            smoothWheel: true,
-            wheelMultiplier: 0.95,
-            touchMultiplier: 0.9,
-            lerp: 0.075,
-            // Let touch gestures use native scrolling so mobile Safari
-            // can keep pull-to-refresh and top-edge overscroll behavior.
-            virtualScroll: ({ event }) => !event.type.startsWith('touch')
-          })
-        : null;
+    const lenis = window.Lenis
+      ? new window.Lenis({
+          duration: 1.85,
+          smoothWheel: true,
+          wheelMultiplier: 0.95,
+          touchMultiplier: 0.9,
+          lerp: 0.075,
+          // Let touch gestures use native scrolling so mobile Safari
+          // can keep pull-to-refresh and top-edge overscroll behavior.
+          virtualScroll: ({ event }) => !event.type.startsWith('touch')
+        })
+      : null;
     const isNavMenuExpanded = () =>
       navCollapseEl?.classList.contains('show') || navCollapseEl?.classList.contains('collapsing');
     let collapsedNavOffsetPx = 0;
@@ -341,7 +348,10 @@
         }
         if (imageEl.complete && imageEl.naturalWidth > 0) {
           if (typeof imageEl.decode === 'function') {
-            imageEl.decode().catch(() => {}).finally(resolve);
+            imageEl
+              .decode()
+              .catch(() => {})
+              .finally(resolve);
             return;
           }
           resolve();
@@ -403,40 +413,86 @@
         if (stableFrames >= stableFrameCount) break;
       }
     };
-    const preloadAllPageImages = async (timeoutMs = 7000) => {
-      const imageNodes = Array.from(document.images).filter(
-        (imageEl) => imageEl instanceof HTMLImageElement && Boolean(imageEl.currentSrc || imageEl.src)
-      );
-      if (!imageNodes.length) return;
-
-      imageNodes.forEach((imageEl) => {
-        imageEl.loading = 'eager';
-        imageEl.decoding = 'async';
-        imageEl.fetchPriority = 'high';
-      });
-
-      await Promise.race([
-        Promise.all(imageNodes.map((imageEl) => waitForImageDecode(imageEl, timeoutMs))),
-        new Promise((resolve) => window.setTimeout(resolve, timeoutMs))
-      ]);
-    };
+    const PRELOADER_DELAY_MS = 200;
+    const PRELOADER_MIN_VISIBLE_MS = 400;
     let preloaderHidePromise = null;
+    let preloaderShownAt = null;
+    let preloaderShowTimer = null;
+
+    const showPreloader = () => {
+      if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
+      if (preloaderShownAt !== null) return;
+      preloaderEl.classList.remove('is-delay');
+      preloaderEl.classList.remove('is-hidden');
+      bodyEl.classList.add('is-preloading');
+      preloaderShownAt = window.performance?.now ? window.performance.now() : Date.now();
+    };
+
+    if (preloaderEl) {
+      preloaderEl.classList.add('is-delay');
+      preloaderEl.classList.remove('is-hidden');
+      bodyEl.classList.remove('is-preloading');
+      preloaderShowTimer = window.setTimeout(showPreloader, PRELOADER_DELAY_MS);
+    }
 
     const hidePreloader = () => {
       if (preloaderHidePromise) return preloaderHidePromise;
 
       preloaderHidePromise = (async () => {
         if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
-        await preloadAllPageImages();
+        if (preloaderShowTimer) window.clearTimeout(preloaderShowTimer);
+
         preloaderEl.dataset.dismissed = 'true';
-        window.setTimeout(() => {
+
+        const finalize = () => {
           preloaderEl.classList.add('is-hidden');
-          document.body.classList.remove('is-preloading');
-        }, 220);
+          preloaderEl.classList.add('is-delay');
+          bodyEl.classList.remove('is-preloading');
+        };
+
+        if (preloaderShownAt === null) {
+          finalize();
+          return;
+        }
+
+        const now = window.performance?.now ? window.performance.now() : Date.now();
+        const elapsed = now - preloaderShownAt;
+        const remaining = Math.max(0, PRELOADER_MIN_VISIBLE_MS - elapsed);
+        if (remaining) {
+          await new Promise((resolve) => window.setTimeout(resolve, remaining));
+        }
+
+        window.setTimeout(finalize, 220);
       })();
 
       return preloaderHidePromise;
     };
+
+    const initMediaSkeletons = () => {
+      const mediaContainers = Array.from(
+        document.querySelectorAll('.product-media, .journey-visual-media')
+      );
+      if (!mediaContainers.length) return;
+
+      mediaContainers.forEach((container) => {
+        const imageEl = container.querySelector('img');
+        if (!(imageEl instanceof HTMLImageElement)) return;
+
+        container.classList.add('media-skeleton');
+        container.classList.toggle(
+          'is-media-loading',
+          !(imageEl.complete && imageEl.naturalWidth > 0)
+        );
+
+        waitForImageDecode(imageEl, 7000)
+          .catch(() => {})
+          .finally(() => {
+            container.classList.remove('is-media-loading');
+          });
+      });
+    };
+
+    initMediaSkeletons();
 
     const syncNavLinkWidths = () => {
       if (!navLinks.length) return;
@@ -744,7 +800,10 @@
         metric.sectionTop = getDocumentTop(metric.sectionEl);
         metric.sectionHeight = metric.sectionEl.offsetHeight || window.innerHeight;
         metric.titleWrapLeft = wrapRect.left;
-        metric.titleWrapEl.style.setProperty('--ghost-left-adjust', `${opticalAdjustPx.toFixed(3)}px`);
+        metric.titleWrapEl.style.setProperty(
+          '--ghost-left-adjust',
+          `${opticalAdjustPx.toFixed(3)}px`
+        );
       });
     };
 
@@ -755,8 +814,7 @@
       const scrollMarker = lastScrollY + getNavOffset();
       const sectionTop = metric.sectionTop ?? getDocumentTop(metric.sectionEl);
       const sectionHeight = metric.sectionHeight || metric.sectionEl.offsetHeight || viewportHeight;
-      const titleWrapLeft =
-        metric.titleWrapLeft ?? metric.titleWrapEl.getBoundingClientRect().left;
+      const titleWrapLeft = metric.titleWrapLeft ?? metric.titleWrapEl.getBoundingClientRect().left;
       const maxOffsetPx = Math.max(window.innerWidth - titleWrapLeft + 180, 360);
       const startMarker = sectionTop - viewportHeight * 0.65;
       const arriveDistance = Math.max(sectionTop - startMarker, 1);
@@ -823,7 +881,6 @@
       return isStillAnimating;
     };
 
-
     const updateTitleReveal = (sectionEl) => {
       if (!sectionEl) return false;
 
@@ -843,9 +900,7 @@
       const end = viewportHeight * 0.22;
       const progress = clamp((start - rect.top) / Math.max(start - end, 1), 0, 1);
       const hasPrimaryPhaseSplit = Number.isFinite(primaryCompleteAtRaw);
-      const primaryCompleteAt = hasPrimaryPhaseSplit
-        ? clamp(primaryCompleteAtRaw, 0.05, 0.95)
-        : 1;
+      const primaryCompleteAt = hasPrimaryPhaseSplit ? clamp(primaryCompleteAtRaw, 0.05, 0.95) : 1;
       const secondaryStartAt = hasPrimaryPhaseSplit
         ? clamp(
             Number.isFinite(secondaryStartAtRaw) ? secondaryStartAtRaw : primaryCompleteAt,
@@ -853,19 +908,12 @@
             primaryCompleteAt
           )
         : 0;
-      const revealDelay = Number.isFinite(revealDelayRaw)
-        ? clamp(revealDelayRaw, 0, 0.95)
-        : 0.16;
+      const revealDelay = Number.isFinite(revealDelayRaw) ? clamp(revealDelayRaw, 0, 0.95) : 0.16;
       const lineOneProgress = hasPrimaryPhaseSplit
         ? clamp(progress / primaryCompleteAt, 0, 1)
         : progress;
       const lineTwoProgress = hasPrimaryPhaseSplit
-        ? clamp(
-            (progress - secondaryStartAt) /
-              Math.max(1 - secondaryStartAt, 0.01),
-            0,
-            1
-          )
+        ? clamp((progress - secondaryStartAt) / Math.max(1 - secondaryStartAt, 0.01), 0, 1)
         : clamp((progress - revealDelay) / Math.max(1 - revealDelay, 0.01), 0, 1);
       const nextRevealOne = `${(lineOneProgress * 100).toFixed(2)}%`;
       const nextRevealTwo = `${(lineTwoProgress * 100).toFixed(2)}%`;
@@ -1407,12 +1455,14 @@
     };
     const getProductMobilePeekPx = (carouselEl) => {
       if (!isProductMobileViewport() || getProductVisibleCount(carouselEl) !== 1) return 0;
-      const carouselWidth = carouselEl?.querySelector('.carousel-inner')?.clientWidth || carouselEl?.clientWidth || 0;
+      const carouselWidth =
+        carouselEl?.querySelector('.carousel-inner')?.clientWidth || carouselEl?.clientWidth || 0;
       if (!carouselWidth) return 0;
       return Math.max(24, Math.min(Math.round(carouselWidth * 0.085), 34));
     };
     const getProductCenterShiftPx = (slider, itemWidthPx) => {
-      if (!slider?.carouselInner || !isProductMobileViewport() || slider.visibleCount !== 1) return 0;
+      if (!slider?.carouselInner || !isProductMobileViewport() || slider.visibleCount !== 1)
+        return 0;
       return Math.max(Math.round((slider.carouselInner.clientWidth - itemWidthPx) / 2), 0);
     };
     const updateProductCarouselMobileState = (slider) => {
@@ -1533,7 +1583,9 @@
     };
 
     const hydrateSliderImagePriorities = (slider) => {
-      const trackItems = Array.from(slider?.trackEl?.querySelectorAll('.product-carousel-item') ?? []);
+      const trackItems = Array.from(
+        slider?.trackEl?.querySelectorAll('.product-carousel-item') ?? []
+      );
       if (!trackItems.length) return;
       trackItems.forEach((itemEl) => {
         setProductImagePriority(itemEl.querySelector('.card-img-top'), 'lazy');
@@ -1574,6 +1626,77 @@
       updateProductCarouselMobileState(slider);
     };
 
+    const shouldUseProductSwipers = () =>
+      typeof window.Swiper === 'function' && isProductTouchViewport();
+
+    const initProductSwipers = () => {
+      if (!shouldUseProductSwipers()) return;
+
+      productCarousels.forEach((carouselEl) => {
+        if (!carouselEl) return;
+        if (carouselEl.dataset.swiperReady === 'true') return;
+
+        const carouselInner = carouselEl.querySelector('.carousel-inner');
+        if (!carouselInner) return;
+
+        const wrapperEl =
+          carouselInner.querySelector('.product-image-grid') ?? carouselInner.firstElementChild;
+        if (!(wrapperEl instanceof Element)) return;
+
+        const cards = Array.from(wrapperEl.querySelectorAll('.product-card'));
+        if (!cards.length) return;
+
+        carouselEl.dataset.swiperReady = 'true';
+        carouselEl.classList.add('swiper', 'product-swiper', 'is-swiper-active');
+        wrapperEl.classList.add('swiper-wrapper');
+
+        cards.forEach((cardEl) => {
+          primeSliderImages(cardEl);
+          ensureProductPreviewTrigger(cardEl);
+          cardEl.classList.add('swiper-slide');
+        });
+
+        let paginationEl = carouselEl.querySelector('.swiper-pagination');
+        if (!paginationEl) {
+          paginationEl = document.createElement('div');
+          paginationEl.className = 'swiper-pagination';
+          carouselEl.append(paginationEl);
+        }
+
+        // eslint-disable-next-line no-new
+        new window.Swiper(carouselEl, {
+          loop: true,
+          loopAdditionalSlides: Math.min(6, Math.max(cards.length, 1)),
+          grabCursor: true,
+          watchOverflow: true,
+          effect: 'creative',
+          creativeEffect: {
+            prev: {
+              shadow: true,
+              translate: [0, 0, -400]
+            },
+            next: {
+              translate: ['100%', 0, 0]
+            }
+          },
+          speed: 520,
+          resistanceRatio: 0.7,
+          threshold: 6,
+          followFinger: true,
+          longSwipesMs: 240,
+          longSwipesRatio: 0.35,
+          shortSwipes: true,
+          touchStartPreventDefault: false,
+          passiveListeners: true,
+          centeredSlides: true,
+          slidesPerView: 1,
+          spaceBetween: 30,
+          pagination: { el: paginationEl, clickable: true },
+          breakpoints: { 576: { slidesPerView: 1 }, 768: { slidesPerView: 1 } }
+        });
+      });
+    };
+
     const buildProductCarousels = () => {
       productCarousels.forEach((carouselEl) => {
         if (carouselEl.dataset.carouselReady === 'true') return;
@@ -1581,11 +1704,13 @@
         const carouselInner = carouselEl.querySelector('.carousel-inner');
         if (!carouselInner) return;
 
-        const sourceCards = Array.from(carouselInner.querySelectorAll('.product-card')).map((card) => {
-          primeSliderImages(card);
-          ensureProductPreviewTrigger(card);
-          return card.outerHTML;
-        });
+        const sourceCards = Array.from(carouselInner.querySelectorAll('.product-card')).map(
+          (card) => {
+            primeSliderImages(card);
+            ensureProductPreviewTrigger(card);
+            return card.outerHTML;
+          }
+        );
         if (!sourceCards.length) return;
 
         carouselEl.dataset.carouselReady = 'true';
@@ -1648,7 +1773,8 @@
       productCarouselsState.find((slider) => slider.carouselEl === carouselEl) ?? null;
 
     const mountProductCarouselControls = (slider) => {
-      if (!slider?.carouselEl || slider.carouselEl.querySelector('.product-carousel-controls')) return;
+      if (!slider?.carouselEl || slider.carouselEl.querySelector('.product-carousel-controls'))
+        return;
 
       const controlsEl = document.createElement('div');
       controlsEl.className = 'product-carousel-controls';
@@ -1697,7 +1823,6 @@
       });
     };
 
-
     const renderProductCarousel = (slider) => {
       const visibleCount = getProductVisibleCount(slider.carouselEl);
       const cloneCount = getProductCloneCount(slider.carouselEl);
@@ -1735,7 +1860,9 @@
       const offsetPx = (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
       const translateXPx = -Math.round(offsetPx);
 
-      trackEl.style.transition = useTransition ? 'transform 560ms cubic-bezier(0.76, 0, 0.24, 1)' : 'none';
+      trackEl.style.transition = useTransition
+        ? 'transform 560ms cubic-bezier(0.76, 0, 0.24, 1)'
+        : 'none';
       trackEl.style.transform = `translateX(${translateXPx}px)`;
     };
 
@@ -1904,7 +2031,9 @@
       document
         .querySelectorAll('.carousel-control-prev, .carousel-control-next')
         .forEach((controlEl) => {
-          const iconEl = controlEl.querySelector('.carousel-control-prev-icon, .carousel-control-next-icon');
+          const iconEl = controlEl.querySelector(
+            '.carousel-control-prev-icon, .carousel-control-next-icon'
+          );
           bindOneShotArrowAnimation(controlEl, iconEl);
         });
 
@@ -1947,7 +2076,7 @@
         }
 
         const { trackEl } = slider;
-      if (!trackEl) return;
+        if (!trackEl) return;
 
         const gapPx = getProductTrackGapPx(trackEl);
         const carouselWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth;
@@ -1970,13 +2099,13 @@
           slider.sourceCards.length + cloneCount
         );
         slider.gapPx = gapPx;
-      syncProductCarouselPosition(slider, false);
-      slider.isAnimating = false;
-      slider.animatingSinceTs = 0;
-      slider.pendingMoves = 0;
-      resetProductCarouselTransientState(slider);
-      hydrateSliderImagePriorities(slider);
-      updateProductCarouselMobileState(slider);
+        syncProductCarouselPosition(slider, false);
+        slider.isAnimating = false;
+        slider.animatingSinceTs = 0;
+        slider.pendingMoves = 0;
+        resetProductCarouselTransientState(slider);
+        hydrateSliderImagePriorities(slider);
+        updateProductCarouselMobileState(slider);
       });
 
       syncProductCardInteractivity();
@@ -2127,7 +2256,8 @@
 
     const getProductPreviewData = (cardEl) => {
       const imageEl = cardEl.querySelector('.card-img-top');
-      const name = cardEl.querySelector('.product-meta-row h3.card-title')?.textContent?.trim() ?? '';
+      const name =
+        cardEl.querySelector('.product-meta-row h3.card-title')?.textContent?.trim() ?? '';
 
       return {
         imageSrc: imageEl?.getAttribute('src') ?? '',
@@ -2167,8 +2297,11 @@
     const getProductModalPanBounds = () => {
       if (!productFullscreenMediaEl) return { maxX: 0, maxY: 0 };
       const mediaRect = productFullscreenMediaEl.getBoundingClientRect();
-      const maxX = Math.max(((mediaRect.width * PRODUCT_MODAL_ZOOM_SCALE) - mediaRect.width) / 2, 0);
-      const maxY = Math.max(((mediaRect.height * PRODUCT_MODAL_ZOOM_SCALE) - mediaRect.height) / 2, 0);
+      const maxX = Math.max((mediaRect.width * PRODUCT_MODAL_ZOOM_SCALE - mediaRect.width) / 2, 0);
+      const maxY = Math.max(
+        (mediaRect.height * PRODUCT_MODAL_ZOOM_SCALE - mediaRect.height) / 2,
+        0
+      );
       return { maxX, maxY };
     };
 
@@ -2197,9 +2330,18 @@
       productModalImageZoomed = Boolean(zoomed);
       productFullscreenModalEl?.classList.toggle('is-image-zoomed', productModalImageZoomed);
       if (productFullscreenZoomEl) {
-        productFullscreenZoomEl.setAttribute('aria-pressed', productModalImageZoomed ? 'true' : 'false');
-        productFullscreenZoomEl.setAttribute('aria-label', productModalImageZoomed ? 'Uzaklaştır' : 'Yakınlaştır');
-        productFullscreenZoomEl.setAttribute('title', productModalImageZoomed ? 'Uzaklaştır' : 'Yakınlaştır');
+        productFullscreenZoomEl.setAttribute(
+          'aria-pressed',
+          productModalImageZoomed ? 'true' : 'false'
+        );
+        productFullscreenZoomEl.setAttribute(
+          'aria-label',
+          productModalImageZoomed ? 'Uzaklaştır' : 'Yakınlaştır'
+        );
+        productFullscreenZoomEl.setAttribute(
+          'title',
+          productModalImageZoomed ? 'Uzaklaştır' : 'Yakınlaştır'
+        );
         const zoomIconEl = productFullscreenZoomEl.querySelector('svg');
         if (zoomIconEl) {
           zoomIconEl.innerHTML = productModalImageZoomed
@@ -2216,7 +2358,10 @@
 
     const setProductModalNativeFullscreenState = (active) => {
       productModalNativeFullscreen = Boolean(active);
-      productFullscreenModalEl?.classList.toggle('is-native-fullscreen', productModalNativeFullscreen);
+      productFullscreenModalEl?.classList.toggle(
+        'is-native-fullscreen',
+        productModalNativeFullscreen
+      );
       if (!productFullscreenNativeToggleEl) return;
       productFullscreenNativeToggleEl.setAttribute(
         'aria-pressed',
@@ -2260,7 +2405,9 @@
       }
 
       const shareUrl = getShareableProductUrl(currentProductPreviewData.imageSrc);
-      const shareText = encodeURIComponent(`${currentProductPreviewData.name || 'Ürün'} ${shareUrl}`);
+      const shareText = encodeURIComponent(
+        `${currentProductPreviewData.name || 'Ürün'} ${shareUrl}`
+      );
       productFullscreenShareWhatsAppEl.href = `https://wa.me/?text=${shareText}`;
       productFullscreenShareInstagramEl.href = 'https://www.instagram.com/';
     };
@@ -2551,7 +2698,10 @@
       if (!productFullscreenActionsEl?.classList.contains('is-share-open')) return;
       const targetEl = event.target;
       if (!(targetEl instanceof Element)) return;
-      if (targetEl.closest('.product-fullscreen-share') || targetEl.closest('.product-fullscreen-share-cluster')) {
+      if (
+        targetEl.closest('.product-fullscreen-share') ||
+        targetEl.closest('.product-fullscreen-share-cluster')
+      ) {
         return;
       }
       if (targetEl.closest('.product-fullscreen-dismiss')) {
@@ -2565,15 +2715,19 @@
       setProductModalNativeFullscreenState(fullscreenActive);
     });
 
-    buildProductCarousels();
-    productCarouselsState.forEach((slider) => {
-      mountProductCarouselControls(slider);
-    });
-    syncProductCarouselLayout();
-    productCarouselsState.forEach((slider) => {
-      bindProductCarouselSwipe(slider);
-      bindProductCarouselAccessibility(slider);
-    });
+    if (shouldUseProductSwipers()) {
+      initProductSwipers();
+    } else {
+      buildProductCarousels();
+      productCarouselsState.forEach((slider) => {
+        mountProductCarouselControls(slider);
+      });
+      syncProductCarouselLayout();
+      productCarouselsState.forEach((slider) => {
+        bindProductCarouselSwipe(slider);
+        bindProductCarouselAccessibility(slider);
+      });
+    }
     observeProductSectionImagePriming();
     bindArrowAnimations();
 
@@ -2719,7 +2873,12 @@
       }
       return false;
     };
-    const scheduleAnchorSettle = ({ target, isHomeTarget, isMobileNavInteraction, durationSeconds }) => {
+    const scheduleAnchorSettle = ({
+      target,
+      isHomeTarget,
+      isMobileNavInteraction,
+      durationSeconds
+    }) => {
       const token = ++navAnchorSettleToken;
       const startDelayMs = Math.max(Math.round(durationSeconds * 1000) + 120, 240);
       const maxChecks = isMobileNavInteraction ? 14 : 10;
@@ -2757,7 +2916,8 @@
         const isCurrentTargetAligned = isHomeTarget
           ? Math.abs(window.scrollY) <= 6
           : Math.abs(targetViewportTop - currentVisibleNavOffset) <= 6;
-        const isCurrentLinkActive = currentAnchor.classList.contains('is-active') || href === activeSectionHash;
+        const isCurrentLinkActive =
+          currentAnchor.classList.contains('is-active') || href === activeSectionHash;
 
         if (isCurrentLinkActive && isCurrentTargetAligned) {
           await closeNavMenuIfNeeded();
