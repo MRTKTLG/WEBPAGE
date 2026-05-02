@@ -1,11 +1,10 @@
 (() => {
   'use strict';
 
-  if (!window.bootstrap) return;
-
   document.addEventListener('DOMContentLoaded', () => {
+    const bootstrap = window.bootstrap;
     const navCollapseEl = document.getElementById('menu');
-    const navCollapse = navCollapseEl
+    const navCollapse = navCollapseEl && bootstrap
       ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
       : null;
     const navbarEl = document.querySelector('.navbar');
@@ -22,7 +21,7 @@
     const documentEl = document.documentElement;
     const bodyEl = document.body;
     const productFullscreenModalEl = document.getElementById('productFullscreenModal');
-    const productFullscreenModal = productFullscreenModalEl
+    const productFullscreenModal = productFullscreenModalEl && bootstrap
       ? bootstrap.Modal.getOrCreateInstance(productFullscreenModalEl, { focus: false })
       : null;
     const productFullscreenMediaEl = productFullscreenModalEl?.querySelector(
@@ -122,7 +121,7 @@
         'testimonials.t4':
           'İstediğim renkleri ve modeli birebir uygulamış olması harikaydı; ayrıca paketleme o kadar özenliydi ki ürünü hem kendim için çok keyifle açtım hem de hediye etmeden önce içim tamamen rahattı.',
         'testimonials.t5':
-          'Üretim süreci boyunca sürekli bilgilendirildim. Sanki hazır ürün almıyormuşum da benim için özel bir hikaye hazırlanıyormuş gibi hissettirdi.',
+          'Üretim süreci boyunca sürekli bilgilendirildim. Sanki hazır ürün almıyormuşum da benim için özel bir hikâye hazırlanıyormuş gibi hissettirdi.',
         'testimonials.t6':
           'Hediye ettiğim kişi ilk bakışta çok etkilendi. Hem sevimli hem kaliteli bir iş çıkmıştı; uzun süre saklanacak özel bir hediye oldu.',
         'testimonials.t7':
@@ -275,6 +274,7 @@
         window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageCode);
       });
     });
+
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
     const isMobileViewport = () => window.innerWidth < 992;
@@ -990,7 +990,7 @@
 
     refreshCollapsedNavOffset();
 
-    if (heroCarousel) {
+    if (heroCarousel && bootstrap) {
       // Re-create the carousel instance so our touch config wins even when
       // Bootstrap data API auto-initialized it earlier from markup attributes.
       const existingHeroCarousel = bootstrap.Carousel.getInstance(heroCarousel);
@@ -1412,7 +1412,6 @@
     const productCarouselsState = [];
     const isProductMobileViewport = () => window.innerWidth <= 767;
     const isProductTouchViewport = () => window.innerWidth <= 991;
-    const PRODUCT_CAROUSEL_WATCHDOG_MS = 1800;
     const shouldRunProductCarouselAutoplay = () =>
       !isProductModalOpen &&
       !prefersReducedMotion.matches &&
@@ -1441,44 +1440,17 @@
       return gapPx;
     };
 
-    const getProductTrackGapPx = (trackEl) => {
-      if (!trackEl) return getProductGapPx();
-
-      const computedGap = Number.parseFloat(window.getComputedStyle(trackEl).gap);
-      const resolvedGap = Number.isFinite(computedGap) ? computedGap : getProductGapPx();
-      return Math.round(resolvedGap);
-    };
-
-    const getProductCloneCount = (carouselEl) => {
-      const visibleCount = getProductVisibleCount(carouselEl);
-      return visibleCount;
-    };
-    const getProductMobilePeekPx = (carouselEl) => {
-      if (!isProductMobileViewport() || getProductVisibleCount(carouselEl) !== 1) return 0;
-      const carouselWidth =
-        carouselEl?.querySelector('.carousel-inner')?.clientWidth || carouselEl?.clientWidth || 0;
-      if (!carouselWidth) return 0;
-      return Math.max(24, Math.min(Math.round(carouselWidth * 0.085), 34));
-    };
-    const getProductCenterShiftPx = (slider, itemWidthPx) => {
-      if (!slider?.carouselInner || !isProductMobileViewport() || slider.visibleCount !== 1)
-        return 0;
-      return Math.max(Math.round((slider.carouselInner.clientWidth - itemWidthPx) / 2), 0);
-    };
-    const updateProductCarouselMobileState = (slider) => {
-      const items = Array.from(slider?.trackEl?.querySelectorAll('.product-carousel-item') ?? []);
-      if (!items.length) return;
-      items.forEach((itemEl) => {
-        itemEl.classList.remove('is-active', 'is-prev', 'is-next');
-      });
-      if (!isProductMobileViewport() || slider.visibleCount !== 1) return;
-      const activeItem = items[slider.currentIndex];
-      const prevItem = items[slider.currentIndex - 1];
-      const nextItem = items[slider.currentIndex + 1];
-      activeItem?.classList.add('is-active');
-      prevItem?.classList.add('is-prev');
-      nextItem?.classList.add('is-next');
-    };
+    const getProductSwiperBreakpoints = (carouselEl) => ({
+      0: {
+        slidesPerView: Number.parseInt(carouselEl?.dataset.visibleMobile ?? '1', 10) || 1
+      },
+      768: {
+        slidesPerView: Number.parseInt(carouselEl?.dataset.visibleTablet ?? '2', 10) || 2
+      },
+      992: {
+        slidesPerView: Number.parseInt(carouselEl?.dataset.visibleDesktop ?? '4', 10) || 4
+      }
+    });
 
     const ensureProductPreviewTrigger = (cardEl) => {
       if (!cardEl) return;
@@ -1511,14 +1483,6 @@
       }
 
       previewTriggerEl.setAttribute('aria-label', `${nameText || 'Ürün'} görselini modalda aç`);
-    };
-
-    const ensureProductPreviewTriggerMarkup = (cardMarkup) => {
-      const templateEl = document.createElement('template');
-      templateEl.innerHTML = String(cardMarkup ?? '').trim();
-      const cardEl = templateEl.content.querySelector('.product-card');
-      ensureProductPreviewTrigger(cardEl);
-      return cardEl?.outerHTML ?? String(cardMarkup ?? '');
     };
 
     const setProductImagePriority = (imageEl, priority = 'lazy') => {
@@ -1582,59 +1546,9 @@
       observer.observe(productsSectionEl);
     };
 
-    const hydrateSliderImagePriorities = (slider) => {
-      const trackItems = Array.from(
-        slider?.trackEl?.querySelectorAll('.product-carousel-item') ?? []
-      );
-      if (!trackItems.length) return;
-      trackItems.forEach((itemEl) => {
-        setProductImagePriority(itemEl.querySelector('.card-img-top'), 'lazy');
-      });
-
-      const highCount = isProductTouchViewport()
-        ? Math.min(slider.visibleCount + 2, 4)
-        : Math.min(slider.visibleCount + 1, 3);
-      const total = trackItems.length;
-      for (let offset = -1; offset < highCount; offset += 1) {
-        const rawIndex = slider.currentIndex + offset;
-        const normalizedIndex = ((rawIndex % total) + total) % total;
-        const imageEl = trackItems[normalizedIndex]?.querySelector('.card-img-top');
-        setProductImagePriority(imageEl, 'high');
-      }
-    };
-
-    const forceSettleProductCarousel = (slider) => {
-      if (!slider?.trackEl) return;
-      if (slider.transitionFallbackTimerId) {
-        window.clearTimeout(slider.transitionFallbackTimerId);
-        slider.transitionFallbackTimerId = null;
-      }
-      if (slider.transitionEndHandler) {
-        slider.trackEl.removeEventListener('transitionend', slider.transitionEndHandler);
-        slider.transitionEndHandler = null;
-      }
-      const cloneCount = getProductCloneCount(slider.carouselEl);
-      slider.currentIndex = Math.min(
-        Math.max(slider.currentIndex, cloneCount),
-        slider.sourceCards.length + cloneCount
-      );
-      syncProductCarouselPosition(slider, false);
-      slider.isAnimating = false;
-      slider.animatingSinceTs = 0;
-      resetProductCarouselTransientState(slider);
-      hydrateSliderImagePriorities(slider);
-      updateProductCarouselMobileState(slider);
-    };
-
-    const shouldUseProductSwipers = () =>
-      typeof window.Swiper === 'function' && isProductTouchViewport();
-
-    const initProductSwipers = () => {
-      if (!shouldUseProductSwipers()) return;
-
+    const buildProductCarousels = () => {
       productCarousels.forEach((carouselEl) => {
-        if (!carouselEl) return;
-        if (carouselEl.dataset.swiperReady === 'true') return;
+        if (carouselEl.dataset.carouselReady === 'true') return;
 
         const carouselInner = carouselEl.querySelector('.carousel-inner');
         if (!carouselInner) return;
@@ -1643,127 +1557,45 @@
           carouselInner.querySelector('.product-image-grid') ?? carouselInner.firstElementChild;
         if (!(wrapperEl instanceof Element)) return;
 
-        const cards = Array.from(wrapperEl.querySelectorAll('.product-card'));
-        if (!cards.length) return;
+        const slides = Array.from(wrapperEl.querySelectorAll('.product-card'));
+        if (!slides.length) return;
 
-        carouselEl.dataset.swiperReady = 'true';
-        carouselEl.classList.add('swiper', 'product-swiper', 'is-swiper-active');
-        wrapperEl.classList.add('swiper-wrapper');
-
-        cards.forEach((cardEl) => {
+        slides.forEach((cardEl) => {
           primeSliderImages(cardEl);
           ensureProductPreviewTrigger(cardEl);
+        });
+
+        if (typeof window.Swiper !== 'function') {
+          carouselEl.dataset.carouselReady = 'static';
+          return;
+        }
+
+        slides.forEach((cardEl) => {
           cardEl.classList.add('swiper-slide');
         });
 
-        let paginationEl = carouselEl.querySelector('.swiper-pagination');
-        if (!paginationEl) {
-          paginationEl = document.createElement('div');
-          paginationEl.className = 'swiper-pagination';
-          carouselEl.append(paginationEl);
-        }
-
-        // eslint-disable-next-line no-new
-        new window.Swiper(carouselEl, {
-          loop: true,
-          loopAdditionalSlides: Math.min(6, Math.max(cards.length, 1)),
-          grabCursor: true,
-          watchOverflow: true,
-          effect: 'creative',
-          creativeEffect: {
-            prev: {
-              shadow: true,
-              translate: [0, 0, -400]
-            },
-            next: {
-              translate: ['100%', 0, 0]
-            }
-          },
-          speed: 520,
-          resistanceRatio: 0.7,
-          threshold: 6,
-          followFinger: true,
-          longSwipesMs: 240,
-          longSwipesRatio: 0.35,
-          shortSwipes: true,
-          touchStartPreventDefault: false,
-          passiveListeners: true,
-          centeredSlides: true,
-          slidesPerView: 1,
-          spaceBetween: 30,
-          pagination: { el: paginationEl, clickable: true },
-          breakpoints: { 576: { slidesPerView: 1 }, 768: { slidesPerView: 1 } }
-        });
-      });
-    };
-
-    const buildProductCarousels = () => {
-      productCarousels.forEach((carouselEl) => {
-        if (carouselEl.dataset.carouselReady === 'true') return;
-
-        const carouselInner = carouselEl.querySelector('.carousel-inner');
-        if (!carouselInner) return;
-
-        const sourceCards = Array.from(carouselInner.querySelectorAll('.product-card')).map(
-          (card) => {
-            primeSliderImages(card);
-            ensureProductPreviewTrigger(card);
-            return card.outerHTML;
-          }
-        );
-        if (!sourceCards.length) return;
+        carouselEl.classList.add('product-swiper', 'is-swiper-active');
+        carouselInner.classList.add('swiper');
+        wrapperEl.classList.add('swiper-wrapper');
 
         carouselEl.dataset.carouselReady = 'true';
         productCarouselsState.push({
           carouselEl,
           carouselInner,
-          sourceCards,
-          trackEl: null,
-          currentIndex: 0,
-          visibleCount: getProductVisibleCount(carouselEl),
-          isAnimating: false,
-          timerId: null,
-          gapPx: 0,
+          wrapperEl,
+          swiper: null,
+          slideCount: slides.length,
           isPausedByInteraction: false,
-          suppressClickUntil: 0,
-          transitionEndHandler: null,
-          transitionFallbackTimerId: null,
-          animatingSinceTs: 0,
-          pendingMoves: 0
+          suppressClickUntil: 0
         });
       });
-    };
-
-    const setProductCarouselMotionReady = (slider, enabled) => {
-      if (!slider?.carouselEl) return;
-      slider.carouselEl.classList.toggle('is-motion-ready', Boolean(enabled));
-    };
-    const markProductCarouselSilentSwap = (slider) => {
-      if (!slider?.carouselEl) return;
-      slider.carouselEl.classList.add('is-silent-swap');
-    };
-    const unmarkProductCarouselSilentSwap = (slider) => {
-      if (!slider?.carouselEl) return;
-      if (!slider.carouselEl.classList.contains('is-silent-swap')) return;
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          slider.carouselEl.classList.remove('is-silent-swap');
-        });
-      });
-    };
-    const resetProductCarouselTransientState = (slider) => {
-      if (!slider?.carouselEl) return;
-      slider.carouselEl.classList.remove('is-silent-swap');
     };
 
     const setProductCarouselPaused = (slider, paused) => {
       if (!slider) return;
       slider.isPausedByInteraction = paused;
       if (paused) {
-        if (slider.timerId) {
-          window.clearInterval(slider.timerId);
-          slider.timerId = null;
-        }
+        slider.swiper?.autoplay?.stop();
         return;
       }
       startProductCarousels();
@@ -1778,7 +1610,7 @@
 
       const controlsEl = document.createElement('div');
       controlsEl.className = 'product-carousel-controls';
-      const carouselName = slider.carouselEl.getAttribute('aria-label')?.trim() || 'Ürün carousel';
+      const carouselName = slider.carouselEl.getAttribute('aria-label')?.trim() || 'Ürün karuseli';
       controlsEl.innerHTML = `
         <button
           type="button"
@@ -1804,178 +1636,77 @@
       const prevButton = controlsEl.querySelector('.is-prev');
       const nextButton = controlsEl.querySelector('.is-next');
       prevButton?.addEventListener('click', () => {
-        if (slider.sourceCards.length <= 1) return;
-        if (slider.timerId) {
-          window.clearInterval(slider.timerId);
-          slider.timerId = null;
-        }
         moveProductCarousel(slider, -1);
         startProductCarousels();
       });
       nextButton?.addEventListener('click', () => {
-        if (slider.sourceCards.length <= 1) return;
-        if (slider.timerId) {
-          window.clearInterval(slider.timerId);
-          slider.timerId = null;
-        }
         moveProductCarousel(slider, 1);
         startProductCarousels();
       });
     };
 
-    const renderProductCarousel = (slider) => {
-      const visibleCount = getProductVisibleCount(slider.carouselEl);
-      const cloneCount = getProductCloneCount(slider.carouselEl);
-      const leadingCards = slider.sourceCards.slice(-cloneCount);
-      const trailingCards = slider.sourceCards.slice(0, cloneCount);
-      const trackMarkup = [...leadingCards, ...slider.sourceCards, ...trailingCards]
-        .map(
-          (cardMarkup) =>
-            `<div class="product-carousel-item">${ensureProductPreviewTriggerMarkup(cardMarkup)}</div>`
-        )
-        .join('');
+    const initProductSwiper = (slider) => {
+      if (!slider || slider.swiper || typeof window.Swiper !== 'function') return;
 
-      slider.carouselInner.innerHTML = `<div class="product-carousel-track">${trackMarkup}</div>`;
-      slider.trackEl = slider.carouselInner.querySelector('.product-carousel-track');
-      primeSliderImages(slider.carouselInner);
-      slider.carouselInner.querySelectorAll('.product-card').forEach((cardEl) => {
-        ensureProductPreviewTrigger(cardEl);
+      const gapPx = getProductGapPx();
+
+      slider.swiper = new window.Swiper(slider.carouselInner, {
+        loop: slider.slideCount > getProductVisibleCount(slider.carouselEl),
+        grabCursor: true,
+        watchOverflow: true,
+        speed: 560,
+        resistanceRatio: 0.72,
+        threshold: 6,
+        followFinger: true,
+        longSwipesMs: 240,
+        longSwipesRatio: 0.35,
+        shortSwipes: true,
+        touchStartPreventDefault: false,
+        passiveListeners: true,
+        slidesPerView: getProductVisibleCount(slider.carouselEl),
+        spaceBetween: gapPx,
+        breakpoints: getProductSwiperBreakpoints(slider.carouselEl),
+        keyboard: {
+          enabled: true,
+          onlyInViewport: true
+        },
+        autoplay: {
+          delay: PRODUCT_FLOW_INTERVAL_MS,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true
+        },
+        on: {
+          init() {
+            syncProductCardInteractivity();
+          },
+          slideChange() {
+            primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
+          },
+          breakpoint() {
+            syncProductCardInteractivity();
+          },
+          resize() {
+            syncProductCardInteractivity();
+          }
+        }
       });
-      setProductCarouselMotionReady(slider, false);
-      slider.visibleCount = visibleCount;
-      slider.currentIndex = cloneCount;
-      slider.isAnimating = false;
-      slider.animatingSinceTs = 0;
-      resetProductCarouselTransientState(slider);
-      hydrateSliderImagePriorities(slider);
-      updateProductCarouselMobileState(slider);
-    };
 
-    const syncProductCarouselPosition = (slider, useTransition = false) => {
-      const { trackEl, gapPx, currentIndex } = slider;
-      if (!trackEl?.firstElementChild) return;
-
-      const itemWidthPx = trackEl.firstElementChild.offsetWidth;
-      const centerShiftPx = getProductCenterShiftPx(slider, itemWidthPx);
-      const offsetPx = (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
-      const translateXPx = -Math.round(offsetPx);
-
-      trackEl.style.transition = useTransition
-        ? 'transform 560ms cubic-bezier(0.76, 0, 0.24, 1)'
-        : 'none';
-      trackEl.style.transform = `translateX(${translateXPx}px)`;
-    };
-
-    const getProductCarouselOffsetPx = (slider) => {
-      const { trackEl, gapPx, currentIndex } = slider;
-      if (!trackEl?.firstElementChild) return 0;
-
-      const itemWidthPx = trackEl.firstElementChild.offsetWidth;
-      const centerShiftPx = getProductCenterShiftPx(slider, itemWidthPx);
-
-      return (itemWidthPx + gapPx) * currentIndex - centerShiftPx;
+      if (!shouldRunProductCarouselAutoplay()) {
+        slider.swiper.autoplay?.stop();
+      }
     };
 
     const bindProductCarouselSwipe = (slider) => {
-      let dragState = null;
-      const getTrackedTouch = (touchList, touchId) => {
-        if (!touchList || touchId == null) return null;
-        for (let index = 0; index < touchList.length; index += 1) {
-          const touch = touchList[index];
-          if (touch.identifier === touchId) return touch;
-        }
-        return null;
-      };
-
-      slider.carouselInner.addEventListener(
-        'touchstart',
-        (event) => {
-          if (slider.isAnimating) {
-            forceSettleProductCarousel(slider);
-          }
-          if (slider.isAnimating || slider.sourceCards.length <= 1) return;
-          if (event.touches.length !== 1) {
-            dragState = null;
-            return;
-          }
-
-          const touch = event.touches[0];
-          if (!touch) return;
-
-          if (slider.timerId) {
-            window.clearInterval(slider.timerId);
-            slider.timerId = null;
-          }
-
-          dragState = {
-            startX: touch.clientX,
-            startY: touch.clientY,
-            touchId: touch.identifier,
-            deltaX: 0,
-            isSwiping: false,
-            baseOffsetPx: getProductCarouselOffsetPx(slider)
-          };
-          setProductCarouselMotionReady(slider, true);
-          slider.trackEl.style.transition = 'none';
-        },
-        { passive: true }
-      );
-
-      slider.carouselInner.addEventListener(
-        'touchmove',
-        (event) => {
-          if (!dragState || !slider.trackEl) return;
-          if (event.touches.length !== 1) {
-            dragState = null;
-            syncProductCarouselPosition(slider, false);
-            startProductCarousels();
-            return;
-          }
-
-          const touch = getTrackedTouch(event.touches, dragState.touchId) || event.touches[0];
-          if (!touch) return;
-
-          dragState.deltaX = touch.clientX - dragState.startX;
-          const deltaY = touch.clientY - dragState.startY;
-
-          if (!dragState.isSwiping) {
-            if (Math.abs(dragState.deltaX) < 0.5) return;
-            if (Math.abs(dragState.deltaX) <= Math.abs(deltaY)) {
-              dragState = null;
-              startProductCarousels();
-              return;
-            }
-            dragState.isSwiping = true;
-          }
-
-          event.preventDefault();
-          const nextOffsetPx = dragState.baseOffsetPx - dragState.deltaX;
-          const swipeTranslateXPx = -nextOffsetPx;
-          slider.trackEl.style.transform = `translateX(${swipeTranslateXPx}px)`;
-        },
-        { passive: false }
-      );
-
-      const finishSwipe = () => {
-        if (!dragState) return;
-
-        const swipeThresholdPx = Math.min(slider.carouselInner.clientWidth * 0.12, 56);
-        const shouldMove = dragState.isSwiping && Math.abs(dragState.deltaX) >= swipeThresholdPx;
-        const direction = dragState.deltaX < 0 ? 1 : -1;
-
-        dragState = null;
-        if (shouldMove) {
+      let didMove = false;
+      slider.swiper?.on('sliderMove', () => {
+        didMove = true;
+      });
+      slider.swiper?.on('touchEnd', () => {
+        if (didMove) {
           slider.suppressClickUntil = performance.now() + 420;
-          moveProductCarousel(slider, direction);
-        } else {
-          syncProductCarouselPosition(slider, true);
         }
-
-        startProductCarousels();
-      };
-
-      slider.carouselInner.addEventListener('touchend', finishSwipe);
-      slider.carouselInner.addEventListener('touchcancel', finishSwipe);
+        didMove = false;
+      });
     };
 
     const bindProductCarouselAccessibility = (slider) => {
@@ -1996,12 +1727,7 @@
       });
       slider.carouselEl.addEventListener('keydown', (event) => {
         if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-        if (slider.sourceCards.length <= 1) return;
         event.preventDefault();
-        if (slider.timerId) {
-          window.clearInterval(slider.timerId);
-          slider.timerId = null;
-        }
         moveProductCarousel(slider, event.key === 'ArrowRight' ? 1 : -1);
         startProductCarousels();
       });
@@ -2070,139 +1796,26 @@
       if (!productCarouselsState.length) return;
 
       productCarouselsState.forEach((slider) => {
-        const visibleCount = getProductVisibleCount(slider.carouselEl);
-        if (!slider.trackEl || slider.visibleCount !== visibleCount) {
-          renderProductCarousel(slider);
-        }
-
-        const { trackEl } = slider;
-        if (!trackEl) return;
-
-        const gapPx = getProductTrackGapPx(trackEl);
-        const carouselWidth = slider.carouselInner.clientWidth || slider.carouselEl.clientWidth;
-        const mobilePeekPx = getProductMobilePeekPx(slider.carouselEl);
-        const itemWidthPxRaw =
-          visibleCount === 1 && isProductMobileViewport()
-            ? Math.max(carouselWidth - mobilePeekPx * 2 - gapPx * 2, 0)
-            : Math.max((carouselWidth - gapPx * (visibleCount - 1)) / visibleCount, 0);
-        const itemWidthPx = Math.round(itemWidthPxRaw);
-        slider.carouselEl.style.setProperty('--product-carousel-item-width', `${itemWidthPx}px`);
-        trackEl.querySelectorAll('.product-carousel-item').forEach((itemEl) => {
-          itemEl.style.flexBasis = `${itemWidthPx}px`;
-          itemEl.style.width = `${itemWidthPx}px`;
-        });
-
-        slider.visibleCount = visibleCount;
-        const cloneCount = getProductCloneCount(slider.carouselEl);
-        slider.currentIndex = Math.min(
-          Math.max(slider.currentIndex, cloneCount),
-          slider.sourceCards.length + cloneCount
-        );
-        slider.gapPx = gapPx;
-        syncProductCarouselPosition(slider, false);
-        slider.isAnimating = false;
-        slider.animatingSinceTs = 0;
-        slider.pendingMoves = 0;
-        resetProductCarouselTransientState(slider);
-        hydrateSliderImagePriorities(slider);
-        updateProductCarouselMobileState(slider);
+        initProductSwiper(slider);
+        slider.swiper?.update();
+        primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
       });
 
       syncProductCardInteractivity();
     };
 
-    const flushQueuedProductMove = (slider) => {
-      if (!slider || slider.isAnimating || !slider.pendingMoves) return;
-      const nextDirection = slider.pendingMoves > 0 ? 1 : -1;
-      slider.pendingMoves += nextDirection > 0 ? -1 : 1;
-      window.requestAnimationFrame(() => {
-        moveProductCarousel(slider, nextDirection);
-      });
-    };
-
-    const enqueueProductCarouselMove = (slider, direction) => {
-      if (!slider || !direction) return;
-      slider.pendingMoves = clamp((slider.pendingMoves || 0) + direction, -4, 4);
-      flushQueuedProductMove(slider);
-    };
-
     const moveProductCarousel = (slider, direction) => {
-      const { trackEl } = slider;
-      if (slider.isAnimating) {
-        enqueueProductCarouselMove(slider, direction);
-        return;
+      if (!slider?.swiper || slider.slideCount <= 1) return;
+      if (direction < 0) {
+        slider.swiper.slidePrev();
+      } else {
+        slider.swiper.slideNext();
       }
-      if (!trackEl?.firstElementChild || slider.sourceCards.length <= 1) return;
-      setProductCarouselMotionReady(slider, true);
-
-      if (slider.transitionFallbackTimerId) {
-        window.clearTimeout(slider.transitionFallbackTimerId);
-        slider.transitionFallbackTimerId = null;
-      }
-      if (slider.transitionEndHandler) {
-        trackEl.removeEventListener('transitionend', slider.transitionEndHandler);
-        slider.transitionEndHandler = null;
-      }
-      slider.isAnimating = true;
-      slider.animatingSinceTs = performance.now();
-      slider.currentIndex += direction;
-      hydrateSliderImagePriorities(slider);
-      updateProductCarouselMobileState(slider);
-      syncProductCarouselPosition(slider, true);
-      let settled = false;
-
-      const settleTrackPosition = () => {
-        if (settled) return;
-        settled = true;
-        if (slider.transitionFallbackTimerId) {
-          window.clearTimeout(slider.transitionFallbackTimerId);
-          slider.transitionFallbackTimerId = null;
-        }
-        if (slider.transitionEndHandler) {
-          trackEl.removeEventListener('transitionend', slider.transitionEndHandler);
-          slider.transitionEndHandler = null;
-        }
-        const cloneCount = getProductCloneCount(slider.carouselEl);
-        let needsIndexReset = false;
-
-        if (slider.currentIndex <= 0) {
-          slider.currentIndex = slider.sourceCards.length;
-          needsIndexReset = true;
-        } else if (slider.currentIndex >= slider.sourceCards.length + cloneCount) {
-          slider.currentIndex = cloneCount;
-          needsIndexReset = true;
-        }
-
-        if (needsIndexReset) {
-          markProductCarouselSilentSwap(slider);
-          syncProductCarouselPosition(slider, false);
-          void trackEl.offsetWidth;
-        }
-        slider.isAnimating = false;
-        slider.animatingSinceTs = 0;
-        hydrateSliderImagePriorities(slider);
-        updateProductCarouselMobileState(slider);
-        unmarkProductCarouselSilentSwap(slider);
-        flushQueuedProductMove(slider);
-      };
-
-      const handleTrackTransitionEnd = (event) => {
-        if (event.target !== trackEl || event.propertyName !== 'transform') return;
-        settleTrackPosition();
-      };
-
-      slider.transitionEndHandler = handleTrackTransitionEnd;
-      trackEl.addEventListener('transitionend', slider.transitionEndHandler);
-      slider.transitionFallbackTimerId = window.setTimeout(() => {
-        settleTrackPosition();
-      }, 700);
     };
 
     const stopProductCarousels = () => {
       productCarouselsState.forEach((slider) => {
-        if (!slider.timerId) return;
-        window.clearInterval(slider.timerId);
-        slider.timerId = null;
+        slider.swiper?.autoplay?.stop();
       });
     };
 
@@ -2213,35 +1826,8 @@
       }
 
       productCarouselsState.forEach((slider) => {
-        if (
-          slider.isAnimating &&
-          slider.animatingSinceTs > 0 &&
-          performance.now() - slider.animatingSinceTs > PRODUCT_CAROUSEL_WATCHDOG_MS
-        ) {
-          forceSettleProductCarousel(slider);
-        }
-        if (slider.timerId) {
-          window.clearInterval(slider.timerId);
-        }
-
-        if (slider.sourceCards.length <= 1) {
-          slider.timerId = null;
-          return;
-        }
-        if (slider.isPausedByInteraction) {
-          slider.timerId = null;
-          return;
-        }
-
-        slider.timerId = window.setInterval(() => {
-          if (
-            slider.carouselEl.matches(':hover') ||
-            slider.carouselEl.querySelector('.product-card:hover')
-          ) {
-            return;
-          }
-          moveProductCarousel(slider, 1);
-        }, PRODUCT_FLOW_INTERVAL_MS);
+        if (!slider.swiper || slider.slideCount <= 1 || slider.isPausedByInteraction) return;
+        slider.swiper.autoplay?.start();
       });
     };
 
@@ -2715,19 +2301,15 @@
       setProductModalNativeFullscreenState(fullscreenActive);
     });
 
-    if (shouldUseProductSwipers()) {
-      initProductSwipers();
-    } else {
-      buildProductCarousels();
-      productCarouselsState.forEach((slider) => {
-        mountProductCarouselControls(slider);
-      });
-      syncProductCarouselLayout();
-      productCarouselsState.forEach((slider) => {
-        bindProductCarouselSwipe(slider);
-        bindProductCarouselAccessibility(slider);
-      });
-    }
+    buildProductCarousels();
+    productCarouselsState.forEach((slider) => {
+      mountProductCarouselControls(slider);
+    });
+    syncProductCarouselLayout();
+    productCarouselsState.forEach((slider) => {
+      bindProductCarouselSwipe(slider);
+      bindProductCarouselAccessibility(slider);
+    });
     observeProductSectionImagePriming();
     bindArrowAnimations();
 
