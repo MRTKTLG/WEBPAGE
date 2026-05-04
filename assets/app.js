@@ -8,7 +8,6 @@
       ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
       : null;
     const navbarEl = document.querySelector('.navbar');
-    const preloaderEl = document.querySelector('.page-preloader');
     const statsSectionEl = document.getElementById('sayaclar');
     const productsSectionEl = document.getElementById('urunler');
     const navLinks = Array.from(document.querySelectorAll('a.nav-link[href^="#"]'));
@@ -130,14 +129,23 @@
           'Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.',
         'testimonials.t9':
           'Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.',
+        'contact.ghost': 'İletişim',
         'contact.title': 'İletişim',
         'contact.lead':
           'Yeni model talebi, özel renk isteği veya hediye siparişi için doğrudan yazabilirsiniz.',
+        'contact.note.dm': 'Özel siparişler için Instagram DM üzerinden iletişime geçebilirsiniz.',
+        'contact.note.marketplaces.prefix': 'Satıştaki ürünleri',
+        'contact.note.marketplaces.between': ' ve ',
+        'contact.note.marketplaces.suffix': ' üzerinden ziyaret edebilirsiniz.',
+        'contact.note.shipping': "Türkiye'nin her yerine kargo gönderimi yapılır.",
+        'contact.note.handmade':
+          'Ürünlerin tamamı el işidir; satıştaki ürünlere ek olarak özel sipariş de alınır.',
         'contact.name': 'Ad Soyad',
         'contact.email': 'E-posta',
         'contact.phone': 'Telefon',
         'contact.message': 'Mesaj',
         'contact.submit': 'Gönder',
+        'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
       },
       en: {
@@ -225,14 +233,23 @@
           'Both the warm communication and the precision in craftsmanship were clearly noticeable. This amigurumi gift made the recipient very happy and turned out even more special than I expected.',
         'testimonials.t9':
           'The fabric, yarn, and overall form quality were far better than I expected. You could feel the handmade care in every detail, and it genuinely made me smile on delivery.',
+        'contact.ghost': 'Contact',
         'contact.title': 'Contact',
         'contact.lead':
           'You can directly message me for new model requests, custom color preferences, or gift orders.',
+        'contact.note.dm': 'For custom orders, you can reach out via Instagram DM.',
+        'contact.note.marketplaces.prefix': 'You can browse listed items on',
+        'contact.note.marketplaces.between': ' and ',
+        'contact.note.marketplaces.suffix': '.',
+        'contact.note.shipping': 'Shipping is available across Türkiye.',
+        'contact.note.handmade':
+          'All items are handmade; custom orders can also be accepted in addition to listed products.',
         'contact.name': 'Full Name',
         'contact.email': 'Email',
         'contact.phone': 'Phone',
         'contact.message': 'Message',
         'contact.submit': 'Send',
+        'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Lovingly crafted by her husband.'
       }
     };
@@ -412,60 +429,6 @@
         lastTargetTop = nextTargetTop;
         if (stableFrames >= stableFrameCount) break;
       }
-    };
-    const PRELOADER_DELAY_MS = 200;
-    const PRELOADER_MIN_VISIBLE_MS = 400;
-    let preloaderHidePromise = null;
-    let preloaderShownAt = null;
-    let preloaderShowTimer = null;
-
-    const showPreloader = () => {
-      if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
-      if (preloaderShownAt !== null) return;
-      preloaderEl.classList.remove('is-delay');
-      preloaderEl.classList.remove('is-hidden');
-      bodyEl.classList.add('is-preloading');
-      preloaderShownAt = window.performance?.now ? window.performance.now() : Date.now();
-    };
-
-    if (preloaderEl) {
-      preloaderEl.classList.add('is-delay');
-      preloaderEl.classList.remove('is-hidden');
-      bodyEl.classList.remove('is-preloading');
-      preloaderShowTimer = window.setTimeout(showPreloader, PRELOADER_DELAY_MS);
-    }
-
-    const hidePreloader = () => {
-      if (preloaderHidePromise) return preloaderHidePromise;
-
-      preloaderHidePromise = (async () => {
-        if (!preloaderEl || preloaderEl.dataset.dismissed === 'true') return;
-        if (preloaderShowTimer) window.clearTimeout(preloaderShowTimer);
-
-        preloaderEl.dataset.dismissed = 'true';
-
-        const finalize = () => {
-          preloaderEl.classList.add('is-hidden');
-          preloaderEl.classList.add('is-delay');
-          bodyEl.classList.remove('is-preloading');
-        };
-
-        if (preloaderShownAt === null) {
-          finalize();
-          return;
-        }
-
-        const now = window.performance?.now ? window.performance.now() : Date.now();
-        const elapsed = now - preloaderShownAt;
-        const remaining = Math.max(0, PRELOADER_MIN_VISIBLE_MS - elapsed);
-        if (remaining) {
-          await new Promise((resolve) => window.setTimeout(resolve, remaining));
-        }
-
-        window.setTimeout(finalize, 220);
-      })();
-
-      return preloaderHidePromise;
     };
 
     const initMediaSkeletons = () => {
@@ -1586,7 +1549,8 @@
           swiper: null,
           slideCount: slides.length,
           isPausedByInteraction: false,
-          suppressClickUntil: 0
+          suppressClickUntil: 0,
+          controlsLockedUntil: 0
         });
       });
     };
@@ -1635,14 +1599,25 @@
 
       const prevButton = controlsEl.querySelector('.is-prev');
       const nextButton = controlsEl.querySelector('.is-next');
-      prevButton?.addEventListener('click', () => {
-        moveProductCarousel(slider, -1);
+      const onControlClick = (event, direction) => {
+        event.preventDefault();
+        const now = window.performance?.now ? window.performance.now() : Date.now();
+        if (slider.controlsLockedUntil > now) {
+          event.stopImmediatePropagation();
+          return;
+        }
+        const didMove = moveProductCarousel(slider, direction);
+        if (!didMove) {
+          event.stopImmediatePropagation();
+          return;
+        }
+        const speed = Number(slider.swiper?.params?.speed) || 0;
+        slider.controlsLockedUntil = now + speed + 140;
         startProductCarousels();
-      });
-      nextButton?.addEventListener('click', () => {
-        moveProductCarousel(slider, 1);
-        startProductCarousels();
-      });
+      };
+
+      prevButton?.addEventListener('click', (event) => onControlClick(event, -1));
+      nextButton?.addEventListener('click', (event) => onControlClick(event, 1));
     };
 
     const initProductSwiper = (slider) => {
@@ -1652,7 +1627,7 @@
 
       slider.swiper = new window.Swiper(slider.carouselInner, {
         loop: slider.slideCount > getProductVisibleCount(slider.carouselEl),
-        grabCursor: true,
+        grabCursor: false,
         watchOverflow: true,
         speed: 560,
         resistanceRatio: 0.72,
@@ -1805,12 +1780,17 @@
     };
 
     const moveProductCarousel = (slider, direction) => {
-      if (!slider?.swiper || slider.slideCount <= 1) return;
+      if (!slider) return false;
+      initProductSwiper(slider);
+      if (!slider.swiper || slider.slideCount <= 1) return false;
+      if (slider.slideCount <= getProductVisibleCount(slider.carouselEl)) return false;
+      if (slider.swiper.animating) return false;
       if (direction < 0) {
         slider.swiper.slidePrev();
       } else {
         slider.swiper.slideNext();
       }
+      return true;
     };
 
     const stopProductCarousels = () => {
@@ -2625,10 +2605,5 @@
       });
     });
 
-    if (document.readyState === 'complete') {
-      hidePreloader();
-    } else {
-      window.addEventListener('load', hidePreloader, { once: true });
-    }
   });
 })();

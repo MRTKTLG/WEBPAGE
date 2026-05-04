@@ -26,11 +26,6 @@
     <link rel="stylesheet" href="assets/styles.css?v=20260502195927" />
   </head>
   <body>
-    <div class="page-preloader is-delay" aria-hidden="true">
-      <div class="page-preloader-shell">
-        <div class="page-preloader-brand">Nova Crafts</div>
-      </div>
-    </div>
     <nav class="navbar navbar-expand-lg">
       <div class="container">
         <div class="navbar-topbar">
@@ -1821,103 +1816,79 @@
             </div>
           </section>
 
-          <section id="iletisim" class="bg-light">
-            <div class="container">
-              <div class="row g-4 align-items-start">
-                <div class="col-12 col-lg-6">
-                  <h2 class="section-title mb-3" data-i18n="contact.title">İletişim</h2>
-                  <p class="fs-6 lh-base text-body-secondary mb-4" data-i18n="contact.lead">
-                    Yeni model talebi, özel renk isteği veya hediye siparişi için doğrudan
-                    yazabilirsiniz.
-                  </p>
-                  <div class="d-flex gap-2 contact-actions">
-                    <a
-                      class="btn btn-dark"
-                      href="https://instagram.com/yildizamigurumibebek"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      >Instagram</a
-                    >
-                    <a
-                      class="btn btn-success"
-                      href="https://wa.me/905551112233"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      >WhatsApp</a
-                    >
-                  </div>
-                </div>
-                <div class="col-12 col-lg-6">
-                  <form class="row g-3" novalidate>
-                    <div class="col-12">
-                      <label
-                        for="name"
-                        class="form-label fw-medium text-dark mb-2"
-                        data-i18n="contact.name"
-                        >Ad Soyad</label
-                      >
-                      <input id="name" name="name" type="text" class="form-control" required />
-                    </div>
-                    <div class="col-12 col-md-6">
-                      <label
-                        for="email"
-                        class="form-label fw-medium text-dark mb-2"
-                        data-i18n="contact.email"
-                        >E-posta</label
-                      >
-                      <input id="email" name="email" type="email" class="form-control" required />
-                    </div>
-                    <div class="col-12 col-md-6">
-                      <label
-                        for="phone"
-                        class="form-label fw-medium text-dark mb-2"
-                        data-i18n="contact.phone"
-                        >Telefon</label
-                      >
-                      <input id="phone" name="phone" type="tel" class="form-control" />
-                    </div>
-                    <div class="col-12">
-                      <label
-                        for="message"
-                        class="form-label fw-medium text-dark mb-2"
-                        data-i18n="contact.message"
-                        >Mesaj</label
-                      >
-                      <textarea
-                        id="message"
-                        name="message"
-                        class="form-control"
-                        rows="4"
-                        required
-                      ></textarea>
-                    </div>
-                    <div class="col-12">
-                      <button type="submit" class="btn btn-primary" data-i18n="contact.submit">
-                        Gönder
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </section>
+	          <section id="iletisim" class="section-ghost bg-light">
+	            <div class="container">
+	              <div class="row g-4">
+	                <div class="col-12">
+		                  <div class="ghost-title-wrap">
+		                    <span class="ghost-heading" aria-hidden="true" data-i18n="contact.ghost"
+		                      >İletişim</span
+		                    >
+	                    <h2 class="section-title mb-3" data-i18n="contact.title">İletişim</h2>
+	                  </div>
+	                  <ul class="list-unstyled text-body-secondary mt-4 mb-0">
+	                    <li class="mb-2" data-i18n="contact.note.dm">
+	                      Özel siparişler için Instagram DM üzerinden iletişime geçebilirsiniz.
+	                    </li>
+	                    <li class="mb-2">
+	                      <span data-i18n="contact.note.marketplaces.prefix"
+	                        >Satıştaki ürünleri</span
+	                      >
+	                      <a
+	                        href="https://shopier.com"
+	                        target="_blank"
+	                        rel="noopener noreferrer"
+	                        class="link-dark fw-semibold"
+	                      >
+	                        shopier.com
+	                      </a>
+	                      <span data-i18n="contact.note.marketplaces.between"> ve </span>
+	                      <a
+	                        href="https://endolu.com"
+	                        target="_blank"
+	                        rel="noopener noreferrer"
+	                        class="link-dark fw-semibold"
+	                      >
+	                        endolu.com
+	                      </a>
+	                      <span data-i18n="contact.note.marketplaces.suffix"> üzerinden ziyaret edebilirsiniz.</span>
+	                    </li>
+	                    <li class="mb-2" data-i18n="contact.note.shipping">
+	                      Türkiye'nin her yerine kargo gönderimi yapılır.
+	                    </li>
+	                    <li data-i18n="contact.note.handmade">
+	                      Ürünlerin tamamı el işidir; satıştaki ürünlere ek olarak özel sipariş de
+	                      alınır.
+	                    </li>
+	                  </ul>
+	                </div>
+	              </div>
+	            </div>
+	          </section>
         </main>
 
-        <footer class="py-4 border-top">
-          <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
-            <span class="small text-body-secondary">© 2026 Nova Crafts</span>
-            <span class="footer-signature small text-body-secondary">
-              <span class="footer-signature-heart" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
-                  <path
-                    d="M19.5 12.572L12 20l-7.5-7.428a5 5 0 0 1 7.5-6.572a5 5 0 0 1 7.5 6.572z"
-                  />
-                </svg>
-              </span>
-              <span data-i18n="footer.signature">Kocası tarafından sevgiyle tasarlandı.</span>
-            </span>
-          </div>
-        </footer>
+	        <footer class="site-footer border-top">
+	          <div class="container site-footer-inner">
+		            <div class="site-footer-top">
+		              <div class="site-footer-brand">Nova Crafts</div>
+		            </div>
+
+	            <div class="site-footer-mid small text-body-secondary" data-i18n="footer.copyright">
+	              © 2026 Nova Crafts - Her hakkı saklıdır.
+	            </div>
+
+	            <div class="site-footer-bottom small text-body-secondary">
+	              <span class="footer-signature-heart" aria-hidden="true">
+	                <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+	                  <path
+	                    d="M19.5 12.572L12 20l-7.5-7.428a5 5 0 0 1 7.5-6.572a5 5 0 0 1 7.5 6.572z"
+	                  />
+	                </svg>
+	              </span>
+	              <span data-i18n="footer.signature">Kocası tarafından sevgiyle tasarlandı.</span>
+	            </div>
+	          </div>
+	        </footer>
       </div>
     </div>
 
