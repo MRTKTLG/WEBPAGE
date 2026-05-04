@@ -1538,7 +1538,7 @@ main > section:not([id]) > .container > h2 {
 #hakkimizda .ghost-title-wrap,
 #urunler .ghost-title-wrap,
 #sss .ghost-title-wrap,
-#iletisim .section-title,
+#iletisim .ghost-title-wrap,
 #yorumlar .section-title,
 .stats-section .section-title {
   margin-bottom: var(--section-intro-gap) !important;
