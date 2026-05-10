@@ -145,6 +145,10 @@
         'contact.phone': 'Telefon',
         'contact.message': 'Mesaj',
         'contact.submit': 'Gönder',
+        'footer.tagline': 'El işi amigurumi ve kişiye özel tasarımlar.',
+        'footer.links': 'Menü',
+        'footer.marketplaces': 'Satış',
+        'footer.dmNote': "Özel sipariş ve renk seçenekleri için Instagram DM'den yazabilirsiniz.",
         'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
       },
@@ -249,6 +253,11 @@
         'contact.phone': 'Phone',
         'contact.message': 'Message',
         'contact.submit': 'Send',
+        'footer.tagline': 'Handmade amigurumi and custom designs.',
+        'footer.links': 'Menu',
+        'footer.marketplaces': 'Shop',
+        'footer.dmNote':
+          'For custom orders and color options, feel free to message via Instagram DM.',
         'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Lovingly crafted by her husband.'
       }
@@ -256,6 +265,39 @@
     const getStoredLanguage = () => {
       const storedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
       return storedLanguage === 'en' ? 'en' : 'tr';
+    };
+    const titleCircleTargets = [
+      { anchorSelector: '.hero-title-anchor', textSelector: '.hero-split-title' },
+      { anchorSelector: '.section-title' }
+    ];
+    const syncTitleCircleAlignment = () => {
+      titleCircleTargets.forEach(({ anchorSelector, textSelector }) => {
+        const titleAnchors = Array.from(document.querySelectorAll(anchorSelector));
+
+        titleAnchors.forEach((anchorEl) => {
+          const circleContent = window.getComputedStyle(anchorEl, '::before').content;
+          if (circleContent === 'none' || circleContent === 'normal') return;
+
+          const titleEl = textSelector ? anchorEl.querySelector(textSelector) : anchorEl;
+          if (!titleEl) return;
+
+          const range = document.createRange();
+          range.selectNodeContents(titleEl);
+          const titleRect = range.getBoundingClientRect();
+          range.detach();
+
+          const anchorRect = anchorEl.getBoundingClientRect();
+          if (!titleRect.height || !anchorRect.height) return;
+
+          const titleCenterY = titleRect.top - anchorRect.top + titleRect.height / 2;
+          anchorEl.style.setProperty('--title-circle-anchor-y', `${titleCenterY.toFixed(2)}px`);
+        });
+      });
+    };
+    const scheduleTitleCircleAlignment = () => {
+      window.requestAnimationFrame(() => {
+        syncTitleCircleAlignment();
+      });
     };
     const applyLanguage = (languageCode) => {
       const dictionary = i18nDictionary[languageCode] || i18nDictionary.tr;
@@ -280,6 +322,7 @@
         buttonEl.classList.toggle('is-active', isActive);
         buttonEl.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
+      scheduleTitleCircleAlignment();
     };
     const initialLanguage = getStoredLanguage();
     applyLanguage(initialLanguage);
@@ -291,6 +334,7 @@
         window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageCode);
       });
     });
+    document.fonts?.ready?.then(scheduleTitleCircleAlignment).catch(() => {});
 
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
@@ -1363,6 +1407,7 @@
           setHeroVisibleState(item, index === event.to);
           setHeroMediaCirclesVisibleState(item, false);
         });
+        scheduleTitleCircleAlignment();
         if (heroItems[event.to]) {
           const direction = event.direction === 'right' ? 'down' : 'up';
           animateHeroMediaCircles(heroItems[event.to], direction);
@@ -2349,6 +2394,7 @@
       updateGhostHeadingPosition();
       updateSectionOrbParallax();
       syncHeroParallaxLayout();
+      scheduleTitleCircleAlignment();
       syncProductCarouselLayout();
       syncProductCardInteractivity();
       lenis?.resize();
@@ -2592,17 +2638,6 @@
     navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
       refreshCollapsedNavOffset();
       updateActiveSection();
-    });
-
-    const forms = Array.from(document.querySelectorAll('form[novalidate]'));
-    forms.forEach((form) => {
-      form.addEventListener('submit', (event) => {
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-      });
     });
 
   });
