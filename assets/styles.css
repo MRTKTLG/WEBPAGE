@@ -68,10 +68,10 @@
   --text-nav: 0.86rem;
   --text-body: 1rem;
   --text-body-lg: clamp(1.02rem, 1.04vw, 1.1rem);
-  --text-subheading: clamp(1.42rem, 1.7vw, 1.68rem);
+  --text-subheading: clamp(1.32rem, 1.55vw, 1.56rem);
   --text-description: 1rem;
   --text-body-weight: 400;
-  --text-section-title: clamp(2.75rem, 5.2vw, 4.6rem);
+  --text-section-title: clamp(3.6rem, 6.6vw, 6rem);
   --text-brand: clamp(1.2rem, 1.7vw, 1.6rem);
   --font-description: 'Quicksand', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   --description-color: #1f2933;
@@ -1198,9 +1198,9 @@ main > section {
   left: calc(-0.06em + var(--ghost-left-adjust));
   bottom: -0.08em;
   font-family: var(--font-ui);
-  font-size: calc(var(--text-section-title) * 3);
+  font-size: calc(var(--text-section-title) * 2.4);
   font-weight: 800;
-  letter-spacing: -0.025em;
+  letter-spacing: 0.01em;
   color: var(--ghost);
   pointer-events: none;
   line-height: 0.84;
@@ -1488,8 +1488,10 @@ main > section:not([id]) > .container > h2 {
 #hakkimizda h3,
 #urun-yolculugu .journey-card h3,
 #urunler .product-carousel-group > h3,
+#sayaclar .card-body > p:last-child,
 #sss .accordion-button,
-#sss .accordion-button:not(.collapsed) {
+#sss .accordion-button:not(.collapsed),
+#yorumlar .testimonial-card h3 {
   font-family: var(--font-ui);
   font-size: var(--text-subheading) !important;
   font-weight: 500 !important;
@@ -1571,11 +1573,11 @@ main > section:not([id]) > .container > h2 {
   width: fit-content;
   max-width: min(100%, 62rem);
   margin-inline: auto;
-  font-size: clamp(2.1rem, 3.4vw, 3.3rem) !important;
+  font-size: 3rem !important;
   line-height: 1.24;
   letter-spacing: 0.01em;
   color: rgba(22, 24, 31, 0.24);
-  font-weight: 700;
+  font-weight: 800;
   text-align: center;
   padding-bottom: 0.08em;
   background: none;
@@ -1690,6 +1692,11 @@ main > section:not([id]) > .container > h2 {
 .stats-title {
   text-wrap: balance;
   max-width: 64rem;
+}
+
+#urun-yolculugu .stats-title {
+  font-size: 3rem !important;
+  font-weight: 700;
 }
 
 .stats-title::before {
@@ -2825,7 +2832,9 @@ main > section:not([id]) > .container > h2 {
 #urunler .product-meta-row h3.card-title {
   grid-column: 1;
   grid-row: 1;
+  font-family: var(--font-ui);
   font-size: 0.95rem;
+  font-weight: 400 !important;
   text-align: left;
   color: var(--preview-contrast) !important;
   text-transform: uppercase;
@@ -2836,6 +2845,8 @@ main > section:not([id]) > .container > h2 {
   grid-column: 1;
   grid-row: 2;
   margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 400 !important;
   text-align: left;
   color: var(--description-color) !important;
   text-transform: uppercase !important;
@@ -3194,17 +3205,21 @@ main > section:not([id]) > .container > h2 {
   .ghost-heading {
     display: block;
     bottom: -0.08em;
-    font-size: calc(1.95rem * 2.6);
+    font-size: calc(2.9rem * 2.4);
     line-height: 0.84;
   }
 
   .section-title,
   main > section:not([id]) > .container > h2 {
-    font-size: 2.3rem;
+    font-size: 2.9rem;
   }
 
   .stats-title {
-    font-size: 1.85rem !important;
+    font-size: 3rem !important;
+  }
+
+  #urun-yolculugu .stats-title {
+    font-size: 3rem !important;
   }
 
   .product-image-grid {
@@ -3237,6 +3252,10 @@ main > section:not([id]) > .container > h2 {
 
   main > section {
     padding-block: var(--section-pad-y-mobile) !important;
+  }
+
+  .ghost-heading {
+    font-size: calc(2.45rem * 2.4);
   }
 
   .navbar-nav .nav-link {
@@ -3428,7 +3447,7 @@ main > section:not([id]) > .container > h2 {
   #iletisim h2,
   main > section:not([id]) > .container > h2 {
     --title-circle-anchor-y: 50%;
-    font-size: 1.95rem;
+    font-size: 2.45rem;
     margin-bottom: var(--heading-gap) !important;
   }
 
@@ -3439,7 +3458,11 @@ main > section:not([id]) > .container > h2 {
   }
 
   .stats-title {
-    font-size: 1.5rem !important;
+    font-size: 3rem !important;
+  }
+
+  #urun-yolculugu .stats-title {
+    font-size: 3rem !important;
   }
 
   .product-image-grid {

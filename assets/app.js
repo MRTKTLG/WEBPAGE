@@ -978,21 +978,50 @@
         performScrollEffects();
       });
 
+      let shouldSyncLenisBeforeNextInput = true;
+      const syncLenisToCurrentScroll = () => {
+        const y = window.scrollY;
+        if (!Number.isFinite(y) || y <= 1) return false;
+        lenis.resize();
+        lenis.reset();
+        lastScrollY = y;
+        performScrollEffects();
+        return true;
+      };
+      const syncLenisBeforeInput = () => {
+        if (!shouldSyncLenisBeforeNextInput) return;
+        shouldSyncLenisBeforeNextInput = false;
+        syncLenisToCurrentScroll();
+      };
       const syncLenisScrollState = () => {
-        const hash = window.location.hash;
-        if (hash && hash !== '#anasayfa') return;
-        const currentY = window.scrollY;
-        if (!Number.isFinite(currentY) || currentY <= 1) return;
-        // After reload, the browser may restore scroll position after Lenis has
-        // initialized. Sync Lenis' internal state so the next wheel scroll does
-        // not snap back to the top.
-        window.requestAnimationFrame(() => {
-          lenis.scrollTo(currentY, { immediate: true, force: true });
-        });
+        shouldSyncLenisBeforeNextInput = true;
+        // After reload, the browser may restore scroll position *after* Lenis
+        // has initialized. If we sync too early (while scrollY is still 0),
+        // the next wheel/touch scroll can snap back. Poll for a short time and
+        // sync once the restored scroll position is observable.
+        const maxFrames = 60;
+        let frame = 0;
+        const tick = () => {
+          frame += 1;
+          if (syncLenisToCurrentScroll()) {
+            shouldSyncLenisBeforeNextInput = false;
+            return;
+          }
+          if (frame < maxFrames) {
+            window.requestAnimationFrame(tick);
+          }
+        };
+        window.requestAnimationFrame(tick);
       };
 
       window.addEventListener('pageshow', syncLenisScrollState);
       window.addEventListener('load', syncLenisScrollState, { once: true });
+      ['wheel', 'touchstart', 'touchmove', 'keydown'].forEach((eventName) => {
+        window.addEventListener(eventName, syncLenisBeforeInput, {
+          capture: true,
+          passive: true
+        });
+      });
     }
 
     refreshCollapsedNavOffset();
@@ -2427,26 +2456,33 @@
       document.querySelectorAll('a.navbar-brand[href^="#"], a.nav-link[href^="#"]')
     );
     let userInteractedBeforeInitialHashAlign = false;
+    let userInteractionVersion = 0;
+    let navAnchorSettleToken = 0;
     const markUserInteractedBeforeInitialHashAlign = () => {
       userInteractedBeforeInitialHashAlign = true;
+      userInteractionVersion += 1;
     };
-    window.addEventListener('touchstart', markUserInteractedBeforeInitialHashAlign, {
+    const cancelAnchorSettleForUserInput = () => {
+      markUserInteractedBeforeInitialHashAlign();
+      navAnchorSettleToken += 1;
+    };
+    window.addEventListener('touchstart', cancelAnchorSettleForUserInput, {
       passive: true,
       once: true
     });
-    window.addEventListener('touchmove', markUserInteractedBeforeInitialHashAlign, {
+    window.addEventListener('touchmove', cancelAnchorSettleForUserInput, {
       passive: true,
       once: true
     });
-    window.addEventListener('wheel', markUserInteractedBeforeInitialHashAlign, {
+    window.addEventListener('wheel', cancelAnchorSettleForUserInput, {
       passive: true,
       once: true
     });
-    window.addEventListener('pointerdown', markUserInteractedBeforeInitialHashAlign, {
+    window.addEventListener('pointerdown', cancelAnchorSettleForUserInput, {
       passive: true,
       once: true
     });
-    window.addEventListener('keydown', markUserInteractedBeforeInitialHashAlign, {
+    window.addEventListener('keydown', cancelAnchorSettleForUserInput, {
       once: true
     });
     window.addEventListener(
@@ -2458,7 +2494,6 @@
       },
       { passive: true, once: true }
     );
-    let navAnchorSettleToken = 0;
     const alignAnchorTarget = (target, isHomeTarget) => {
       if (!target) return true;
       refreshCollapsedNavOffset();
@@ -2584,16 +2619,27 @@
       if (!hash || hash.length < 2) return;
       const target = document.querySelector(hash);
       if (!target) return;
+      const interactionVersionAtStart = userInteractionVersion;
+      const scrollYAtStart = window.scrollY;
+      const didScrollSinceStart = () => Math.abs(window.scrollY - scrollYAtStart) > 8;
       const isHomeTarget = hash === '#anasayfa';
       const isMobileNavInteraction = isMobileViewport();
       await closeNavMenuIfNeeded();
+      if (didScrollSinceStart()) return;
+      if (interactionVersionAtStart !== userInteractionVersion) return;
       refreshCollapsedNavOffset();
       syncNavOffset();
       if (isMobileNavInteraction) {
         await waitForStableNavbar();
+        if (didScrollSinceStart()) return;
+        if (interactionVersionAtStart !== userInteractionVersion) return;
       }
       await waitForPrecedingMediaStability(target);
+      if (didScrollSinceStart()) return;
+      if (interactionVersionAtStart !== userInteractionVersion) return;
       await waitForLayoutStability(target);
+      if (didScrollSinceStart()) return;
+      if (interactionVersionAtStart !== userInteractionVersion) return;
       const nextTop = isHomeTarget
         ? 0
         : Math.max(Math.round(getDocumentTop(target) - getNavOffset()), 0);
