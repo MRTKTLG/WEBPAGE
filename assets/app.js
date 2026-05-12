@@ -131,8 +131,6 @@
           'Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.',
         'contact.ghost': 'İletişim',
         'contact.title': 'İletişim',
-        'contact.lead':
-          'Yeni model talebi, özel renk isteği veya hediye siparişi için doğrudan yazabilirsiniz.',
         'contact.note.dm': 'Özel siparişler için Instagram DM üzerinden iletişime geçebilirsiniz.',
         'contact.note.marketplaces.prefix': 'Satıştaki ürünleri',
         'contact.note.marketplaces.between': ' ve ',
@@ -140,15 +138,6 @@
         'contact.note.shipping': "Türkiye'nin her yerine kargo gönderimi yapılır.",
         'contact.note.handmade':
           'Ürünlerin tamamı el işidir; satıştaki ürünlere ek olarak özel sipariş de alınır.',
-        'contact.name': 'Ad Soyad',
-        'contact.email': 'E-posta',
-        'contact.phone': 'Telefon',
-        'contact.message': 'Mesaj',
-        'contact.submit': 'Gönder',
-        'footer.tagline': 'El işi amigurumi ve kişiye özel tasarımlar.',
-        'footer.links': 'Menü',
-        'footer.marketplaces': 'Satış',
-        'footer.dmNote': "Özel sipariş ve renk seçenekleri için Instagram DM'den yazabilirsiniz.",
         'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
       },
@@ -239,8 +228,6 @@
           'The fabric, yarn, and overall form quality were far better than I expected. You could feel the handmade care in every detail, and it genuinely made me smile on delivery.',
         'contact.ghost': 'Contact',
         'contact.title': 'Contact',
-        'contact.lead':
-          'You can directly message me for new model requests, custom color preferences, or gift orders.',
         'contact.note.dm': 'For custom orders, you can reach out via Instagram DM.',
         'contact.note.marketplaces.prefix': 'You can browse listed items on',
         'contact.note.marketplaces.between': ' and ',
@@ -248,16 +235,6 @@
         'contact.note.shipping': 'Shipping is available across Türkiye.',
         'contact.note.handmade':
           'All items are handmade; custom orders can also be accepted in addition to listed products.',
-        'contact.name': 'Full Name',
-        'contact.email': 'Email',
-        'contact.phone': 'Phone',
-        'contact.message': 'Message',
-        'contact.submit': 'Send',
-        'footer.tagline': 'Handmade amigurumi and custom designs.',
-        'footer.links': 'Menu',
-        'footer.marketplaces': 'Shop',
-        'footer.dmNote':
-          'For custom orders and color options, feel free to message via Instagram DM.',
         'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Lovingly crafted by her husband.'
       }
@@ -1710,6 +1687,7 @@
         longSwipesMs: 240,
         longSwipesRatio: 0.35,
         shortSwipes: true,
+        simulateTouch: false,
         touchStartPreventDefault: false,
         passiveListeners: true,
         slidesPerView: getProductVisibleCount(slider.carouselEl),
@@ -1749,13 +1727,42 @@
       let didMove = false;
       slider.swiper?.on('sliderMove', () => {
         didMove = true;
+        slider.carouselEl?.classList.add('is-touch-dragging');
       });
       slider.swiper?.on('touchEnd', () => {
         if (didMove) {
           slider.suppressClickUntil = performance.now() + 420;
+          window.setTimeout(() => {
+            slider.carouselEl?.classList.remove('is-touch-dragging');
+          }, 420);
+        } else {
+          slider.carouselEl?.classList.remove('is-touch-dragging');
         }
         didMove = false;
       });
+    };
+
+    const bindProductCarouselTouchGuard = (slider) => {
+      if (!slider?.carouselEl || slider.carouselEl.dataset.touchGuardBound === 'true') return;
+
+      const clearTouchGuard = () => {
+        window.setTimeout(() => {
+          if (slider.suppressClickUntil > performance.now()) return;
+          slider.carouselEl.classList.remove('is-touch-dragging');
+        }, 90);
+      };
+
+      slider.carouselEl.addEventListener(
+        'pointerdown',
+        (event) => {
+          if (!isProductTouchViewport() || event.pointerType === 'mouse') return;
+          slider.carouselEl.classList.add('is-touch-dragging');
+        },
+        { passive: true }
+      );
+      slider.carouselEl.addEventListener('pointerup', clearTouchGuard, { passive: true });
+      slider.carouselEl.addEventListener('pointercancel', clearTouchGuard, { passive: true });
+      slider.carouselEl.dataset.touchGuardBound = 'true';
     };
 
     const bindProductCarouselAccessibility = (slider) => {
@@ -2362,6 +2369,7 @@
     syncProductCarouselLayout();
     productCarouselsState.forEach((slider) => {
       bindProductCarouselSwipe(slider);
+      bindProductCarouselTouchGuard(slider);
       bindProductCarouselAccessibility(slider);
     });
     observeProductSectionImagePriming();
