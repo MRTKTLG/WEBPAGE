@@ -55,7 +55,7 @@
         'nav.about': 'Hakkımda',
         'nav.products': 'Ürünler',
         'nav.faq': 'SSS',
-        'nav.contact': 'İletişim',
+        'nav.contact': 'Kontakt',
         'about.ghost': 'Hakkımda',
         'about.title': 'Hakkımda',
         'about.lead':
@@ -1731,10 +1731,8 @@
       });
       slider.swiper?.on('touchEnd', () => {
         if (didMove) {
-          slider.suppressClickUntil = performance.now() + 420;
-          window.setTimeout(() => {
-            slider.carouselEl?.classList.remove('is-touch-dragging');
-          }, 420);
+          const transitionMs = Number(slider.swiper?.params?.speed) || 0;
+          slider.suppressClickUntil = performance.now() + transitionMs + 180;
         } else {
           slider.carouselEl?.classList.remove('is-touch-dragging');
         }
@@ -1757,6 +1755,9 @@
         (event) => {
           if (!isProductTouchViewport() || event.pointerType === 'mouse') return;
           slider.carouselEl.classList.add('is-touch-dragging');
+          if (slider.suppressClickUntil <= performance.now()) {
+            slider.suppressClickUntil = 0;
+          }
         },
         { passive: true }
       );
@@ -1810,15 +1811,6 @@
     };
 
     const bindArrowAnimations = () => {
-      document
-        .querySelectorAll('.carousel-control-prev, .carousel-control-next')
-        .forEach((controlEl) => {
-          const iconEl = controlEl.querySelector(
-            '.carousel-control-prev-icon, .carousel-control-next-icon'
-          );
-          bindOneShotArrowAnimation(controlEl, iconEl);
-        });
-
       document.querySelectorAll('.product-carousel-control').forEach((controlEl) => {
         const iconEl = controlEl.querySelector('svg');
         bindOneShotArrowAnimation(controlEl, iconEl);
