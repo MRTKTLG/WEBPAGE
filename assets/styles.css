@@ -1811,7 +1811,7 @@ main > section:not([id]) > .container > h2 {
 }
 
 #sayaclar .card-body > p:last-child {
-  color: var(--counter-step-color, var(--description-color)) !important;
+  color: var(--ink) !important;
 }
 
 .stats-section .stat-digit-face,
@@ -1842,6 +1842,137 @@ main > section:not([id]) > .container > h2 {
 #iletisim li a,
 #iletisim li span {
   font-family: var(--font-description);
+}
+
+.instagram-feed {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  overflow: hidden;
+}
+
+.instagram-feed-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.instagram-feed-kicker {
+  font-family: var(--font-description);
+  font-size: 0.84rem !important;
+  font-weight: 600;
+  line-height: 1.2 !important;
+  color: var(--description-color);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.instagram-feed-title {
+  font-size: var(--text-subheading);
+  font-weight: 400;
+  line-height: var(--heading-line-height);
+  color: var(--ink);
+}
+
+.instagram-feed-link {
+  flex: 0 0 auto;
+  font-family: var(--font-description);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--preview-contrast);
+  text-decoration: none;
+  border-bottom: 1px solid currentcolor;
+}
+
+.instagram-feed-link:hover,
+.instagram-feed-link:focus-visible {
+  color: var(--ink);
+}
+
+.instagram-carousel {
+  --instagram-post-count: 6;
+  --instagram-total-slides: 12;
+  --instagram-flow-duration: 22s;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.instagram-track {
+  display: flex;
+  width: 200%;
+  animation: instagramFeedFlow var(--instagram-flow-duration) linear infinite;
+  will-change: transform;
+}
+
+@keyframes instagramFeedFlow {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.instagram-post-card {
+  flex: 0 0 calc(100% / var(--instagram-total-slides));
+  width: calc(100% / var(--instagram-total-slides));
+  height: auto;
+  overflow: hidden;
+  border-radius: 0;
+  background: #fff;
+}
+
+.instagram-post-card a {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  color: #fff;
+  text-decoration: none;
+  isolation: isolate;
+}
+
+.instagram-post-card img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition:
+    filter 360ms ease,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.instagram-post-card a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 48%, rgba(22, 24, 31, 0.62) 100%);
+  z-index: 1;
+}
+
+.instagram-post-card a:hover img,
+.instagram-post-card a:focus-visible img {
+  filter: brightness(0.92) saturate(0.98);
+  transform: scale(1.025);
+}
+
+.instagram-post-card a:focus-visible {
+  outline: 2px solid var(--preview-contrast);
+  outline-offset: 3px;
+}
+
+.instagram-post-meta {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.9rem;
+  z-index: 2;
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .carousel-caption p {
@@ -2573,26 +2704,30 @@ main > section:not([id]) > .container > h2 {
   border: 0;
   margin: 0;
   background: #efe3ea;
-  transform: scale(1);
   filter: none;
-  transform-origin: center center;
-  will-change: transform;
-  transition:
-    filter 520ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: filter;
+  transition: filter 520ms cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 1;
   clip-path: none;
 }
 
 .product-media:hover .card-img-top,
 .product-media:focus-within .card-img-top {
-  transform: scale(1.025);
   filter: brightness(0.9) saturate(0.95);
 }
 
 @media (hover: none), (pointer: coarse) {
   .product-media::after {
     content: none;
+  }
+
+  .product-preview-trigger {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .product-preview-trigger .corner-segment {
+    transform: translate3d(0, 0, 0) scale(1);
   }
 
   .product-carousel.is-touch-dragging .product-media:hover .product-preview-trigger,
@@ -2671,8 +2806,6 @@ main > section:not([id]) > .container > h2 {
   width: 100% !important;
   max-width: 100% !important;
   height: 100% !important;
-  transform: none !important;
-  transform-origin: center;
   clip-path: none !important;
   object-fit: cover !important;
   margin: 0 !important;
@@ -2807,8 +2940,8 @@ main > section:not([id]) > .container > h2 {
   font-size: var(--text-subheading) !important;
   font-weight: 400 !important;
   text-align: left;
-  color: var(--preview-contrast) !important;
-  text-transform: uppercase;
+  color: var(--preview-contrast);
+  text-transform: none;
   letter-spacing: 0.025em;
 }
 
@@ -2822,9 +2955,9 @@ main > section:not([id]) > .container > h2 {
   color: var(--description-color) !important;
   text-transform: uppercase !important;
   letter-spacing: var(--heading-letter-spacing);
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+  display: block;
+  visibility: visible;
+  opacity: 1;
   line-height: 1.35;
 }
 
@@ -2879,7 +3012,7 @@ main > section:not([id]) > .container > h2 {
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: 0.01em;
-  color: var(--preview-contrast) !important;
+  color: var(--preview-contrast);
 }
 
 .product-price-row {
@@ -3591,6 +3724,16 @@ main > section:not([id]) > .container > h2 {
   .lead,
   #iletisim p {
     font-size: var(--text-body);
+  }
+
+  .instagram-feed-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .instagram-feed-link {
+    font-size: 0.9rem;
   }
 
   #sss .accordion-button,
