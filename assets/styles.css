@@ -134,7 +134,6 @@ body.is-nav-collapsing {
   overflow-anchor: none;
 }
 
-
 .media-skeleton {
   position: relative;
   isolation: isolate;
@@ -1124,7 +1123,7 @@ main > section {
 .ghost-heading {
   position: absolute;
   left: calc(-0.06em + var(--ghost-left-adjust));
-  bottom: -0.08em;
+  bottom: 0;
   font-family: var(--font-primary);
   font-size: calc(var(--text-section-title) * 2);
   font-weight: 700;
@@ -1337,7 +1336,7 @@ main > section {
   font-family: var(--font-primary);
   line-height: 0.82;
   letter-spacing: -0.08em;
-  color: rgba(43, 52, 66, 0.1);
+  color: var(--journey-step-color, rgba(43, 52, 66, 0.1));
   text-shadow: 0 14px 28px rgba(104, 121, 145, 0.08);
   z-index: -1;
   pointer-events: none;
@@ -1345,29 +1344,23 @@ main > section {
 }
 
 .journey-card:nth-child(1) h3 {
+  --journey-step-color: rgba(123, 159, 190, 0.16);
   --journey-step-optical-y: -1px;
 }
 
 .journey-card:nth-child(2) h3 {
+  --journey-step-color: rgba(154, 154, 186, 0.16);
   --journey-step-optical-y: 0px;
 }
 
 .journey-card:nth-child(3) h3 {
+  --journey-step-color: rgba(184, 148, 181, 0.16);
   --journey-step-optical-y: -1px;
 }
 
 .journey-card:nth-child(4) h3 {
+  --journey-step-color: rgba(215, 143, 177, 0.16);
   --journey-step-optical-y: 0px;
-}
-
-.journey-card:nth-child(2) h3::before,
-.journey-card:nth-child(4) h3::before {
-  color: rgba(123, 159, 190, 0.13);
-}
-
-.journey-card:nth-child(1) h3::before,
-.journey-card:nth-child(3) h3::before {
-  color: rgba(215, 143, 177, 0.13);
 }
 
 .journey-card p:last-child {
@@ -1431,6 +1424,14 @@ main > section:not([id]) > .container > h2 {
   font-weight: 400 !important;
   letter-spacing: var(--heading-letter-spacing);
   line-height: var(--heading-line-height);
+}
+
+#urun-yolculugu .journey-card h3 {
+  width: 100%;
+  max-width: 100%;
+  white-space: nowrap;
+  text-wrap: nowrap;
+  overflow: visible;
 }
 
 #hakkimizda p,
@@ -1771,15 +1772,46 @@ main > section:not([id]) > .container > h2 {
 }
 
 #sayaclar .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 0.35rem 0 0.15rem;
+}
+
+#sayaclar .stat-visual {
+  width: min(100%, 12rem);
+  aspect-ratio: 1;
+  margin-bottom: var(--space-2);
+  display: grid;
+  place-items: center;
+}
+
+#sayaclar .stat-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 16px 24px rgba(104, 121, 145, 0.1));
 }
 
 #sayaclar .stat-counter {
   color: var(--preview-contrast);
 }
 
+#sayaclar .row > :nth-child(1) {
+  --counter-step-color: rgba(123, 159, 190, 0.95);
+}
+
+#sayaclar .row > :nth-child(2) {
+  --counter-step-color: rgba(169, 151, 184, 0.95);
+}
+
+#sayaclar .row > :nth-child(3) {
+  --counter-step-color: rgba(215, 143, 177, 0.95);
+}
+
 #sayaclar .card-body > p:last-child {
-  color: var(--description-color) !important;
+  color: var(--counter-step-color, var(--description-color)) !important;
 }
 
 .stats-section .stat-digit-face,
@@ -2350,7 +2382,9 @@ main > section:not([id]) > .container > h2 {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(10, 16, 26, 0.26);
+  background:
+    radial-gradient(circle at 50% 72%, rgba(255, 255, 255, 0.24), transparent 34%),
+    linear-gradient(180deg, rgba(23, 29, 39, 0.02) 0%, rgba(23, 29, 39, 0.32) 100%);
   opacity: 0;
   transition: opacity var(--preview-overlay-motion-duration) var(--preview-overlay-motion-ease);
   transition-delay: 0ms;
@@ -2367,6 +2401,7 @@ main > section:not([id]) > .container > h2 {
   bottom: auto;
   width: var(--icon-button-size);
   height: var(--icon-button-size);
+  padding: 0;
   border: 0;
   border-radius: var(--icon-radius-control);
   display: inline-flex;
@@ -2542,13 +2577,16 @@ main > section:not([id]) > .container > h2 {
   filter: none;
   transform-origin: center center;
   will-change: transform;
-  transition: filter 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    filter 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 1;
   clip-path: none;
 }
 
 .product-media:hover .card-img-top,
 .product-media:focus-within .card-img-top {
+  transform: scale(1.025);
   filter: brightness(0.9) saturate(0.95);
 }
 
@@ -2707,7 +2745,7 @@ main > section:not([id]) > .container > h2 {
 
 .product-carousel-compact .product-meta-row h3.card-title {
   order: 1;
-  font-size: 0.95rem;
+  font-size: var(--text-subheading);
   text-align: left;
 }
 
@@ -2766,7 +2804,7 @@ main > section:not([id]) > .container > h2 {
   grid-column: 1;
   grid-row: 1;
   font-family: var(--font-primary);
-  font-size: 0.95rem;
+  font-size: var(--text-subheading) !important;
   font-weight: 400 !important;
   text-align: left;
   color: var(--preview-contrast) !important;
@@ -2837,7 +2875,7 @@ main > section:not([id]) > .container > h2 {
 
 #urunler .product-carousel-featured .product-meta-row h3.card-title {
   order: 1;
-  font-size: 0.95rem;
+  font-size: var(--text-subheading) !important;
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: 0.01em;
@@ -3057,7 +3095,7 @@ main > section:not([id]) > .container > h2 {
 
   .ghost-heading {
     display: block;
-    bottom: -0.08em;
+    bottom: 0;
     font-size: calc(2.35rem * 2);
     line-height: var(--heading-line-height);
   }
@@ -3092,6 +3130,10 @@ main > section:not([id]) > .container > h2 {
     padding: var(--space-3);
   }
 
+  .journey-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .section-title::before,
   .hero-title-anchor::before {
     left: -1.2rem;
@@ -3101,6 +3143,7 @@ main > section:not([id]) > .container > h2 {
 @media (max-width: 767px) {
   :root {
     --mobile-round-control-size: calc(var(--icon-button-size) + 0.9rem);
+    --mobile-section-title-size: clamp(1.45rem, 6.2vw, 2.35rem);
   }
 
   main > section {
@@ -3108,7 +3151,7 @@ main > section:not([id]) > .container > h2 {
   }
 
   .ghost-heading {
-    font-size: calc(2.45rem * 2);
+    font-size: calc(var(--mobile-section-title-size) * 2);
   }
 
   .navbar-nav .nav-link {
@@ -3181,7 +3224,7 @@ main > section:not([id]) > .container > h2 {
   .carousel-caption h1,
   .carousel-caption h2 {
     position: relative;
-    font-size: 1.95rem;
+    font-size: var(--mobile-section-title-size);
     text-align: center;
   }
 
@@ -3274,18 +3317,25 @@ main > section:not([id]) > .container > h2 {
   }
 
   #hakkimizda h2,
-  #yorumlar h2,
+  #urunler h2,
   #sss h2,
   #iletisim h2,
   main > section:not([id]) > .container > h2 {
     --title-circle-anchor-y: 50%;
-    font-size: 2.35rem;
+    max-width: 100%;
+    font-size: var(--mobile-section-title-size) !important;
+    white-space: nowrap;
+    text-wrap: nowrap;
+    overflow: visible;
+    overflow-wrap: normal;
+    word-break: normal;
     margin-bottom: var(--heading-gap) !important;
   }
 
   #hakkimizda .ghost-title-wrap .section-title,
   #urunler .ghost-title-wrap .section-title,
-  #sss .ghost-title-wrap .section-title {
+  #sss .ghost-title-wrap .section-title,
+  #iletisim .ghost-title-wrap .section-title {
     margin-bottom: 0 !important;
   }
 
@@ -3436,11 +3486,11 @@ main > section:not([id]) > .container > h2 {
   }
 
   #urunler .product-carousel-featured .product-meta-row h3.card-title {
-    font-size: 0.95rem;
+    font-size: var(--text-subheading) !important;
   }
 
   #urunler .product-carousel-compact .product-meta-row h3.card-title {
-    font-size: 0.95rem;
+    font-size: var(--text-subheading) !important;
   }
 
   #urunler .product-carousel-compact .product-description,

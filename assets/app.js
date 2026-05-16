@@ -4,9 +4,10 @@
   document.addEventListener('DOMContentLoaded', () => {
     const bootstrap = window.bootstrap;
     const navCollapseEl = document.getElementById('menu');
-    const navCollapse = navCollapseEl && bootstrap
-      ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
-      : null;
+    const navCollapse =
+      navCollapseEl && bootstrap
+        ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
+        : null;
     const navbarEl = document.querySelector('.navbar');
     const statsSectionEl = document.getElementById('sayaclar');
     const productsSectionEl = document.getElementById('urunler');
@@ -20,9 +21,10 @@
     const documentEl = document.documentElement;
     const bodyEl = document.body;
     const productFullscreenModalEl = document.getElementById('productFullscreenModal');
-    const productFullscreenModal = productFullscreenModalEl && bootstrap
-      ? bootstrap.Modal.getOrCreateInstance(productFullscreenModalEl, { focus: false })
-      : null;
+    const productFullscreenModal =
+      productFullscreenModalEl && bootstrap
+        ? bootstrap.Modal.getOrCreateInstance(productFullscreenModalEl, { focus: false })
+        : null;
     const productFullscreenMediaEl = productFullscreenModalEl?.querySelector(
       '.product-fullscreen-media'
     );
@@ -129,8 +131,8 @@
           'Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.',
         'testimonials.t9':
           'Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.',
-        'contact.ghost': 'İletişim',
-        'contact.title': 'İletişim',
+        'contact.ghost': 'Kontakt',
+        'contact.title': 'Kontakt',
         'contact.note.dm': 'Özel siparişler için Instagram DM üzerinden iletişime geçebilirsiniz.',
         'contact.note.marketplaces.prefix': 'Satıştaki ürünleri',
         'contact.note.marketplaces.between': ' ve ',
@@ -2685,6 +2687,5 @@
       refreshCollapsedNavOffset();
       updateActiveSection();
     });
-
   });
 })();
