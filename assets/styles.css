@@ -1072,26 +1072,6 @@ main > section,
   transform: scale(1.06);
 }
 
-@keyframes arrowSlideLeft {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(-4px, 0, 0);
-  }
-}
-
-@keyframes arrowSlideRight {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(4px, 0, 0);
-  }
-}
-
 main {
   position: relative;
 }
@@ -2379,14 +2359,6 @@ main > section:not([id]) > .container > h2 {
   backdrop-filter: none !important;
 }
 
-.product-carousel-control.is-prev svg.is-arrow-animating {
-  animation: arrowSlideLeft var(--icon-motion-duration) var(--icon-motion-ease) 1;
-}
-
-.product-carousel-control.is-next svg.is-arrow-animating {
-  animation: arrowSlideRight var(--icon-motion-duration) var(--icon-motion-ease) 1;
-}
-
 .product-carousel-control:focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.9);
   outline-offset: 2px;
@@ -2588,38 +2560,6 @@ main > section:not([id]) > .container > h2 {
 .product-media:focus-within .product-preview-trigger .corner-bl,
 .product-media:focus-within .product-preview-trigger .corner-br {
   transform: translate3d(0, 0, 0) scale(1);
-}
-
-.product-media:hover .product-preview-trigger.is-click-closing,
-.product-media:focus-within .product-preview-trigger.is-click-closing {
-  opacity: 0;
-  pointer-events: none;
-  transform: translate3d(0, 0, 0) scale(0.92);
-}
-
-.product-media:hover .product-preview-trigger.is-click-closing svg,
-.product-media:focus-within .product-preview-trigger.is-click-closing svg {
-  transform: translateZ(0);
-}
-
-.product-media:hover .product-preview-trigger.is-click-closing .corner-tl,
-.product-media:focus-within .product-preview-trigger.is-click-closing .corner-tl {
-  transform: translate3d(-8px, -8px, 0) scale(1.55);
-}
-
-.product-media:hover .product-preview-trigger.is-click-closing .corner-tr,
-.product-media:focus-within .product-preview-trigger.is-click-closing .corner-tr {
-  transform: translate3d(8px, -8px, 0) scale(1.55);
-}
-
-.product-media:hover .product-preview-trigger.is-click-closing .corner-bl,
-.product-media:focus-within .product-preview-trigger.is-click-closing .corner-bl {
-  transform: translate3d(-8px, 8px, 0) scale(1.55);
-}
-
-.product-media:hover .product-preview-trigger.is-click-closing .corner-br,
-.product-media:focus-within .product-preview-trigger.is-click-closing .corner-br {
-  transform: translate3d(8px, 8px, 0) scale(1.55);
 }
 
 .product-preview-trigger:hover,
@@ -3846,22 +3786,10 @@ main > section:not([id]) > .container > h2 {
 .product-preview-trigger:focus-visible,
 .product-preview-trigger:active,
 .product-media:hover .product-preview-trigger,
-.product-media:focus-within .product-preview-trigger,
-.product-media:hover .product-preview-trigger.is-click-closing,
-.product-media:focus-within .product-preview-trigger.is-click-closing {
+.product-media:focus-within .product-preview-trigger {
   transform: none !important;
 }
 
-.product-media:hover .product-preview-trigger.is-click-closing .corner-tl,
-.product-media:focus-within .product-preview-trigger.is-click-closing .corner-tl,
-.product-media:hover .product-preview-trigger.is-click-closing .corner-tr,
-.product-media:focus-within .product-preview-trigger.is-click-closing .corner-tr,
-.product-media:hover .product-preview-trigger.is-click-closing .corner-bl,
-.product-media:focus-within .product-preview-trigger.is-click-closing .corner-bl,
-.product-media:hover .product-preview-trigger.is-click-closing .corner-br,
-.product-media:focus-within .product-preview-trigger.is-click-closing .corner-br,
-.product-carousel-control.is-prev svg.is-arrow-animating,
-.product-carousel-control.is-next svg.is-arrow-animating,
 .navbar-toggler[aria-expanded='true'] .navbar-line-top,
 .navbar-toggler[aria-expanded='true'] .navbar-line-mid,
 .navbar-toggler[aria-expanded='true'] .navbar-line-bottom {
