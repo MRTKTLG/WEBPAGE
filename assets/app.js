@@ -18,7 +18,6 @@
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
 
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
-    const instagramCarouselEl = document.querySelector('.instagram-carousel');
     const documentEl = document.documentElement;
     const bodyEl = document.body;
     const productFullscreenModalEl = document.getElementById('productFullscreenModal');
@@ -134,24 +133,28 @@
           'Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.',
         'contact.ghost': 'Kontakt',
         'contact.title': 'Kontakt',
-        'contact.note.dm': 'Özel siparişler için Instagram DM üzerinden iletişime geçebilirsiniz.',
-        'contact.note.marketplaces.prefix': 'Satıştaki ürünleri',
+        'contact.note.dm':
+          'Aklındaki model, renk veya hediye fikri için Instagram üzerinden mesaj yazabilirsin.',
+        'contact.note.marketplaces.prefix': 'Hazır ürünleri',
         'contact.note.marketplaces.between': ' ve ',
-        'contact.note.marketplaces.suffix': ' üzerinden ziyaret edebilirsiniz.',
-        'contact.note.shipping': "Türkiye'nin her yerine kargo gönderimi yapılır.",
+        'contact.note.marketplaces.suffix': ' mağazalarında inceleyebilirsin.',
+        'contact.note.shipping':
+          'Siparişler özenle paketlenir ve Türkiye genelinde kargoya verilir.',
         'contact.note.handmade':
-          'Ürünlerin tamamı el işidir; satıştaki ürünlere ek olarak özel sipariş de alınır.',
-        'contact.instagram.kicker': 'Instagram',
-        'contact.instagram.title': 'Son paylaşımlardan seçmeler',
-        'contact.instagram.link': 'Profili aç',
-        'contact.instagram.aria': 'Instagram gönderileri',
-        'contact.instagram.openPost': 'Instagram gönderisini aç',
-        'contact.instagram.post1': 'Pudra Ayıcık',
-        'contact.instagram.post2': 'Lavanta Panda',
-        'contact.instagram.post3': 'Mini Ayıcık',
-        'contact.instagram.post4': 'Papatya Kuzu',
-        'contact.instagram.post5': 'Bal Köpüğü Ayıcık',
-        'contact.instagram.post6': 'Ada Tavşancık',
+          'Ürünler %100 el işidir; sağlığa zararlı malzemelere yer verilmeden özenle hazırlanır.',
+        'contact.feature.aria': 'İletişim seçenekleri',
+        'contact.feature.shipping.title': 'Güvenli Kargo',
+        'contact.feature.shipping.body':
+          "Ürünler formunu koruyacak şekilde paketlenir ve Türkiye'nin her yerine kargo gönderilir.",
+        'contact.feature.custom.title': 'Kişiye Özel Tasarım',
+        'contact.feature.custom.body':
+          'Model, renk ve boyut detayları %100 el işi üretime başlamadan birlikte netleştirilir.',
+        'contact.feature.market.title': 'Hazır Ürünler',
+        'contact.feature.market.body':
+          'Satışa hazır modelleri Shopier ve Endolu mağazalarından kolayca inceleyebilirsin.',
+        'contact.feature.instagram.title': 'Mesajla İletişim',
+        'contact.feature.instagram.body':
+          'Malzeme, sipariş, fiyat ve hazırlık süresiyle ilgili soruların için Instagram DM’den yazabilirsin.',
         'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
       },
@@ -242,24 +245,27 @@
           'The fabric, yarn, and overall form quality were far better than I expected. You could feel the handmade care in every detail, and it genuinely made me smile on delivery.',
         'contact.ghost': 'Contact',
         'contact.title': 'Contact',
-        'contact.note.dm': 'For custom orders, you can reach out via Instagram DM.',
-        'contact.note.marketplaces.prefix': 'You can browse listed items on',
+        'contact.note.dm':
+          'You can message on Instagram for a model, color choice, or gift idea you have in mind.',
+        'contact.note.marketplaces.prefix': 'You can browse ready-made pieces on',
         'contact.note.marketplaces.between': ' and ',
         'contact.note.marketplaces.suffix': '.',
-        'contact.note.shipping': 'Shipping is available across Türkiye.',
+        'contact.note.shipping': 'Orders are carefully packed and shipped across Türkiye.',
         'contact.note.handmade':
-          'All items are handmade; custom orders can also be accepted in addition to listed products.',
-        'contact.instagram.kicker': 'Instagram',
-        'contact.instagram.title': 'Selected recent posts',
-        'contact.instagram.link': 'Open profile',
-        'contact.instagram.aria': 'Instagram posts',
-        'contact.instagram.openPost': 'Open Instagram post',
-        'contact.instagram.post1': 'Powder Bear',
-        'contact.instagram.post2': 'Lavender Panda',
-        'contact.instagram.post3': 'Mini Bear',
-        'contact.instagram.post4': 'Daisy Lamb',
-        'contact.instagram.post5': 'Honey Foam Bear',
-        'contact.instagram.post6': 'Island Bunny',
+          'Every piece is 100% handmade and carefully crafted without materials harmful to health.',
+        'contact.feature.aria': 'Contact options',
+        'contact.feature.shipping.title': 'Secure Shipping',
+        'contact.feature.shipping.body':
+          'Products are packed to preserve their shape and can be shipped across Türkiye.',
+        'contact.feature.custom.title': 'Personalized Design',
+        'contact.feature.custom.body':
+          'Model, color, and size details are confirmed together before the 100% handmade production begins.',
+        'contact.feature.market.title': 'Ready-Made Pieces',
+        'contact.feature.market.body':
+          'You can browse ready-to-order models through the Shopier and Endolu stores.',
+        'contact.feature.instagram.title': 'Message to Order',
+        'contact.feature.instagram.body':
+          'For questions about materials, orders, pricing, or preparation time, you can send an Instagram DM.',
         'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Lovingly crafted by her husband.'
       }
@@ -1511,17 +1517,22 @@
       }
       if (previewTriggerEl.dataset.iconReady !== 'true') {
         previewTriggerEl.innerHTML = `
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path class="corner-segment corner-tl" d="M8 3H5a2 2 0 0 0-2 2v3" />
-            <path class="corner-segment corner-tr" d="M16 3h3a2 2 0 0 1 2 2v3" />
-            <path class="corner-segment corner-bl" d="M8 21H5a2 2 0 0 1-2-2v-3" />
-            <path class="corner-segment corner-br" d="M16 21h3a2 2 0 0 0 2-2v-3" />
+          <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+            <circle class="preview-trigger-disc" cx="28" cy="28" r="26" />
+            <g class="preview-trigger-mark">
+              <path class="corner-segment corner-tl" d="M24 17h-4a3 3 0 0 0-3 3v4" />
+              <path class="corner-segment corner-tr" d="M32 17h4a3 3 0 0 1 3 3v4" />
+              <path class="corner-segment corner-bl" d="M24 39h-4a3 3 0 0 1-3-3v-4" />
+              <path class="corner-segment corner-br" d="M32 39h4a3 3 0 0 0 3-3v-4" />
+            </g>
           </svg>
         `;
         previewTriggerEl.dataset.iconReady = 'true';
       }
 
-      previewTriggerEl.setAttribute('aria-label', `${nameText || 'Ürün'} görselini modalda aç`);
+      const previewLabel = `${nameText || 'Ürün'} görselini modalda aç`;
+      previewTriggerEl.setAttribute('aria-label', previewLabel);
+      previewTriggerEl.setAttribute('title', previewLabel);
     };
 
     const setProductImagePriority = (imageEl, priority = 'lazy') => {
@@ -1583,30 +1594,6 @@
         }
       );
       observer.observe(productsSectionEl);
-    };
-
-    const initInstagramCarousel = () => {
-      if (
-        !instagramCarouselEl ||
-        instagramCarouselEl.dataset.carouselReady === 'true'
-      ) {
-        return;
-      }
-
-      const instagramTrackEl = instagramCarouselEl.querySelector('.instagram-track');
-      const instagramSlides = Array.from(
-        instagramTrackEl?.querySelectorAll('.instagram-post-card') ?? []
-      );
-      instagramSlides.forEach((slideEl) => {
-        const duplicateSlideEl = slideEl.cloneNode(true);
-        duplicateSlideEl.setAttribute('aria-hidden', 'true');
-        duplicateSlideEl.querySelectorAll('a, button').forEach((interactiveEl) => {
-          interactiveEl.setAttribute('tabindex', '-1');
-        });
-        instagramTrackEl?.append(duplicateSlideEl);
-      });
-
-      instagramCarouselEl.dataset.carouselReady = 'true';
     };
 
     const buildProductCarousels = () => {
@@ -1681,8 +1668,9 @@
           class="product-carousel-control is-prev"
           aria-label="${carouselName} için önceki ürün"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="m15 18-6-6 6-6" />
+          <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+            <circle class="control-icon-disc" cx="28" cy="28" r="26" />
+            <path class="control-icon-mark" d="m31 36-8-8 8-8" />
           </svg>
         </button>
         <button
@@ -1690,8 +1678,9 @@
           class="product-carousel-control is-next"
           aria-label="${carouselName} için sonraki ürün"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="m9 18 6-6-6-6" />
+          <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+            <circle class="control-icon-disc" cx="28" cy="28" r="26" />
+            <path class="control-icon-mark" d="m25 36 8-8-8-8" />
           </svg>
         </button>
       `;
@@ -1866,56 +1855,6 @@
       });
     };
 
-    const bindOneShotArrowAnimation = (triggerEl, iconEl) => {
-      if (!triggerEl || !iconEl) return;
-      if (triggerEl.dataset.arrowAnimationBound === 'true') return;
-
-      const playAnimation = () => {
-        if (prefersReducedMotion.matches) return;
-        iconEl.classList.remove('is-arrow-animating');
-        void iconEl.offsetWidth;
-        iconEl.classList.add('is-arrow-animating');
-      };
-
-      const clearAnimation = () => {
-        iconEl.classList.remove('is-arrow-animating');
-      };
-
-      triggerEl.addEventListener('click', playAnimation);
-      iconEl.addEventListener('animationend', clearAnimation);
-      triggerEl.dataset.arrowAnimationBound = 'true';
-    };
-
-    const bindArrowAnimations = () => {
-      document.querySelectorAll('.product-carousel-control').forEach((controlEl) => {
-        const iconEl = controlEl.querySelector('svg');
-        bindOneShotArrowAnimation(controlEl, iconEl);
-      });
-    };
-
-    const PREVIEW_ICON_CLICK_CLOSE_DURATION_MS = 500;
-
-    const triggerProductPreviewIconAnimation = (triggerEl) => {
-      if (!triggerEl || prefersReducedMotion.matches) return 0;
-
-      const activeTimerId = Number(triggerEl.dataset.previewCloseTimerId || 0);
-      if (activeTimerId) {
-        window.clearTimeout(activeTimerId);
-      }
-
-      triggerEl.classList.remove('is-click-closing');
-      void triggerEl.offsetWidth;
-      triggerEl.classList.add('is-click-closing');
-
-      const timerId = window.setTimeout(() => {
-        triggerEl.classList.remove('is-click-closing');
-        delete triggerEl.dataset.previewCloseTimerId;
-      }, PREVIEW_ICON_CLICK_CLOSE_DURATION_MS);
-
-      triggerEl.dataset.previewCloseTimerId = String(timerId);
-      return 0;
-    };
-
     const syncProductCarouselLayout = () => {
       if (!productCarouselsState.length) return;
 
@@ -2059,8 +1998,8 @@
         const zoomIconEl = productFullscreenZoomEl.querySelector('svg');
         if (zoomIconEl) {
           zoomIconEl.innerHTML = productModalImageZoomed
-            ? '<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M7 10h6" />'
-            : '<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M10 7v6" /><path d="M7 10h6" />';
+            ? '<circle class="control-icon-disc" cx="28" cy="28" r="26" /><g class="control-icon-mark" transform="translate(16 16)"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M7 10h6" /></g>'
+            : '<circle class="control-icon-disc" cx="28" cy="28" r="26" /><g class="control-icon-mark" transform="translate(16 16)"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M10 7v6" /><path d="M7 10h6" /></g>';
         }
       }
       if (!productModalImageZoomed) {
@@ -2297,8 +2236,7 @@
       if (triggerEl instanceof HTMLElement) {
         lastProductPreviewTriggerEl = triggerEl;
       }
-      const clickAnimationDelayMs = triggerProductPreviewIconAnimation(triggerEl);
-      handleProductCardOpen(event, cardEl, clickAnimationDelayMs);
+      handleProductCardOpen(event, cardEl);
     });
 
     productFullscreenZoomEl?.addEventListener('click', (event) => {
@@ -2417,7 +2355,6 @@
       setProductModalNativeFullscreenState(fullscreenActive);
     });
 
-    initInstagramCarousel();
     buildProductCarousels();
     productCarouselsState.forEach((slider) => {
       mountProductCarouselControls(slider);
@@ -2429,8 +2366,6 @@
       bindProductCarouselAccessibility(slider);
     });
     observeProductSectionImagePriming();
-    bindArrowAnimations();
-
     if (productCarouselsState.length) {
       window.requestAnimationFrame(() => {
         syncProductCarouselLayout();
