@@ -146,7 +146,7 @@
         'contact.feature.shipping.title': 'Güvenli Kargo',
         'contact.feature.shipping.body':
           "Ürünler formunu koruyacak şekilde paketlenir ve Türkiye'nin her yerine kargo gönderilir.",
-        'contact.feature.custom.title': 'Kişiye Özel Tasarım',
+        'contact.feature.custom.title': 'Özel Tasarım',
         'contact.feature.custom.body':
           'Model, renk ve boyut detayları %100 el işi üretime başlamadan birlikte netleştirilir.',
         'contact.feature.market.title': 'Hazır Ürünler',
@@ -257,7 +257,7 @@
         'contact.feature.shipping.title': 'Secure Shipping',
         'contact.feature.shipping.body':
           'Products are packed to preserve their shape and can be shipped across Türkiye.',
-        'contact.feature.custom.title': 'Personalized Design',
+        'contact.feature.custom.title': 'Custom Design',
         'contact.feature.custom.body':
           'Model, color, and size details are confirmed together before the 100% handmade production begins.',
         'contact.feature.market.title': 'Ready-Made Pieces',
@@ -1709,6 +1709,35 @@
       nextButton?.addEventListener('click', (event) => onControlClick(event, 1));
     };
 
+    const syncCompactProductPreviewAlignment = () => {
+      productCarouselsState.forEach((slider) => {
+        const carouselEl = slider.carouselEl;
+        if (!carouselEl?.classList.contains('product-carousel-compact')) return;
+
+        const mediaEls = Array.from(carouselEl.querySelectorAll('.product-media'));
+        if (window.innerWidth < 992) {
+          mediaEls.forEach((mediaEl) => {
+            mediaEl.style.removeProperty('--product-preview-trigger-y');
+          });
+          return;
+        }
+
+        const controlEl = carouselEl.querySelector('.product-carousel-control.is-prev');
+        if (!controlEl) return;
+
+        const controlRect = controlEl.getBoundingClientRect();
+        const controlCenterY = controlRect.top + controlRect.height / 2;
+
+        mediaEls.forEach((mediaEl) => {
+          const mediaRect = mediaEl.getBoundingClientRect();
+          if (!mediaRect.height) return;
+
+          const triggerY = Math.min(Math.max(controlCenterY - mediaRect.top, 0), mediaRect.height);
+          mediaEl.style.setProperty('--product-preview-trigger-y', `${triggerY.toFixed(2)}px`);
+        });
+      });
+    };
+
     const initProductSwiper = (slider) => {
       if (!slider || slider.swiper || typeof window.Swiper !== 'function') return;
 
@@ -1743,15 +1772,18 @@
         on: {
           init() {
             syncProductCardInteractivity();
+            syncCompactProductPreviewAlignment();
           },
           slideChange() {
             primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
           },
           breakpoint() {
             syncProductCardInteractivity();
+            syncCompactProductPreviewAlignment();
           },
           resize() {
             syncProductCardInteractivity();
+            syncCompactProductPreviewAlignment();
           }
         }
       });
@@ -1865,6 +1897,7 @@
       });
 
       syncProductCardInteractivity();
+      syncCompactProductPreviewAlignment();
     };
 
     const moveProductCarousel = (slider, direction) => {
@@ -1906,6 +1939,7 @@
           ensureProductPreviewTrigger(cardEl);
         });
       });
+      syncCompactProductPreviewAlignment();
     };
 
     const getProductPreviewData = (cardEl) => {

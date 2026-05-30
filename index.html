@@ -8,6 +8,25 @@
       name="description"
       content="Nova Crafts el işi oyuncakların satışa sunulduğu butik mağaza sayfası."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:title" content="Nova Crafts | El İşi Oyuncaklar" />
+    <meta
+      property="og:description"
+      content="El işi amigurumi oyuncaklar, özel tasarımlar ve hediye için özenle hazırlanan butik ürünler."
+    />
+    <meta property="og:image" content="assets/img/og-nova-crafts.webp" />
+    <meta property="og:image:alt" content="Nova Crafts el işi amigurumi oyuncaklar" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Nova Crafts | El İşi Oyuncaklar" />
+    <meta
+      name="twitter:description"
+      content="El işi amigurumi oyuncaklar, özel tasarımlar ve hediye için özenle hazırlanan butik ürünler."
+    />
+    <meta name="twitter:image" content="assets/img/og-nova-crafts.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23f6cfe0'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Teko, Arial, sans-serif' fill='%23111319'%3EY%3C/text%3E%3C/svg%3E"
@@ -23,7 +42,7 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="assets/styles.css?v=20260517203905" />
+    <link rel="stylesheet" href="assets/styles.css?v=20260530221818" />
   </head>
   <body>
     <nav class="navbar navbar-expand-lg">
@@ -133,7 +152,7 @@
                     alt="Amigurumi oyuncak kedi illüstrasyonu"
                     width="128"
                     height="128"
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                   />
                 </div>
@@ -159,7 +178,7 @@
                     alt="Amigurumi oyuncak sincap illüstrasyonu"
                     width="128"
                     height="128"
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                   />
                 </div>
@@ -255,15 +274,31 @@
                 <article class="journey-card">
                   <div class="journey-visual">
                     <div class="journey-visual-media">
-                      <img
-                        src="assets/img/journey-order-received-transparent.png"
-                        alt="Alınan amigurumi siparişinin oluşturulma aşaması"
-                        width="1536"
-                        height="1536"
-                        decoding="async"
-                        loading="eager"
-                        sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
-                      />
+                      <picture>
+                        <source
+                          type="image/webp"
+                          srcset="
+                            assets/img/transparent/1-640.webp   640w,
+                            assets/img/transparent/1-960.webp   960w,
+                            assets/img/transparent/1-1254.webp 1254w
+                          "
+                          sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
+                        />
+                        <img
+                          src="assets/img/1.png?v=20260530201000"
+                          srcset="
+                            assets/img/responsive/1-640.png?v=20260530201000  640w,
+                            assets/img/responsive/1-960.png?v=20260530201000  960w,
+                            assets/img/1.png?v=20260530201000                1254w
+                          "
+                          alt="Alınan amigurumi siparişinin oluşturulma aşaması"
+                          width="1254"
+                          height="1254"
+                          decoding="async"
+                          loading="eager"
+                          sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
+                        />
+                      </picture>
                     </div>
                   </div>
                   <h3
@@ -280,15 +315,31 @@
                 <article class="journey-card">
                   <div class="journey-visual">
                     <div class="journey-visual-media">
-                      <img
-                        src="assets/img/journey-production-transparent.png"
-                        alt="Hazırlanmakta olan amigurumi siparişi"
-                        width="1536"
-                        height="1536"
-                        decoding="async"
-                        loading="lazy"
-                        sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
-                      />
+                      <picture>
+                        <source
+                          type="image/webp"
+                          srcset="
+                            assets/img/transparent/2-640.webp   640w,
+                            assets/img/transparent/2-960.webp   960w,
+                            assets/img/transparent/2-1254.webp 1254w
+                          "
+                          sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
+                        />
+                        <img
+                          src="assets/img/2.png?v=20260530201000"
+                          srcset="
+                            assets/img/responsive/2-640.png?v=20260530201000  640w,
+                            assets/img/responsive/2-960.png?v=20260530201000  960w,
+                            assets/img/2.png?v=20260530201000                1254w
+                          "
+                          alt="Hazırlanmakta olan amigurumi siparişi"
+                          width="1254"
+                          height="1254"
+                          decoding="async"
+                          loading="lazy"
+                          sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
+                        />
+                      </picture>
                     </div>
                   </div>
                   <h3
@@ -306,15 +357,31 @@
                 <article class="journey-card">
                   <div class="journey-visual">
                     <div class="journey-visual-media">
-                      <img
-                        src="assets/img/journey-shipping-transparent.png"
-                        alt="Kargoya hazırlanmış amigurumi siparişi"
-                        width="1536"
-                        height="1536"
-                        decoding="async"
-                        loading="lazy"
-                        sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
-                      />
+                      <picture>
+                        <source
+                          type="image/webp"
+                          srcset="
+                            assets/img/transparent/3-640.webp   640w,
+                            assets/img/transparent/3-960.webp   960w,
+                            assets/img/transparent/3-1254.webp 1254w
+                          "
+                          sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
+                        />
+                        <img
+                          src="assets/img/3.png?v=20260530201000"
+                          srcset="
+                            assets/img/responsive/3-640.png?v=20260530201000  640w,
+                            assets/img/responsive/3-960.png?v=20260530201000  960w,
+                            assets/img/3.png?v=20260530201000                1254w
+                          "
+                          alt="Kargoya hazırlanmış amigurumi siparişi"
+                          width="1254"
+                          height="1254"
+                          decoding="async"
+                          loading="lazy"
+                          sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
+                        />
+                      </picture>
                     </div>
                   </div>
                   <h3
@@ -331,15 +398,31 @@
                 <article class="journey-card">
                   <div class="journey-visual">
                     <div class="journey-visual-media">
-                      <img
-                        src="assets/img/journey-delivery-transparent.png"
-                        alt="Teslim edilen siparişle mutlu müşteri"
-                        width="1536"
-                        height="1536"
-                        decoding="async"
-                        loading="lazy"
-                        sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
-                      />
+                      <picture>
+                        <source
+                          type="image/webp"
+                          srcset="
+                            assets/img/transparent/4-640.webp   640w,
+                            assets/img/transparent/4-960.webp   960w,
+                            assets/img/transparent/4-1254.webp 1254w
+                          "
+                          sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
+                        />
+                        <img
+                          src="assets/img/4.png?v=20260530201000"
+                          srcset="
+                            assets/img/responsive/4-640.png?v=20260530201000  640w,
+                            assets/img/responsive/4-960.png?v=20260530201000  960w,
+                            assets/img/4.png?v=20260530201000                1254w
+                          "
+                          alt="Teslim edilen siparişle mutlu müşteri"
+                          width="1254"
+                          height="1254"
+                          decoding="async"
+                          loading="lazy"
+                          sizes="(max-width: 767px) 86vw, (max-width: 991px) 42vw, 22vw"
+                        />
+                      </picture>
                     </div>
                   </div>
                   <h3
@@ -1157,14 +1240,31 @@
                   <div class="card h-100 text-center">
                     <div class="card-body">
                       <div class="stat-visual" aria-hidden="true">
-                        <img
-                          src="assets/img/stats-custom-design-transparent.png"
-                          alt=""
-                          width="1254"
-                          height="1254"
-                          loading="lazy"
-                          decoding="async"
-                        />
+                        <picture>
+                          <source
+                            type="image/webp"
+                            srcset="
+                              assets/img/transparent/5-640.webp   640w,
+                              assets/img/transparent/5-960.webp   960w,
+                              assets/img/transparent/5-1254.webp 1254w
+                            "
+                            sizes="(max-width: 767px) 56vw, (max-width: 991px) 24vw, 12rem"
+                          />
+                          <img
+                            src="assets/img/5.png?v=20260530201000"
+                            srcset="
+                              assets/img/responsive/5-640.png?v=20260530201000  640w,
+                              assets/img/responsive/5-960.png?v=20260530201000  960w,
+                              assets/img/5.png?v=20260530201000                1254w
+                            "
+                            sizes="(max-width: 767px) 56vw, (max-width: 991px) 24vw, 12rem"
+                            alt=""
+                            width="1254"
+                            height="1254"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </picture>
                       </div>
                       <p
                         class="display-6 fw-bold mb-2 stat-counter"
@@ -1186,14 +1286,31 @@
                   <div class="card h-100 text-center">
                     <div class="card-body">
                       <div class="stat-visual" aria-hidden="true">
-                        <img
-                          src="assets/img/stats-completed-orders-transparent.png"
-                          alt=""
-                          width="1254"
-                          height="1254"
-                          loading="lazy"
-                          decoding="async"
-                        />
+                        <picture>
+                          <source
+                            type="image/webp"
+                            srcset="
+                              assets/img/transparent/6-640.webp   640w,
+                              assets/img/transparent/6-960.webp   960w,
+                              assets/img/transparent/6-1254.webp 1254w
+                            "
+                            sizes="(max-width: 767px) 56vw, (max-width: 991px) 24vw, 12rem"
+                          />
+                          <img
+                            src="assets/img/6.png?v=20260530201000"
+                            srcset="
+                              assets/img/responsive/6-640.png?v=20260530201000  640w,
+                              assets/img/responsive/6-960.png?v=20260530201000  960w,
+                              assets/img/6.png?v=20260530201000                1254w
+                            "
+                            sizes="(max-width: 767px) 56vw, (max-width: 991px) 24vw, 12rem"
+                            alt=""
+                            width="1254"
+                            height="1254"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </picture>
                       </div>
                       <p
                         class="display-6 fw-bold mb-2 stat-counter"
@@ -1215,14 +1332,31 @@
                   <div class="card h-100 text-center">
                     <div class="card-body">
                       <div class="stat-visual" aria-hidden="true">
-                        <img
-                          src="assets/img/stats-happy-customers-transparent.png"
-                          alt=""
-                          width="1254"
-                          height="1254"
-                          loading="lazy"
-                          decoding="async"
-                        />
+                        <picture>
+                          <source
+                            type="image/webp"
+                            srcset="
+                              assets/img/transparent/7-640.webp   640w,
+                              assets/img/transparent/7-960.webp   960w,
+                              assets/img/transparent/7-1254.webp 1254w
+                            "
+                            sizes="(max-width: 767px) 56vw, (max-width: 991px) 24vw, 12rem"
+                          />
+                          <img
+                            src="assets/img/7.png?v=20260530201000"
+                            srcset="
+                              assets/img/responsive/7-640.png?v=20260530201000  640w,
+                              assets/img/responsive/7-960.png?v=20260530201000  960w,
+                              assets/img/7.png?v=20260530201000                1254w
+                            "
+                            sizes="(max-width: 767px) 56vw, (max-width: 991px) 24vw, 12rem"
+                            alt=""
+                            width="1254"
+                            height="1254"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </picture>
                       </div>
                       <p
                         class="display-6 fw-bold mb-2 stat-counter"
@@ -1884,7 +2018,7 @@
                           />
                         </svg>
                       </span>
-                      <h3 data-i18n="contact.feature.custom.title">Kişiye Özel Tasarım</h3>
+                      <h3 data-i18n="contact.feature.custom.title">Özel Tasarım</h3>
                       <p data-i18n="contact.feature.custom.body">
                         Model, renk ve boyut detayları %100 el işi üretime başlamadan birlikte
                         netleştirilir.
@@ -2106,13 +2240,15 @@
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
+      defer
     ></script>
     <script
       src="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js"
       integrity="sha384-kdY9hFBPoAPpxcrLihsO3APivFOxtQwSeYdzFD5CIIfLurwhdMrEHhkQxZJDkxgk"
       crossorigin="anonymous"
+      defer
     ></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="assets/app.js?v=20260517203905"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+    <script src="assets/app.js?v=20260530221818" defer></script>
   </body>
 </html>
