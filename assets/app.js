@@ -16,6 +16,8 @@
     const languageButtons = Array.from(document.querySelectorAll('[data-lang-btn]'));
     const heroCarousel = document.getElementById('heroCarousel');
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
+    const testimonialsSectionEl = document.getElementById('yorumlar');
+    const productRatingStars = Array.from(document.querySelectorAll('.product-rating-stars'));
 
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
     const documentEl = document.documentElement;
@@ -47,17 +49,23 @@
     const LANGUAGE_STORAGE_KEY = 'nova-language';
     const i18nDictionary = {
       tr: {
+        'hero.slide1.titleBack': 'Bal',
+        'hero.slide1.titleFront': 'Düşü',
         'hero.slide1.desc':
           'Yumuşak dokulu ipliklerle hazırlanan sevimli ayıcıklar, hediye ve oda dekoru için sıcak bir seçim.',
+        'hero.slide2.titleBack': 'Mırıl',
+        'hero.slide2.titleFront': 'Masalı',
         'hero.slide2.desc':
           'Renk, ifade ve detayları özenle çalışılmış amigurumi kedi tasarımları her siparişte ayrı karakter taşır.',
+        'hero.slide3.titleBack': 'Orman',
+        'hero.slide3.titleFront': 'Neşesi',
         'hero.slide3.desc':
           'Sıcacık renk paleti ve dengeli formuyla hazırlanan özel figürler, koleksiyonluk ve anlamlı bir hatıraya dönüşür.',
         'nav.home': 'Anasayfa',
         'nav.about': 'Hakkımda',
         'nav.products': 'Ürünler',
         'nav.faq': 'SSS',
-        'nav.contact': 'Kontakt',
+        'nav.contact': 'İrtibat',
         'about.ghost': 'Hakkımda',
         'about.title': 'Hakkımda',
         'about.lead':
@@ -91,11 +99,12 @@
           'El emeğiyle hazırlanan amigurumi tasarımları arasından en sevilen modelleri ve avantajlı fiyatlarla sunduğum seçili ürünleri burada inceleyebilirsin.',
         'products.popular': 'Popüler Ürünler',
         'products.sale': 'Kampanyalı Ürünler',
+        'products.saleBadge': 'İndirimli ürün',
         'products.other': 'Diğer Ürünler',
         'faq.ghost': 'Sık Sorulan Sorular',
         'faq.title': 'Sık Sorulan Sorular',
         'faq.lead':
-          'Sipariş süreci, teslimat ve kişiye özel hazırlıklarla ilgili en çok sorulan konuları burada topladım. Aklına takılan farklı bir detay olursa iletişim bölümünden her zaman yazabilirsin.',
+          'Sipariş süreci, teslimat ve özel tasarımlarla ilgili en çok sorulan soruları burada topladım. Aklına takılan farklı bir detay olursa iletişim bölümünden her zaman yazabilirsin.',
         'faq.q1.title': 'Siparişim ne kadar sürede hazırlanıyor?',
         'faq.q1.body':
           'Hazır modellerde ortalama 3-6 iş günü içinde üretimi tamamlıyorum. Kişiye özel siparişlerde modelin detayına göre net hazırlık süresini sipariş öncesinde birlikte belirtiyorum.',
@@ -131,40 +140,46 @@
           'Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.',
         'testimonials.t9':
           'Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.',
-        'contact.ghost': 'Kontakt',
-        'contact.title': 'Kontakt',
+        'contact.ghost': 'İrtibat',
+        'contact.title': 'İrtibat',
         'contact.note.dm':
-          'Aklındaki model, renk veya hediye fikri için Instagram üzerinden mesaj yazabilirsin.',
-        'contact.note.marketplaces.prefix': 'Hazır ürünleri',
+          'Aklındaki model, renk veya hediye fikrini Instagram’dan paylaşarak başlayabilirsin.',
+        'contact.note.marketplaces.prefix': 'Sana özel tasarım ya da hazır modeller için',
         'contact.note.marketplaces.between': ' ve ',
-        'contact.note.marketplaces.suffix': ' mağazalarında inceleyebilirsin.',
+        'contact.note.marketplaces.suffix': ' mağazalarına göz atabilirsin.',
         'contact.note.shipping':
-          'Siparişler özenle paketlenir ve Türkiye genelinde kargoya verilir.',
+          'Siparişler formunu koruyacak şekilde paketlenir ve Türkiye geneline kargolanır.',
         'contact.note.handmade':
-          'Ürünler %100 el işidir; sağlığa zararlı malzemelere yer verilmeden özenle hazırlanır.',
+          'Her ürün el işi özeniyle hazırlanır; detaylar üretime başlamadan birlikte netleştirilir.',
         'contact.feature.aria': 'İletişim seçenekleri',
-        'contact.feature.shipping.title': 'Güvenli Kargo',
+        'contact.feature.shipping.title': 'Özenli Paketleme',
         'contact.feature.shipping.body':
-          "Ürünler formunu koruyacak şekilde paketlenir ve Türkiye'nin her yerine kargo gönderilir.",
-        'contact.feature.custom.title': 'Özel Tasarım',
+          'Ürünler formunu koruyacak şekilde paketlenir ve Türkiye geneline kargolanır.',
+        'contact.feature.custom.title': 'Sana Özel Tasarım',
         'contact.feature.custom.body':
-          'Model, renk ve boyut detayları %100 el işi üretime başlamadan birlikte netleştirilir.',
-        'contact.feature.market.title': 'Hazır Ürünler',
+          'Renk, boyut ve detayları birlikte netleştirip sana özel bir tasarım hazırlayabilirim.',
+        'contact.feature.market.title': 'Hazır Modeller',
         'contact.feature.market.body':
-          'Satışa hazır modelleri Shopier ve Endolu mağazalarından kolayca inceleyebilirsin.',
-        'contact.feature.instagram.title': 'Mesajla İletişim',
+          'Satışa hazır ürünleri Shopier ve Endolu mağazalarından inceleyebilirsin.',
+        'contact.feature.instagram.title': 'Mesajla Başlayalım',
         'contact.feature.instagram.body':
-          'Malzeme, sipariş, fiyat ve hazırlık süresiyle ilgili soruların için Instagram DM’den yazabilirsin.',
+          'Aklındaki model, renk veya hediye fikrini Instagram’dan paylaşabilirsin.',
         'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
       },
       en: {
+        'hero.slide1.titleBack': 'Honey',
+        'hero.slide1.titleFront': 'Dream',
         'hero.slide1.desc':
-          'Cute bears crafted with soft-texture yarn are a warm choice for gifts and room décor.',
+          'Lovable bears made with soft, textured yarn bring warmth to nurseries, shelves, and thoughtful gifts.',
+        'hero.slide2.titleBack': 'Purr',
+        'hero.slide2.titleFront': 'Tale',
         'hero.slide2.desc':
-          'Amigurumi cat designs with carefully refined colors, expressions, and details bring a unique character to every order.',
+          'Each amigurumi cat is shaped with carefully chosen colors, expressive details, and its own gentle character.',
+        'hero.slide3.titleBack': 'Forest',
+        'hero.slide3.titleFront': 'Joy',
         'hero.slide3.desc':
-          'With a cozy color palette and balanced form, these special figures become collectible and meaningful keepsakes.',
+          'Warm palettes and balanced forms turn each handmade figure into a memorable keepsake.',
         'nav.home': 'Home',
         'nav.about': 'About',
         'nav.products': 'Products',
@@ -173,101 +188,104 @@
         'about.ghost': 'About',
         'about.title': 'About',
         'about.lead':
-          'In every amigurumi design, I bring together aesthetic appearance, clean craftsmanship, and thoughtful details. I care that each piece feels special at first glance and can be enjoyed for a long time.',
-        'about.qualityTitle': 'My Quality & Production Approach',
+          'Every amigurumi piece is designed with a refined look, neat craftsmanship, and considered details. My aim is for each piece to feel special at first glance and remain a joyful companion for years.',
+        'about.qualityTitle': 'Quality & Craftsmanship',
         'about.qualityDesc':
-          'From material selection to final checks, I prioritize quality at every stage. With soft-texture yarns, balanced form, and meticulous workmanship, I ensure each model is prepared to a consistent, durable, and trustworthy standard. Before production, I clarify all details and carefully follow the process from start to delivery.',
+          'From material selection to the final check, quality guides every step. I use soft yarns, balanced forms, and meticulous handwork so each model is finished to a consistent, durable, and reassuring standard. Before production begins, every detail is clarified and the process is followed carefully through delivery.',
         'about.designTitle': 'My Design Approach',
         'about.designDesc':
-          'I design in a timeless, simple, and warm style—creating products children can enjoy and families can choose with confidence. Beyond being cute, I care that every design feels thoughtful and truly special as a whole.',
-        'journey.title': 'The carefully completed story of an order',
+          'I work in a timeless, simple, and warm style, creating pieces children can enjoy and families can choose with confidence. Beyond looking sweet, every design is meant to feel thoughtful, balanced, and genuinely special.',
+        'journey.title': 'How each order comes thoughtfully to life',
         'journey.step1.title': 'Order Received',
         'journey.step1.desc':
-          'Once the model, colors, and special details are finalized, the preparation process is planned with care.',
-        'journey.step2.title': 'Preparation Process',
+          'Once the model, colors, and personal details are confirmed, the preparation plan is shaped with care.',
+        'journey.step2.title': 'Handmade Preparation',
         'journey.step2.desc':
-          'The design is crafted according to the agreed details and begins to gain its character.',
-        'journey.step3.title': 'Shipped',
+          'The design is made according to the agreed details and gradually gains its own character.',
+        'journey.step3.title': 'Ready to Ship',
         'journey.step3.desc':
-          'After final checks, the product is handed over to shipping with careful presentation.',
-        'journey.step4.title': 'Delivery Moment',
+          'After final checks, the piece is carefully presented, packed, and handed over for shipping.',
+        'journey.step4.title': 'A Meaningful Arrival',
         'journey.step4.desc':
-          'With delivery, the carefully crafted design turns into a special and meaningful gift.',
-        'counter.title': 'Care in every stitch, happiness in every order',
+          'On arrival, the handmade piece becomes a personal and meaningful gift.',
+        'counter.title': 'Care in every stitch, joy in every order',
         'counter.item1': 'Custom Designs',
         'counter.item2': 'Completed Orders',
         'counter.item3': 'Happy Customers',
         'products.ghost': 'Products',
         'products.title': 'Products',
         'products.lead':
-          'Here you can explore the most loved handmade amigurumi designs and selected pieces offered at great prices.',
+          'Explore the most-loved handmade amigurumi designs, along with selected pieces offered at special prices.',
         'products.popular': 'Popular Products',
-        'products.sale': 'Discounted Products',
+        'products.sale': 'Special Offers',
+        'products.saleBadge': 'Discounted product',
         'products.other': 'More Products',
         'faq.ghost': 'Frequently Asked Questions',
         'faq.title': 'Frequently Asked Questions',
         'faq.lead':
-          'I gathered the most frequently asked topics about ordering, delivery, and personalized preparation here. If you have another question in mind, you can always message me via the contact section.',
+          'Here are the most common questions about ordering, delivery, and custom preparation. If you need anything else, you can always reach out through the contact section.',
         'faq.q1.title': 'How long does it take to prepare my order?',
         'faq.q1.body':
-          'For ready models, I complete production in about 3–6 business days. For custom orders, I share a clear preparation timeline based on the model details before confirming the order.',
+          'Ready-made models are usually prepared within 3-6 business days. For custom orders, I confirm a clear preparation timeline based on the model details before the order is finalized.',
         'faq.q2.title': 'Can I choose custom colors or a custom model?',
         'faq.q2.body':
-          'Yes. We can finalize color, size, and certain design details together to prepare a custom piece for you. Sharing a reference image or idea makes the process even easier.',
-        'faq.q3.title': 'Do you ship across all of Turkey?',
+          'Yes. We can finalize the color, size, and selected design details together to create a piece made especially for you. A reference image or idea is always helpful.',
+        'faq.q3.title': 'Do you ship across Türkiye?',
         'faq.q3.body':
-          'Yes, I ship to all cities in Turkey. I package each product carefully to preserve its form and share shipment details with you.',
+          'Yes, I ship to all cities in Türkiye. Each product is packed carefully to protect its shape, and shipment details are shared with you.',
         'faq.q4.title': 'Can you help if I want to send it as a gift?',
         'faq.q4.body':
-          'Of course. I can help with details like adding a gift note, preparing extra-careful packaging, or planning delivery timing. Just mention this during the order.',
+          'Of course. I can help with details such as adding a gift note, preparing extra-careful packaging, or planning the delivery timing. Just mention it while placing your order.',
         'faq.q5.title': 'Can I get information before placing an order?',
         'faq.q5.body':
-          'Absolutely. Before ordering, you can message me about the model, price range, preparation time, and availability. I prefer clarifying all details first, then starting production.',
-        'testimonials.title': 'Customer satisfaction inspires every piece',
+          'Absolutely. Before ordering, you can message me about the model, price range, preparation time, and availability. I prefer to clarify all details first, then begin production.',
+        'testimonials.title': 'Customer happiness inspires every piece',
         'testimonials.aria': 'Customer reviews',
         'testimonials.t1':
-          'Before ordering, we discussed every detail patiently. I received regular updates throughout the process, and when the product arrived, seeing it even more careful and higher quality than the photos made me truly happy.',
+          'Before ordering, we discussed every detail patiently. I received regular updates throughout the process, and when the product arrived, it looked even more carefully made and higher quality than in the photos.',
         'testimonials.t2':
-          'Every detail was discussed one by one during color and model selection. The result was exactly as I imagined, and the care in the craftsmanship was clear the moment I opened the box.',
+          'Every detail was discussed during the color and model selection. The result was exactly what I imagined, and the care in the craftsmanship was clear the moment I opened the box.',
         'testimonials.t3':
           'The stitching quality, stuffing balance, and overall appearance were truly impressive. It looked great in photos, but in person it was even better.',
         'testimonials.t4':
-          'It was amazing that my requested colors and model were followed exactly. The packaging was so thoughtful that I enjoyed opening it myself and felt completely confident before gifting it.',
+          'The requested colors and model were followed perfectly. The packaging was so thoughtful that I enjoyed opening it myself and felt completely confident gifting it.',
         'testimonials.t5':
-          'I was informed continuously throughout the production process. It felt less like buying a ready product and more like a special story made just for me.',
+          'I received updates throughout the production process. It felt less like buying a ready-made item and more like having a special story created just for me.',
         'testimonials.t6':
-          'The person I gifted it to was impressed at first glance. It was both cute and high quality, and became a special gift to keep for a long time.',
+          'The person I gifted it to was impressed at first glance. It was both adorable and beautifully made, a special gift to keep for a long time.',
         'testimonials.t7':
-          'Communication was fast and reassuring from start to finish. Every question was answered quickly, and delivery happened smoothly on the date we agreed, so the whole experience felt easier than I expected.',
+          'Communication was fast and reassuring from start to finish. Every question was answered quickly, and delivery arrived smoothly on the agreed date, making the whole experience easier than I expected.',
         'testimonials.t8':
-          'Both the warm communication and the precision in craftsmanship were clearly noticeable. This amigurumi gift made the recipient very happy and turned out even more special than I expected.',
+          'The warm communication and precise craftsmanship both stood out. This amigurumi gift made the recipient very happy and turned out even more special than I expected.',
         'testimonials.t9':
-          'The fabric, yarn, and overall form quality were far better than I expected. You could feel the handmade care in every detail, and it genuinely made me smile on delivery.',
+          'The yarn, texture, and overall form were far better than I expected. The handmade care was visible in every detail, and it genuinely made me smile when it arrived.',
         'contact.ghost': 'Contact',
         'contact.title': 'Contact',
         'contact.note.dm':
-          'You can message on Instagram for a model, color choice, or gift idea you have in mind.',
-        'contact.note.marketplaces.prefix': 'You can browse ready-made pieces on',
+          'You can start by sharing the model, colors, or gift idea you have in mind on Instagram.',
+        'contact.note.marketplaces.prefix':
+          'For a made-for-you design or ready-made pieces, you can visit',
         'contact.note.marketplaces.between': ' and ',
         'contact.note.marketplaces.suffix': '.',
-        'contact.note.shipping': 'Orders are carefully packed and shipped across Türkiye.',
+        'contact.note.shipping':
+          'Orders are packed to preserve their shape and shipped across Türkiye.',
         'contact.note.handmade':
-          'Every piece is 100% handmade and carefully crafted without materials harmful to health.',
+          'Every piece is prepared with handmade care; details are confirmed together before production begins.',
         'contact.feature.aria': 'Contact options',
-        'contact.feature.shipping.title': 'Secure Shipping',
+        'contact.feature.shipping.title': 'Careful Packaging',
         'contact.feature.shipping.body':
-          'Products are packed to preserve their shape and can be shipped across Türkiye.',
-        'contact.feature.custom.title': 'Custom Design',
+          'Each piece is packed to preserve its shape and shipped across Türkiye.',
+        'contact.feature.custom.title': 'Made for You',
         'contact.feature.custom.body':
-          'Model, color, and size details are confirmed together before the 100% handmade production begins.',
+          'We can refine the colors, size, and details together for a personal design.',
         'contact.feature.market.title': 'Ready-Made Pieces',
         'contact.feature.market.body':
-          'You can browse ready-to-order models through the Shopier and Endolu stores.',
-        'contact.feature.instagram.title': 'Message to Order',
+          'You can browse ready-made pieces through the Shopier and Endolu shops.',
+        'contact.feature.instagram.title': 'Start with a Message',
         'contact.feature.instagram.body':
-          'For questions about materials, orders, pricing, or preparation time, you can send an Instagram DM.',
+          'Share the model, colors, or gift idea you have in mind on Instagram.',
         'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
-        'footer.signature': 'Lovingly crafted by her husband.'
+        'footer.signature': 'Designed with love by her husband.'
       }
     };
     const getStoredLanguage = () => {
@@ -344,6 +362,33 @@
     });
     document.fonts?.ready?.then(scheduleTitleCircleAlignment).catch(() => {});
 
+    productRatingStars.forEach((ratingEl) => {
+      if (ratingEl.dataset.ratingReady === 'true') return;
+      const fillRaw = ratingEl.style.getPropertyValue('--rating-fill').trim();
+      const fillPercent = Number.parseFloat(fillRaw);
+      const ratingValue = Number.isFinite(fillPercent) ? Math.max(0, Math.min(5, fillPercent / 20)) : 5;
+      const fullStars = Math.floor(ratingValue);
+      const hasHalfStar = ratingValue % 1 >= 0.5;
+      const fragment = document.createDocumentFragment();
+
+      ratingEl.textContent = '';
+      for (let index = 0; index < 5; index += 1) {
+        const starEl = document.createElement('span');
+        starEl.className = 'product-rating-star';
+        starEl.setAttribute('aria-hidden', 'true');
+        starEl.textContent = '★';
+        if (index < fullStars) {
+          starEl.classList.add('is-full');
+        } else if (index === fullStars && hasHalfStar) {
+          starEl.classList.add('is-half');
+        }
+        fragment.append(starEl);
+      }
+
+      ratingEl.append(fragment);
+      ratingEl.dataset.ratingReady = 'true';
+    });
+
     const HERO_CAROUSEL_INTERVAL_MS = 6000;
     const PRODUCT_FLOW_INTERVAL_MS = 3000;
     const isMobileViewport = () => window.innerWidth < 992;
@@ -380,6 +425,63 @@
 
     // Prime collapsed navbar height early so first mobile nav click
     // doesn't use expanded menu height in scroll offset calculations.
+    if (lenis) {
+      const runLenisFrame = (time) => {
+        lenis.raf(time);
+        window.requestAnimationFrame(runLenisFrame);
+      };
+
+      window.requestAnimationFrame(runLenisFrame);
+      lenis.resize();
+      lenis.on('scroll', () => {
+        lastScrollY = window.scrollY;
+        scheduleScrollEffects();
+      });
+
+      let shouldSyncLenisBeforeNextInput = true;
+      const syncLenisToCurrentScroll = () => {
+        const y = window.scrollY;
+        if (!Number.isFinite(y) || y <= 1) return false;
+        lenis.resize();
+        lenis.reset();
+        lastScrollY = y;
+        performScrollEffects();
+        return true;
+      };
+      const syncLenisBeforeInput = () => {
+        if (!shouldSyncLenisBeforeNextInput) return;
+        shouldSyncLenisBeforeNextInput = false;
+        syncLenisToCurrentScroll();
+      };
+      const syncLenisScrollState = () => {
+        shouldSyncLenisBeforeNextInput = true;
+        // After reload, the browser may restore scroll position after Lenis
+        // has initialized. Poll briefly and sync once it is observable.
+        const maxFrames = 60;
+        let frame = 0;
+        const tick = () => {
+          frame += 1;
+          if (syncLenisToCurrentScroll()) {
+            shouldSyncLenisBeforeNextInput = false;
+            return;
+          }
+          if (frame < maxFrames) {
+            window.requestAnimationFrame(tick);
+          }
+        };
+        window.requestAnimationFrame(tick);
+      };
+
+      window.addEventListener('pageshow', syncLenisScrollState);
+      window.addEventListener('load', syncLenisScrollState, { once: true });
+      ['wheel', 'touchstart', 'touchmove', 'keydown'].forEach((eventName) => {
+        window.addEventListener(eventName, syncLenisBeforeInput, {
+          capture: true,
+          passive: true
+        });
+      });
+    }
+
     refreshCollapsedNavOffset();
 
     const syncNavOffset = () => {
@@ -576,6 +678,61 @@
         navCollapse.hide();
       });
 
+    let lastNavMenuScrollY = window.scrollY;
+    let lastNavMenuScrollAt = 0;
+    let navMenuScrollYAtOpen = window.scrollY;
+    let navMenuScrollCloseArmed = false;
+    let navMenuOpenedDuringPageMove = false;
+    let navMenuScrollSettleTimer = null;
+    const getNavMenuCloseScrollThreshold = () => Math.max(getBaseNavOffset(), 1);
+    const armNavMenuScrollClose = () => {
+      navMenuScrollYAtOpen = window.scrollY;
+      navMenuScrollCloseArmed = true;
+      navMenuOpenedDuringPageMove = false;
+    };
+    const scheduleNavMenuScrollCloseArming = () => {
+      window.clearTimeout(navMenuScrollSettleTimer);
+      navMenuScrollSettleTimer = window.setTimeout(armNavMenuScrollClose, 180);
+    };
+    const rememberNavMenuScrollPosition = () => {
+      navMenuScrollYAtOpen = window.scrollY;
+      navMenuScrollCloseArmed = false;
+      navMenuOpenedDuringPageMove =
+        window.performance.now() - lastNavMenuScrollAt < 180 ||
+        Math.abs(window.scrollY - lastNavMenuScrollY) > 1;
+      if (navMenuOpenedDuringPageMove) {
+        scheduleNavMenuScrollCloseArming();
+        return;
+      }
+      armNavMenuScrollClose();
+    };
+    const closeMobileNavMenuOnPageMove = () => {
+      const nextScrollY = window.scrollY;
+      if (Math.abs(nextScrollY - lastNavMenuScrollY) > 1) {
+        lastNavMenuScrollAt = window.performance.now();
+        lastNavMenuScrollY = nextScrollY;
+      }
+      if (!isMobileViewport() || !isNavMenuExpanded()) return;
+      if (documentEl.classList.contains('is-nav-collapsing')) return;
+      if (navMenuOpenedDuringPageMove) {
+        scheduleNavMenuScrollCloseArming();
+        return;
+      }
+      if (!navMenuScrollCloseArmed) return;
+      if (Math.abs(nextScrollY - navMenuScrollYAtOpen) < getNavMenuCloseScrollThreshold()) return;
+      navMenuScrollCloseArmed = false;
+      closeNavMenuIfNeeded().catch(() => {});
+    };
+
+    navCollapseEl?.addEventListener('show.bs.collapse', rememberNavMenuScrollPosition);
+    navCollapseEl?.addEventListener('shown.bs.collapse', rememberNavMenuScrollPosition);
+    navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
+      window.clearTimeout(navMenuScrollSettleTimer);
+      navMenuScrollCloseArmed = false;
+      navMenuOpenedDuringPageMove = false;
+    });
+    window.addEventListener('scroll', closeMobileNavMenuOnPageMove, { passive: true });
+
     const statCounters = Array.from(document.querySelectorAll('.stat-counter[data-count]'));
 
     const createStatDigitFace = (digit) => {
@@ -723,12 +880,14 @@
     let lastScrollY = window.scrollY;
     let applyHeroScrollParallax = () => false;
     let syncHeroParallaxLayout = () => {};
+    let scrollEffectsFrame = 0;
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let testimonialMarqueeFrame = 0;
     let testimonialMarqueeLastTime = 0;
+    let isTestimonialMarqueeVisible = false;
     const testimonialMarqueeState = testimonialTracks.map((track, index) => ({
       track,
       offsetPx: 0,
@@ -793,10 +952,52 @@
     };
 
     const startTestimonialMarquee = () => {
-      if (!testimonialMarqueeState.length || prefersReducedMotion.matches) return;
+      if (
+        !testimonialMarqueeState.length ||
+        prefersReducedMotion.matches ||
+        !isTestimonialMarqueeVisible ||
+        document.hidden
+      ) {
+        return;
+      }
       stopTestimonialMarquee();
       syncTestimonialMarquee();
       testimonialMarqueeFrame = window.requestAnimationFrame(runTestimonialMarquee);
+    };
+
+    const initTestimonialMarqueeVisibility = () => {
+      if (!testimonialMarqueeState.length || !testimonialsSectionEl) return;
+
+      if (!('IntersectionObserver' in window)) {
+        isTestimonialMarqueeVisible = true;
+        startTestimonialMarquee();
+        return;
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          isTestimonialMarqueeVisible = entries.some((entry) => entry.isIntersecting);
+          if (isTestimonialMarqueeVisible) {
+            startTestimonialMarquee();
+          } else {
+            stopTestimonialMarquee();
+          }
+        },
+        {
+          root: null,
+          rootMargin: '120px 0px',
+          threshold: 0.01
+        }
+      );
+
+      observer.observe(testimonialsSectionEl);
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopTestimonialMarquee();
+          return;
+        }
+        startTestimonialMarquee();
+      });
     };
 
     const refreshGhostMetrics = () => {
@@ -973,65 +1174,6 @@
       }
     };
 
-    if (lenis) {
-      const runLenisFrame = (time) => {
-        lenis.raf(time);
-        window.requestAnimationFrame(runLenisFrame);
-      };
-
-      window.requestAnimationFrame(runLenisFrame);
-      lenis.resize();
-      lenis.on('scroll', () => {
-        lastScrollY = window.scrollY;
-        performScrollEffects();
-      });
-
-      let shouldSyncLenisBeforeNextInput = true;
-      const syncLenisToCurrentScroll = () => {
-        const y = window.scrollY;
-        if (!Number.isFinite(y) || y <= 1) return false;
-        lenis.resize();
-        lenis.reset();
-        lastScrollY = y;
-        performScrollEffects();
-        return true;
-      };
-      const syncLenisBeforeInput = () => {
-        if (!shouldSyncLenisBeforeNextInput) return;
-        shouldSyncLenisBeforeNextInput = false;
-        syncLenisToCurrentScroll();
-      };
-      const syncLenisScrollState = () => {
-        shouldSyncLenisBeforeNextInput = true;
-        // After reload, the browser may restore scroll position *after* Lenis
-        // has initialized. If we sync too early (while scrollY is still 0),
-        // the next wheel/touch scroll can snap back. Poll for a short time and
-        // sync once the restored scroll position is observable.
-        const maxFrames = 60;
-        let frame = 0;
-        const tick = () => {
-          frame += 1;
-          if (syncLenisToCurrentScroll()) {
-            shouldSyncLenisBeforeNextInput = false;
-            return;
-          }
-          if (frame < maxFrames) {
-            window.requestAnimationFrame(tick);
-          }
-        };
-        window.requestAnimationFrame(tick);
-      };
-
-      window.addEventListener('pageshow', syncLenisScrollState);
-      window.addEventListener('load', syncLenisScrollState, { once: true });
-      ['wheel', 'touchstart', 'touchmove', 'keydown'].forEach((eventName) => {
-        window.addEventListener(eventName, syncLenisBeforeInput, {
-          capture: true,
-          passive: true
-        });
-      });
-    }
-
     refreshCollapsedNavOffset();
 
     if (heroCarousel && bootstrap) {
@@ -1110,7 +1252,7 @@
           revealTimers.set(item, []);
           item
             .querySelectorAll(
-              '.hero-title-enter-up, .hero-title-enter-down, .hero-body-enter-up, .hero-body-enter-down, .hero-circle-enter-up, .hero-circle-enter-down, .hero-title-exit-up, .hero-title-exit-down, .hero-body-exit-up, .hero-body-exit-down, .hero-circle-exit-up, .hero-circle-exit-down, .hero-media-circles-enter-up, .hero-media-circles-enter-down, .hero-media-circles-exit-up, .hero-media-circles-exit-down'
+              '.hero-title-enter-up, .hero-title-enter-down, .hero-body-enter-up, .hero-body-enter-down, .hero-circle-enter-up, .hero-circle-enter-down, .hero-title-exit-up, .hero-title-exit-down, .hero-body-exit-up, .hero-body-exit-down, .hero-circle-exit-up, .hero-circle-exit-down'
             )
             .forEach((node) => {
               node.classList.remove(
@@ -1125,11 +1267,7 @@
                 'hero-body-exit-up',
                 'hero-body-exit-down',
                 'hero-circle-exit-up',
-                'hero-circle-exit-down',
-                'hero-media-circles-enter-up',
-                'hero-media-circles-enter-down',
-                'hero-media-circles-exit-up',
-                'hero-media-circles-exit-down'
+                'hero-circle-exit-down'
               );
             });
         });
@@ -1153,11 +1291,6 @@
         body: HERO_ANIMATION_STAGGER_MS * 2
       };
       const INITIAL_MEDIA_ENTRY_MS = 600;
-      const MEDIA_CIRCLES_VISIBLE_TIMINGS = {
-        top: 820,
-        bottom: 1140
-      };
-
       const setHeroVisibleState = (item, isVisible) => {
         if (!item) return;
 
@@ -1166,14 +1299,6 @@
         title?.classList.toggle('hero-title-visible', isVisible);
         body?.classList.toggle('hero-body-visible', isVisible);
         caption?.classList.toggle('hero-circle-visible', isVisible);
-      };
-
-      const setHeroMediaCirclesVisibleState = (item, isVisible) => {
-        if (!item) return;
-
-        const media = item.querySelector('.hero-media');
-        media?.classList.toggle('hero-media-circles-visible-top', isVisible);
-        media?.classList.toggle('hero-media-circles-visible-bottom', isVisible);
       };
 
       const animateInitialHeroMedia = (item) => {
@@ -1189,38 +1314,6 @@
             media.classList.remove('hero-media-enter-initial');
           },
           { once: true }
-        );
-      };
-
-      const animateHeroMediaCircles = (item, direction) => {
-        const media = item?.querySelector('.hero-media');
-        if (!media) return;
-
-        void media.offsetWidth;
-        media.classList.add(
-          direction === 'down' ? 'hero-media-circles-enter-down' : 'hero-media-circles-enter-up'
-        );
-
-        const topCircleTimer = window.setTimeout(() => {
-          media.classList.add('hero-media-circles-visible-top');
-        }, MEDIA_CIRCLES_VISIBLE_TIMINGS.top);
-
-        const bottomCircleTimer = window.setTimeout(() => {
-          media.classList.add('hero-media-circles-visible-bottom');
-          media.classList.remove('hero-media-circles-enter-up', 'hero-media-circles-enter-down');
-        }, MEDIA_CIRCLES_VISIBLE_TIMINGS.bottom);
-
-        const timers = revealTimers.get(item) ?? [];
-        revealTimers.set(item, [...timers, topCircleTimer, bottomCircleTimer]);
-      };
-
-      const animateHeroMediaCirclesExit = (item, direction) => {
-        const media = item?.querySelector('.hero-media');
-        if (!media) return;
-
-        void media.offsetWidth;
-        media.classList.add(
-          direction === 'down' ? 'hero-media-circles-exit-down' : 'hero-media-circles-exit-up'
         );
       };
 
@@ -1312,7 +1405,6 @@
       resetHeroRevealClasses();
       heroItems.forEach((item) => {
         setHeroVisibleState(item, false);
-        setHeroMediaCirclesVisibleState(item, false);
       });
       applyInitialSlideDistance();
       syncHeroParallaxLayout = () => {
@@ -1325,9 +1417,6 @@
       if (activeIndex !== -1) {
         window.requestAnimationFrame(() => {
           animateInitialHeroMedia(heroItems[activeIndex]);
-          window.setTimeout(() => {
-            animateHeroMediaCircles(heroItems[activeIndex], 'up');
-          }, INITIAL_MEDIA_ENTRY_MS);
           window.setTimeout(() => {
             animateHeroText(heroItems[activeIndex], 'up');
           }, INITIAL_MEDIA_ENTRY_MS);
@@ -1428,10 +1517,7 @@
         const direction = event.direction === 'right' ? 'down' : 'up';
         resetHeroRevealClasses();
         setHeroVisibleState(currentItem, true);
-        setHeroMediaCirclesVisibleState(currentItem, true);
         setHeroVisibleState(targetItem, false);
-        setHeroMediaCirclesVisibleState(targetItem, false);
-        animateHeroMediaCirclesExit(currentItem, direction);
         animateHeroExit(currentItem, direction);
         setBackgroundDirection(targetItem, !isReverseBackground(currentItem));
       });
@@ -1442,12 +1528,10 @@
         resetHeroRevealClasses();
         heroItems.forEach((item, index) => {
           setHeroVisibleState(item, index === event.to);
-          setHeroMediaCirclesVisibleState(item, false);
         });
         scheduleTitleCircleAlignment();
         if (heroItems[event.to]) {
           const direction = event.direction === 'right' ? 'down' : 'up';
-          animateHeroMediaCircles(heroItems[event.to], direction);
           animateHeroText(heroItems[event.to], direction);
         }
         performScrollEffects();
@@ -1539,10 +1623,11 @@
       if (!(imageEl instanceof HTMLImageElement)) return;
       const isProductCarouselImage = Boolean(imageEl.closest('.product-carousel'));
       if (isProductCarouselImage) {
-        imageEl.loading = 'eager';
+        const shouldPrioritize = priority === 'high';
+        imageEl.loading = shouldPrioritize ? 'eager' : 'lazy';
         imageEl.decoding = 'async';
-        imageEl.fetchPriority = 'high';
-        if (!imageEl.complete && typeof imageEl.decode === 'function') {
+        imageEl.fetchPriority = shouldPrioritize ? 'high' : 'low';
+        if (shouldPrioritize && !imageEl.complete && typeof imageEl.decode === 'function') {
           imageEl.decode().catch(() => {
             // Ignore decode rejections from browser timing/race conditions.
           });
@@ -1571,8 +1656,8 @@
       });
     };
     const primeAllProductSliderImages = () => {
-      document.querySelectorAll('.product-carousel .card-img-top').forEach((imageEl) => {
-        setProductImagePriority(imageEl, 'high');
+      productCarouselsState.forEach((slider) => {
+        primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
       });
     };
     const observeProductSectionImagePriming = () => {
@@ -1710,30 +1795,10 @@
     };
 
     const syncCompactProductPreviewAlignment = () => {
-      productCarouselsState.forEach((slider) => {
-        const carouselEl = slider.carouselEl;
-        if (!carouselEl?.classList.contains('product-carousel-compact')) return;
-
+      productCarouselsState.forEach(({ carouselEl }) => {
         const mediaEls = Array.from(carouselEl.querySelectorAll('.product-media'));
-        if (window.innerWidth < 992) {
-          mediaEls.forEach((mediaEl) => {
-            mediaEl.style.removeProperty('--product-preview-trigger-y');
-          });
-          return;
-        }
-
-        const controlEl = carouselEl.querySelector('.product-carousel-control.is-prev');
-        if (!controlEl) return;
-
-        const controlRect = controlEl.getBoundingClientRect();
-        const controlCenterY = controlRect.top + controlRect.height / 2;
-
         mediaEls.forEach((mediaEl) => {
-          const mediaRect = mediaEl.getBoundingClientRect();
-          if (!mediaRect.height) return;
-
-          const triggerY = Math.min(Math.max(controlCenterY - mediaRect.top, 0), mediaRect.height);
-          mediaEl.style.setProperty('--product-preview-trigger-y', `${triggerY.toFixed(2)}px`);
+          mediaEl.style.removeProperty('--product-preview-trigger-y');
         });
       });
     };
@@ -1948,7 +2013,7 @@
         cardEl.querySelector('.product-meta-row h3.card-title')?.textContent?.trim() ?? '';
 
       return {
-        imageSrc: imageEl?.getAttribute('src') ?? '',
+        imageSrc: imageEl?.currentSrc || imageEl?.getAttribute('src') || '',
         imageAlt: imageEl?.getAttribute('alt') || name || 'Ürün görseli',
         name
       };
@@ -1977,7 +2042,6 @@
     let productModalPanStartY = 0;
     let productModalPointerStartX = 0;
     let productModalPointerStartY = 0;
-    let productModalNativeFullscreen = false;
     const PRODUCT_MODAL_ZOOM_SCALE = 1.4;
     const PRODUCT_MODAL_TRANSITION_MS = 360;
 
@@ -2044,23 +2108,19 @@
     };
 
     const setProductModalNativeFullscreenState = (active) => {
-      productModalNativeFullscreen = Boolean(active);
-      productFullscreenModalEl?.classList.toggle(
-        'is-native-fullscreen',
-        productModalNativeFullscreen
-      );
+      const isNativeFullscreen = Boolean(active);
       if (!productFullscreenNativeToggleEl) return;
       productFullscreenNativeToggleEl.setAttribute(
         'aria-pressed',
-        productModalNativeFullscreen ? 'true' : 'false'
+        isNativeFullscreen ? 'true' : 'false'
       );
       productFullscreenNativeToggleEl.setAttribute(
         'aria-label',
-        productModalNativeFullscreen ? 'Tam ekrandan çık' : 'Tam ekran'
+        isNativeFullscreen ? 'Tam ekrandan çık' : 'Tam ekran'
       );
       productFullscreenNativeToggleEl.setAttribute(
         'title',
-        productModalNativeFullscreen ? 'Tam ekrandan çık' : 'Tam ekran'
+        isNativeFullscreen ? 'Tam ekrandan çık' : 'Tam ekran'
       );
     };
 
@@ -2148,6 +2208,18 @@
         return;
       }
       openProductFullscreenModal(cardEl);
+    };
+
+    let productTouchPreviewTimer = null;
+
+    const setProductTouchPreviewState = (mediaEl, active) => {
+      if (!(mediaEl instanceof HTMLElement)) return;
+      mediaEl.classList.toggle('is-touch-preview-active', active);
+      if (!active) return;
+      window.clearTimeout(productTouchPreviewTimer);
+      productTouchPreviewTimer = window.setTimeout(() => {
+        mediaEl.classList.remove('is-touch-preview-active');
+      }, 700);
     };
 
     productFullscreenModalEl?.classList.remove('fade');
@@ -2271,6 +2343,36 @@
         lastProductPreviewTriggerEl = triggerEl;
       }
       handleProductCardOpen(event, cardEl);
+    });
+
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        if (!isProductTouchViewport() || event.pointerType === 'mouse') return;
+        const mediaEl = event.target.closest?.('.product-media');
+        if (!mediaEl?.closest('.product-carousel')) return;
+        setProductTouchPreviewState(mediaEl, true);
+      },
+      { passive: true }
+    );
+
+    document.addEventListener('click', (event) => {
+      if (!isProductTouchViewport()) return;
+      if (event.target.closest('.product-preview-trigger')) return;
+      const mediaEl = event.target.closest?.('.product-media');
+      if (!mediaEl) return;
+      const cardEl = mediaEl.closest('.product-card');
+      const carouselEl = mediaEl.closest('.product-carousel');
+      if (!cardEl || !carouselEl) return;
+
+      const slider = getProductSliderState(carouselEl);
+      if (slider && slider.suppressClickUntil > performance.now()) return;
+
+      event.preventDefault();
+      setProductTouchPreviewState(mediaEl, true);
+      window.setTimeout(() => {
+        openProductFullscreenModal(cardEl);
+      }, 90);
     });
 
     productFullscreenZoomEl?.addEventListener('click', (event) => {
@@ -2418,7 +2520,7 @@
     }
 
     initStatCounters();
-    startTestimonialMarquee();
+    initTestimonialMarqueeVisibility();
     syncNavOffset();
     syncNavLinkWidths();
     updateStatsTitleReveal();
@@ -2428,6 +2530,7 @@
     updateSectionOrbParallax();
 
     function performScrollEffects() {
+      scrollEffectsFrame = 0;
       lastScrollY = window.scrollY;
       updateActiveSection();
       updateStatsTitleReveal();
@@ -2436,11 +2539,16 @@
       applyHeroScrollParallax();
     }
 
+    function scheduleScrollEffects() {
+      if (scrollEffectsFrame) return;
+      scrollEffectsFrame = window.requestAnimationFrame(performScrollEffects);
+    }
+
     if (!lenis) {
       window.addEventListener(
         'scroll',
         () => {
-          performScrollEffects();
+          scheduleScrollEffects();
         },
         { passive: true }
       );
