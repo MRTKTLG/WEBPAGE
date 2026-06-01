@@ -1794,11 +1794,96 @@
       nextButton?.addEventListener('click', (event) => onControlClick(event, 1));
     };
 
-    const syncCompactProductPreviewAlignment = () => {
+    const syncProductPreviewAlignment = () => {
+      let compactPreviewBottomInset = null;
+
       productCarouselsState.forEach(({ carouselEl }) => {
+        if (isProductMobileViewport()) {
+          carouselEl.querySelectorAll('.product-media').forEach((mediaEl) => {
+            mediaEl.style.removeProperty('--product-preview-trigger-y');
+          });
+          return;
+        }
+
+        const controlsEl = carouselEl.querySelector('.product-carousel-controls');
+        const controlEl = carouselEl.querySelector('.product-carousel-control');
+        const controlRect = controlEl?.getBoundingClientRect();
+        const hasVisibleControls =
+          controlsEl instanceof HTMLElement &&
+          controlEl instanceof HTMLElement &&
+          window.getComputedStyle(controlsEl).display !== 'none' &&
+          window.getComputedStyle(controlEl).display !== 'none' &&
+          controlRect.width > 0 &&
+          controlRect.height > 0;
+        if (!hasVisibleControls) {
+          carouselEl.querySelectorAll('.product-media').forEach((mediaEl) => {
+            mediaEl.style.removeProperty('--product-preview-trigger-y');
+          });
+          return;
+        }
+
+        const controlCenterY = controlRect.top + controlRect.height / 2;
+        if (carouselEl.classList.contains('product-carousel-compact')) {
+          const referenceMediaEl = Array.from(carouselEl.querySelectorAll('.product-media')).find(
+            (mediaEl) => {
+              const mediaRect = mediaEl.getBoundingClientRect();
+              return mediaRect.height > 0;
+            }
+          );
+          const referenceTriggerEl = referenceMediaEl?.querySelector('.product-preview-trigger');
+          if (referenceMediaEl && referenceTriggerEl instanceof HTMLElement) {
+            const referenceMediaRect = referenceMediaEl.getBoundingClientRect();
+            const referenceTriggerRect = referenceTriggerEl.getBoundingClientRect();
+            const referenceTriggerHalfHeight = (referenceTriggerRect.height || 48) / 2;
+            const referenceTargetY = controlCenterY - referenceMediaRect.top;
+            const referenceClampedTargetY = Math.min(
+              Math.max(referenceTargetY, referenceTriggerHalfHeight),
+              referenceMediaRect.height - referenceTriggerHalfHeight
+            );
+            compactPreviewBottomInset =
+              referenceMediaRect.height - (referenceClampedTargetY + referenceTriggerHalfHeight);
+          }
+        }
+      });
+
+      productCarouselsState.forEach(({ carouselEl }) => {
+        if (isProductMobileViewport()) return;
+
+        const controlsEl = carouselEl.querySelector('.product-carousel-controls');
+        const controlEl = carouselEl.querySelector('.product-carousel-control');
+        const controlRect = controlEl?.getBoundingClientRect();
+        const hasVisibleControls =
+          controlsEl instanceof HTMLElement &&
+          controlEl instanceof HTMLElement &&
+          window.getComputedStyle(controlsEl).display !== 'none' &&
+          window.getComputedStyle(controlEl).display !== 'none' &&
+          controlRect.width > 0 &&
+          controlRect.height > 0;
+        if (!hasVisibleControls) return;
+
+        const controlCenterY = controlRect.top + controlRect.height / 2;
+        const alignToCompactBottomInset =
+          compactPreviewBottomInset !== null &&
+          !carouselEl.classList.contains('product-carousel-compact');
         const mediaEls = Array.from(carouselEl.querySelectorAll('.product-media'));
         mediaEls.forEach((mediaEl) => {
-          mediaEl.style.removeProperty('--product-preview-trigger-y');
+          const triggerEl = mediaEl.querySelector('.product-preview-trigger');
+          const mediaRect = mediaEl.getBoundingClientRect();
+          if (!mediaRect.height || !(triggerEl instanceof HTMLElement)) {
+            mediaEl.style.removeProperty('--product-preview-trigger-y');
+            return;
+          }
+
+          const triggerRect = triggerEl.getBoundingClientRect();
+          const triggerHalfHeight = (triggerRect.height || 48) / 2;
+          const targetY = alignToCompactBottomInset
+            ? mediaRect.height - compactPreviewBottomInset - triggerHalfHeight
+            : controlCenterY - mediaRect.top;
+          const clampedTargetY = Math.min(
+            Math.max(targetY, triggerHalfHeight),
+            mediaRect.height - triggerHalfHeight
+          );
+          mediaEl.style.setProperty('--product-preview-trigger-y', `${clampedTargetY}px`);
         });
       });
     };
@@ -1837,18 +1922,19 @@
         on: {
           init() {
             syncProductCardInteractivity();
-            syncCompactProductPreviewAlignment();
+            syncProductPreviewAlignment();
           },
           slideChange() {
             primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
+            syncProductPreviewAlignment();
           },
           breakpoint() {
             syncProductCardInteractivity();
-            syncCompactProductPreviewAlignment();
+            syncProductPreviewAlignment();
           },
           resize() {
             syncProductCardInteractivity();
-            syncCompactProductPreviewAlignment();
+            syncProductPreviewAlignment();
           }
         }
       });
@@ -1962,7 +2048,7 @@
       });
 
       syncProductCardInteractivity();
-      syncCompactProductPreviewAlignment();
+      syncProductPreviewAlignment();
     };
 
     const moveProductCarousel = (slider, direction) => {
@@ -2004,7 +2090,7 @@
           ensureProductPreviewTrigger(cardEl);
         });
       });
-      syncCompactProductPreviewAlignment();
+      syncProductPreviewAlignment();
     };
 
     const getProductPreviewData = (cardEl) => {
@@ -2211,6 +2297,13 @@
     };
 
     let productTouchPreviewTimer = null;
+    let productTouchPreviewPointerId = null;
+    let productTouchPreviewMediaEl = null;
+    let productTouchPreviewStartX = 0;
+    let productTouchPreviewStartY = 0;
+    let productTouchPreviewDidScroll = false;
+    let productTouchPreviewSuppressUntil = 0;
+    const PRODUCT_TOUCH_PREVIEW_MOVE_THRESHOLD_PX = 10;
 
     const setProductTouchPreviewState = (mediaEl, active) => {
       if (!(mediaEl instanceof HTMLElement)) return;
@@ -2219,7 +2312,21 @@
       window.clearTimeout(productTouchPreviewTimer);
       productTouchPreviewTimer = window.setTimeout(() => {
         mediaEl.classList.remove('is-touch-preview-active');
-      }, 700);
+      }, 1800);
+    };
+
+    const clearProductTouchPreviewIntent = () => {
+      productTouchPreviewPointerId = null;
+      productTouchPreviewMediaEl = null;
+      productTouchPreviewDidScroll = false;
+    };
+
+    const canActivateProductTouchPreview = (mediaEl) => {
+      if (!(mediaEl instanceof HTMLElement)) return false;
+      const carouselEl = mediaEl.closest('.product-carousel');
+      if (!carouselEl) return false;
+      const slider = getProductSliderState(carouselEl);
+      return !slider || slider.suppressClickUntil <= performance.now();
     };
 
     productFullscreenModalEl?.classList.remove('fade');
@@ -2351,10 +2458,50 @@
         if (!isProductTouchViewport() || event.pointerType === 'mouse') return;
         const mediaEl = event.target.closest?.('.product-media');
         if (!mediaEl?.closest('.product-carousel')) return;
-        setProductTouchPreviewState(mediaEl, true);
+        productTouchPreviewPointerId = event.pointerId;
+        productTouchPreviewMediaEl = mediaEl;
+        productTouchPreviewStartX = event.clientX;
+        productTouchPreviewStartY = event.clientY;
+        productTouchPreviewDidScroll = false;
       },
       { passive: true }
     );
+
+    document.addEventListener(
+      'pointermove',
+      (event) => {
+        if (event.pointerId !== productTouchPreviewPointerId || productTouchPreviewDidScroll)
+          return;
+        const deltaX = event.clientX - productTouchPreviewStartX;
+        const deltaY = event.clientY - productTouchPreviewStartY;
+        if (Math.hypot(deltaX, deltaY) < PRODUCT_TOUCH_PREVIEW_MOVE_THRESHOLD_PX) return;
+        productTouchPreviewDidScroll = true;
+        productTouchPreviewSuppressUntil = performance.now() + 320;
+        if (productTouchPreviewMediaEl instanceof HTMLElement) {
+          productTouchPreviewMediaEl.classList.remove('is-touch-preview-active');
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'pointerup',
+      (event) => {
+        if (event.pointerId !== productTouchPreviewPointerId) return;
+        const mediaEl = productTouchPreviewMediaEl;
+        const shouldActivate =
+          !productTouchPreviewDidScroll && canActivateProductTouchPreview(mediaEl);
+        clearProductTouchPreviewIntent();
+        if (shouldActivate) {
+          setProductTouchPreviewState(mediaEl, true);
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener('pointercancel', clearProductTouchPreviewIntent, {
+      passive: true
+    });
 
     document.addEventListener('click', (event) => {
       if (!isProductTouchViewport()) return;
@@ -2364,15 +2511,15 @@
       const cardEl = mediaEl.closest('.product-card');
       const carouselEl = mediaEl.closest('.product-carousel');
       if (!cardEl || !carouselEl) return;
+      if (productTouchPreviewSuppressUntil > performance.now()) return;
 
       const slider = getProductSliderState(carouselEl);
       if (slider && slider.suppressClickUntil > performance.now()) return;
 
       event.preventDefault();
-      setProductTouchPreviewState(mediaEl, true);
-      window.setTimeout(() => {
-        openProductFullscreenModal(cardEl);
-      }, 90);
+      if (canActivateProductTouchPreview(mediaEl)) {
+        setProductTouchPreviewState(mediaEl, true);
+      }
     });
 
     productFullscreenZoomEl?.addEventListener('click', (event) => {

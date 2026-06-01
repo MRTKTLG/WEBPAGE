@@ -7,8 +7,9 @@
   --icon-stroke-thin: 1.35;
   --icon-size-control: 1.85rem;
   --icon-size-control-mobile: 1.45rem;
-  --icon-button-size: 2.6rem;
-  --product-preview-trigger-size: 2.15rem;
+  --icon-button-size: 2.1rem;
+  --product-slider-control-size: 48px;
+  --product-preview-trigger-size: var(--product-slider-control-size);
   --icon-radius-control: 0.7rem;
   --icon-color-hero: var(--preview-contrast);
   --icon-motion-duration: 350ms;
@@ -2368,8 +2369,8 @@ main > section:not([id]) > .container > h2 {
 }
 
 .product-carousel-control {
-  width: calc(var(--icon-button-size) + 0.9rem);
-  height: calc(var(--icon-button-size) + 0.9rem);
+  width: var(--product-slider-control-size);
+  height: var(--product-slider-control-size);
   padding: 0;
   line-height: 0;
   border: 0;
@@ -2572,10 +2573,10 @@ main > section:not([id]) > .container > h2 {
 
 .product-preview-trigger {
   position: absolute;
-  top: auto;
+  top: var(--product-preview-trigger-y, 50%);
   right: auto;
   left: 50%;
-  bottom: 0.75rem;
+  bottom: auto;
   width: var(--product-preview-trigger-size);
   height: var(--product-preview-trigger-size);
   padding: 0;
@@ -2591,7 +2592,8 @@ main > section:not([id]) > .container > h2 {
   opacity: 0;
   pointer-events: none;
   cursor: pointer;
-  transform: translate3d(-50%, calc(100% + 1rem), 0) scale(0.98);
+  transform: translate3d(-50%, calc(-50% + var(--product-preview-trigger-slide-distance)), 0)
+    scale(0.98);
   transition: var(--product-preview-trigger-transition);
   transition-delay: 0ms;
   -webkit-tap-highlight-color: transparent;
@@ -2668,7 +2670,7 @@ main > section:not([id]) > .container > h2 {
 .product-media:focus-within .product-preview-trigger {
   opacity: 1;
   pointer-events: auto;
-  transform: translate3d(-50%, 0, 0) scale(1);
+  transform: translate3d(-50%, -50%, 0) scale(1);
   transition-delay: 0ms;
 }
 
@@ -2693,14 +2695,14 @@ main > section:not([id]) > .container > h2 {
   background: transparent;
   border-color: transparent;
   color: var(--preview-contrast);
-  transform: translate3d(-50%, 0, 0) scale(1);
+  transform: translate3d(-50%, -50%, 0) scale(1);
   box-shadow: none;
   filter: none !important;
   backdrop-filter: none !important;
 }
 
 .product-preview-trigger:active {
-  transform: translate3d(-50%, 0, 0) scale(0.98);
+  transform: translate3d(-50%, -50%, 0) scale(0.98);
 }
 
 .product-preview-trigger:focus-visible {
@@ -2744,7 +2746,8 @@ main > section:not([id]) > .container > h2 {
   .product-preview-trigger {
     opacity: 0;
     pointer-events: none;
-    transform: translate3d(-50%, calc(100% + 1rem), 0) scale(0.98);
+    transform: translate3d(-50%, calc(-50% + var(--product-preview-trigger-slide-distance)), 0)
+      scale(0.98);
   }
 
   .product-preview-trigger .corner-segment {
@@ -2752,21 +2755,18 @@ main > section:not([id]) > .container > h2 {
   }
 
   .product-media.is-touch-preview-active::after,
-  .product-media:active::after,
   .product-media:focus-within::after {
     opacity: 1;
   }
 
   .product-media.is-touch-preview-active .product-preview-trigger,
-  .product-media:active .product-preview-trigger,
   .product-media:focus-within .product-preview-trigger {
     opacity: 1;
     pointer-events: auto;
-    transform: translate3d(-50%, 0, 0) scale(1);
+    transform: translate3d(-50%, -50%, 0) scale(1);
   }
 
   .product-media.is-touch-preview-active .card-img-top,
-  .product-media:active .card-img-top,
   .product-media:focus-within .card-img-top {
     filter: brightness(0.9) saturate(0.95);
   }
@@ -2777,7 +2777,8 @@ main > section:not([id]) > .container > h2 {
     .product-preview-trigger {
     opacity: 0;
     pointer-events: none;
-    transform: translate3d(-50%, calc(100% + 1rem), 0) scale(0.98);
+    transform: translate3d(-50%, calc(-50% + var(--product-preview-trigger-slide-distance)), 0)
+      scale(0.98);
     transition-delay: 0ms;
   }
 
@@ -3762,15 +3763,15 @@ main > section:not([id]) > .container > h2 {
   }
 
   .product-carousel-control {
-    width: var(--mobile-round-control-size);
-    height: var(--mobile-round-control-size);
+    width: var(--product-slider-control-size);
+    height: var(--product-slider-control-size);
     border-radius: 999px;
     border-width: 4px;
   }
 
   .product-preview-trigger {
-    width: var(--product-preview-trigger-size);
-    height: var(--product-preview-trigger-size);
+    width: var(--product-slider-control-size);
+    height: var(--product-slider-control-size);
   }
 
   .product-fullscreen-action {
@@ -3966,8 +3967,47 @@ main > section:not([id]) > .container > h2 {
 .product-preview-trigger:focus-visible,
 .product-media:hover .product-preview-trigger,
 .product-media:focus-within .product-preview-trigger {
-  transform: translate3d(-50%, 0, 0) scale(1);
+  transform: translate3d(-50%, -50%, 0) scale(1);
   transition: var(--product-preview-trigger-transition);
+}
+
+@media (max-width: 767px) {
+  #urunler .product-preview-trigger {
+    width: var(--product-slider-control-size);
+    height: var(--product-slider-control-size);
+  }
+
+  #urunler .product-media.is-touch-preview-active::after {
+    opacity: 1;
+  }
+
+  #urunler .product-media.is-touch-preview-active .product-preview-trigger {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+
+  #urunler .product-media.is-touch-preview-active .card-img-top {
+    filter: brightness(0.9) saturate(0.95);
+  }
+
+  #urunler
+    .product-carousel.is-touch-dragging
+    .product-media.is-touch-preview-active
+    .product-preview-trigger {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(-50%, calc(-50% + var(--product-preview-trigger-slide-distance)), 0)
+      scale(0.98);
+  }
+
+  #urunler .product-carousel.is-touch-dragging .product-media.is-touch-preview-active::after {
+    opacity: 0;
+  }
+
+  #urunler .product-carousel.is-touch-dragging .product-media.is-touch-preview-active .card-img-top {
+    filter: none;
+  }
 }
 
 /* Final overrides: image-only modal experience */
