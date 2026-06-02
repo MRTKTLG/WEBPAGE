@@ -67,6 +67,24 @@ const getCenterPoint = async (locator) => {
 const isPreviewActive = (page) =>
   page.locator('.product-media.is-touch-preview-active').count().then((count) => count > 0);
 
+const getPreviewTriggerState = (page) =>
+  page.evaluate(() => {
+    const triggerEl = document.querySelector('.product-carousel .product-preview-trigger');
+    const mediaEl = triggerEl?.closest('.product-media');
+    if (!triggerEl || !mediaEl) {
+      throw new Error('Product preview trigger not found.');
+    }
+
+    const style = getComputedStyle(triggerEl);
+
+    return {
+      active: mediaEl.classList.contains('is-touch-preview-active'),
+      opacity: Number.parseFloat(style.opacity),
+      pointerEvents: style.pointerEvents,
+      transform: style.transform
+    };
+  });
+
 const clearPreview = async (page) => {
   await page.touchscreen.tap(12, 12);
   await page.waitForFunction(
@@ -138,6 +156,29 @@ const dispatchTouchDragOnMedia = async (page) => {
     );
 
     await clearPreview(page);
+
+    await media.hover({ force: true });
+    await wait(160);
+    const hoverLeakState = await getPreviewTriggerState(page);
+    if (
+      !hoverLeakState.active &&
+      (hoverLeakState.opacity > 0.01 || hoverLeakState.pointerEvents !== 'none')
+    ) {
+      throw new Error('Preview trigger became visible from mobile hover state.');
+    }
+
+    await page.evaluate(() => {
+      const triggerEl = document.querySelector('.product-carousel .product-preview-trigger');
+      triggerEl?.focus();
+    });
+    await wait(160);
+    const focusLeakState = await getPreviewTriggerState(page);
+    if (
+      !focusLeakState.active &&
+      (focusLeakState.opacity > 0.01 || focusLeakState.pointerEvents !== 'none')
+    ) {
+      throw new Error('Preview trigger became visible from mobile focus-within state.');
+    }
 
     await page.evaluate(() => window.scrollBy(0, 72));
     await wait(80);

@@ -4019,6 +4019,28 @@ main > section:not([id]) > .container > h2 {
   }
 }
 
+@media (hover: none), (pointer: coarse) {
+  #urunler .product-media:hover:not(.is-touch-preview-active)::after,
+  #urunler .product-media:focus-within:not(.is-touch-preview-active)::after {
+    opacity: 0;
+  }
+
+  #urunler .product-media:hover:not(.is-touch-preview-active) .product-preview-trigger,
+  #urunler .product-media:focus-within:not(.is-touch-preview-active) .product-preview-trigger {
+    --product-preview-trigger-disc-alpha: 0.5;
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(-50%, calc(-50% + var(--product-preview-trigger-slide-distance)), 0)
+      scale(0.98);
+  }
+
+  #urunler .product-media:hover:not(.is-touch-preview-active) .card-img-top,
+  #urunler .product-media:focus-within:not(.is-touch-preview-active) .card-img-top {
+    filter: none;
+  }
+}
+
 /* Final overrides: image-only modal experience */
 .product-fullscreen-modal {
   z-index: 2000 !important;
