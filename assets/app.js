@@ -12,7 +12,7 @@
     const statsSectionEl = document.getElementById('sayaclar');
     const productsSectionEl = document.getElementById('urunler');
     const navLinks = Array.from(document.querySelectorAll('a.nav-link[href^="#"]'));
-    const i18nNodes = Array.from(document.querySelectorAll('[data-i18n]'));
+    const getI18nNodes = () => Array.from(document.querySelectorAll('[data-i18n]'));
     const languageButtons = Array.from(document.querySelectorAll('[data-lang-btn]'));
     const heroCarousel = document.getElementById('heroCarousel');
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
@@ -328,7 +328,7 @@
     const applyLanguage = (languageCode) => {
       const dictionary = i18nDictionary[languageCode] || i18nDictionary.tr;
       document.documentElement.lang = languageCode;
-      i18nNodes.forEach((node) => {
+      getI18nNodes().forEach((node) => {
         const key = node.getAttribute('data-i18n');
         if (!key || !dictionary[key]) return;
         const translatedText = dictionary[key];
@@ -888,6 +888,28 @@
     let testimonialMarqueeFrame = 0;
     let testimonialMarqueeLastTime = 0;
     let isTestimonialMarqueeVisible = false;
+
+    const prepareTestimonialMarqueeTracks = () => {
+      testimonialTracks.forEach((track) => {
+        if (track.dataset.marqueeCloned === 'true') return;
+
+        const originalCards = Array.from(
+          track.querySelectorAll('.testimonial-card:not([aria-hidden="true"])')
+        );
+
+        originalCards.forEach((card) => {
+          const clone = card.cloneNode(true);
+          clone.setAttribute('aria-hidden', 'true');
+          clone.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
+          track.append(clone);
+        });
+
+        track.dataset.marqueeCloned = 'true';
+      });
+    };
+
+    prepareTestimonialMarqueeTracks();
+
     const testimonialMarqueeState = testimonialTracks.map((track, index) => ({
       track,
       offsetPx: 0,
@@ -1101,48 +1123,17 @@
       if (!sectionEl) return false;
 
       const rect = sectionEl.getBoundingClientRect();
-      const sectionStyles = window.getComputedStyle(sectionEl);
-      const primaryCompleteAtRaw = Number.parseFloat(
-        sectionStyles.getPropertyValue('--stats-title-primary-complete-at')
-      );
-      const secondaryStartAtRaw = Number.parseFloat(
-        sectionStyles.getPropertyValue('--stats-title-secondary-start-at')
-      );
-      const revealDelayRaw = Number.parseFloat(
-        sectionStyles.getPropertyValue('--stats-title-secondary-delay')
-      );
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
       const start = viewportHeight * 0.88;
       const end = viewportHeight * 0.22;
       const progress = clamp((start - rect.top) / Math.max(start - end, 1), 0, 1);
-      const hasPrimaryPhaseSplit = Number.isFinite(primaryCompleteAtRaw);
-      const primaryCompleteAt = hasPrimaryPhaseSplit ? clamp(primaryCompleteAtRaw, 0.05, 0.95) : 1;
-      const secondaryStartAt = hasPrimaryPhaseSplit
-        ? clamp(
-            Number.isFinite(secondaryStartAtRaw) ? secondaryStartAtRaw : primaryCompleteAt,
-            0,
-            primaryCompleteAt
-          )
-        : 0;
-      const revealDelay = Number.isFinite(revealDelayRaw) ? clamp(revealDelayRaw, 0, 0.95) : 0.16;
-      const lineOneProgress = hasPrimaryPhaseSplit
-        ? clamp(progress / primaryCompleteAt, 0, 1)
-        : progress;
-      const lineTwoProgress = hasPrimaryPhaseSplit
-        ? clamp((progress - secondaryStartAt) / Math.max(1 - secondaryStartAt, 0.01), 0, 1)
-        : clamp((progress - revealDelay) / Math.max(1 - revealDelay, 0.01), 0, 1);
-      const nextRevealOne = `${(lineOneProgress * 100).toFixed(2)}%`;
-      const nextRevealTwo = `${(lineTwoProgress * 100).toFixed(2)}%`;
+      const nextRevealOne = `${(progress * 100).toFixed(2)}%`;
 
-      if (
-        sectionEl.style.getPropertyValue('--stats-title-reveal-1') === nextRevealOne &&
-        sectionEl.style.getPropertyValue('--stats-title-reveal-2') === nextRevealTwo
-      ) {
+      if (sectionEl.style.getPropertyValue('--stats-title-reveal-1') === nextRevealOne) {
         return progress > 0 && progress < 1;
       }
 
       sectionEl.style.setProperty('--stats-title-reveal-1', nextRevealOne);
-      sectionEl.style.setProperty('--stats-title-reveal-2', nextRevealTwo);
       return progress > 0 && progress < 1;
     };
 
@@ -1602,7 +1593,7 @@
       if (previewTriggerEl.dataset.iconReady !== 'true') {
         previewTriggerEl.innerHTML = `
           <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
-            <circle class="preview-trigger-disc" cx="28" cy="28" r="26" />
+            <circle class="preview-trigger-disc" cx="28" cy="28" r="28" />
             <g class="preview-trigger-mark">
               <path class="corner-segment corner-tl" d="M24 17h-4a3 3 0 0 0-3 3v4" />
               <path class="corner-segment corner-tr" d="M32 17h4a3 3 0 0 1 3 3v4" />
@@ -1754,7 +1745,7 @@
           aria-label="${carouselName} için önceki ürün"
         >
           <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
-            <circle class="control-icon-disc" cx="28" cy="28" r="26" />
+            <circle class="control-icon-disc" cx="28" cy="28" r="28" />
             <path class="control-icon-mark" d="m31 36-8-8 8-8" />
           </svg>
         </button>
@@ -1764,7 +1755,7 @@
           aria-label="${carouselName} için sonraki ürün"
         >
           <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
-            <circle class="control-icon-disc" cx="28" cy="28" r="26" />
+            <circle class="control-icon-disc" cx="28" cy="28" r="28" />
             <path class="control-icon-mark" d="m25 36 8-8-8-8" />
           </svg>
         </button>
@@ -1792,100 +1783,6 @@
 
       prevButton?.addEventListener('click', (event) => onControlClick(event, -1));
       nextButton?.addEventListener('click', (event) => onControlClick(event, 1));
-    };
-
-    const syncProductPreviewAlignment = () => {
-      let compactPreviewBottomInset = null;
-
-      productCarouselsState.forEach(({ carouselEl }) => {
-        if (isProductMobileViewport()) {
-          carouselEl.querySelectorAll('.product-media').forEach((mediaEl) => {
-            mediaEl.style.removeProperty('--product-preview-trigger-y');
-          });
-          return;
-        }
-
-        const controlsEl = carouselEl.querySelector('.product-carousel-controls');
-        const controlEl = carouselEl.querySelector('.product-carousel-control');
-        const controlRect = controlEl?.getBoundingClientRect();
-        const hasVisibleControls =
-          controlsEl instanceof HTMLElement &&
-          controlEl instanceof HTMLElement &&
-          window.getComputedStyle(controlsEl).display !== 'none' &&
-          window.getComputedStyle(controlEl).display !== 'none' &&
-          controlRect.width > 0 &&
-          controlRect.height > 0;
-        if (!hasVisibleControls) {
-          carouselEl.querySelectorAll('.product-media').forEach((mediaEl) => {
-            mediaEl.style.removeProperty('--product-preview-trigger-y');
-          });
-          return;
-        }
-
-        const controlCenterY = controlRect.top + controlRect.height / 2;
-        if (carouselEl.classList.contains('product-carousel-compact')) {
-          const referenceMediaEl = Array.from(carouselEl.querySelectorAll('.product-media')).find(
-            (mediaEl) => {
-              const mediaRect = mediaEl.getBoundingClientRect();
-              return mediaRect.height > 0;
-            }
-          );
-          const referenceTriggerEl = referenceMediaEl?.querySelector('.product-preview-trigger');
-          if (referenceMediaEl && referenceTriggerEl instanceof HTMLElement) {
-            const referenceMediaRect = referenceMediaEl.getBoundingClientRect();
-            const referenceTriggerRect = referenceTriggerEl.getBoundingClientRect();
-            const referenceTriggerHalfHeight = (referenceTriggerRect.height || 48) / 2;
-            const referenceTargetY = controlCenterY - referenceMediaRect.top;
-            const referenceClampedTargetY = Math.min(
-              Math.max(referenceTargetY, referenceTriggerHalfHeight),
-              referenceMediaRect.height - referenceTriggerHalfHeight
-            );
-            compactPreviewBottomInset =
-              referenceMediaRect.height - (referenceClampedTargetY + referenceTriggerHalfHeight);
-          }
-        }
-      });
-
-      productCarouselsState.forEach(({ carouselEl }) => {
-        if (isProductMobileViewport()) return;
-
-        const controlsEl = carouselEl.querySelector('.product-carousel-controls');
-        const controlEl = carouselEl.querySelector('.product-carousel-control');
-        const controlRect = controlEl?.getBoundingClientRect();
-        const hasVisibleControls =
-          controlsEl instanceof HTMLElement &&
-          controlEl instanceof HTMLElement &&
-          window.getComputedStyle(controlsEl).display !== 'none' &&
-          window.getComputedStyle(controlEl).display !== 'none' &&
-          controlRect.width > 0 &&
-          controlRect.height > 0;
-        if (!hasVisibleControls) return;
-
-        const controlCenterY = controlRect.top + controlRect.height / 2;
-        const alignToCompactBottomInset =
-          compactPreviewBottomInset !== null &&
-          !carouselEl.classList.contains('product-carousel-compact');
-        const mediaEls = Array.from(carouselEl.querySelectorAll('.product-media'));
-        mediaEls.forEach((mediaEl) => {
-          const triggerEl = mediaEl.querySelector('.product-preview-trigger');
-          const mediaRect = mediaEl.getBoundingClientRect();
-          if (!mediaRect.height || !(triggerEl instanceof HTMLElement)) {
-            mediaEl.style.removeProperty('--product-preview-trigger-y');
-            return;
-          }
-
-          const triggerRect = triggerEl.getBoundingClientRect();
-          const triggerHalfHeight = (triggerRect.height || 48) / 2;
-          const targetY = alignToCompactBottomInset
-            ? mediaRect.height - compactPreviewBottomInset - triggerHalfHeight
-            : controlCenterY - mediaRect.top;
-          const clampedTargetY = Math.min(
-            Math.max(targetY, triggerHalfHeight),
-            mediaRect.height - triggerHalfHeight
-          );
-          mediaEl.style.setProperty('--product-preview-trigger-y', `${clampedTargetY}px`);
-        });
-      });
     };
 
     const initProductSwiper = (slider) => {
@@ -1922,19 +1819,15 @@
         on: {
           init() {
             syncProductCardInteractivity();
-            syncProductPreviewAlignment();
           },
           slideChange() {
             primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
-            syncProductPreviewAlignment();
           },
           breakpoint() {
             syncProductCardInteractivity();
-            syncProductPreviewAlignment();
           },
           resize() {
             syncProductCardInteractivity();
-            syncProductPreviewAlignment();
           }
         }
       });
@@ -2048,7 +1941,6 @@
       });
 
       syncProductCardInteractivity();
-      syncProductPreviewAlignment();
     };
 
     const moveProductCarousel = (slider, direction) => {
@@ -2090,7 +1982,6 @@
           ensureProductPreviewTrigger(cardEl);
         });
       });
-      syncProductPreviewAlignment();
     };
 
     const getProductPreviewData = (cardEl) => {
@@ -2182,8 +2073,8 @@
         const zoomIconEl = productFullscreenZoomEl.querySelector('svg');
         if (zoomIconEl) {
           zoomIconEl.innerHTML = productModalImageZoomed
-            ? '<circle class="control-icon-disc" cx="28" cy="28" r="26" /><g class="control-icon-mark" transform="translate(16 16)"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M7 10h6" /></g>'
-            : '<circle class="control-icon-disc" cx="28" cy="28" r="26" /><g class="control-icon-mark" transform="translate(16 16)"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M10 7v6" /><path d="M7 10h6" /></g>';
+            ? '<circle class="control-icon-disc" cx="28" cy="28" r="28" /><g class="control-icon-mark" transform="translate(16 16)"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M7 10h6" /></g>'
+            : '<circle class="control-icon-disc" cx="28" cy="28" r="28" /><g class="control-icon-mark" transform="translate(16 16)"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M10 7v6" /><path d="M7 10h6" /></g>';
         }
       }
       if (!productModalImageZoomed) {
@@ -2301,18 +2192,64 @@
     let productTouchPreviewMediaEl = null;
     let productTouchPreviewStartX = 0;
     let productTouchPreviewStartY = 0;
+    let productTouchPreviewStartScrollY = window.scrollY;
     let productTouchPreviewDidScroll = false;
     let productTouchPreviewSuppressUntil = 0;
+    let productTouchPreviewLastScrollAt = 0;
     const PRODUCT_TOUCH_PREVIEW_MOVE_THRESHOLD_PX = 10;
+    const PRODUCT_TOUCH_PREVIEW_SCROLL_THRESHOLD_PX = 2;
+    const PRODUCT_TOUCH_PREVIEW_SCROLL_STABLE_MS = 220;
+    const PRODUCT_TOUCH_PREVIEW_SUPPRESS_MS = 420;
 
     const setProductTouchPreviewState = (mediaEl, active) => {
       if (!(mediaEl instanceof HTMLElement)) return;
+      window.clearTimeout(productTouchPreviewTimer);
+      productTouchPreviewTimer = null;
+
+      if (active) {
+        document.querySelectorAll('.product-media.is-touch-preview-active').forEach((activeEl) => {
+          if (activeEl !== mediaEl) {
+            activeEl.classList.remove('is-touch-preview-active');
+          }
+        });
+      }
+
       mediaEl.classList.toggle('is-touch-preview-active', active);
       if (!active) return;
-      window.clearTimeout(productTouchPreviewTimer);
       productTouchPreviewTimer = window.setTimeout(() => {
-        mediaEl.classList.remove('is-touch-preview-active');
+        setProductTouchPreviewState(mediaEl, false);
       }, 1800);
+    };
+
+    const clearProductTouchPreviewState = () => {
+      window.clearTimeout(productTouchPreviewTimer);
+      productTouchPreviewTimer = null;
+      document.querySelectorAll('.product-media.is-touch-preview-active').forEach((mediaEl) => {
+        mediaEl.classList.remove('is-touch-preview-active');
+      });
+    };
+
+    const suppressProductTouchPreview = (durationMs = PRODUCT_TOUCH_PREVIEW_SUPPRESS_MS) => {
+      productTouchPreviewSuppressUntil = Math.max(
+        productTouchPreviewSuppressUntil,
+        performance.now() + durationMs
+      );
+    };
+
+    const isProductTouchPreviewPageStable = () =>
+      performance.now() - productTouchPreviewLastScrollAt >= PRODUCT_TOUCH_PREVIEW_SCROLL_STABLE_MS;
+
+    const didProductTouchPreviewPageMove = () =>
+      Math.abs(window.scrollY - productTouchPreviewStartScrollY) >
+      PRODUCT_TOUCH_PREVIEW_SCROLL_THRESHOLD_PX;
+
+    const noteProductTouchPreviewPageMove = () => {
+      productTouchPreviewLastScrollAt = performance.now();
+      if (productTouchPreviewPointerId !== null) {
+        productTouchPreviewDidScroll = true;
+        suppressProductTouchPreview();
+      }
+      clearProductTouchPreviewState();
     };
 
     const clearProductTouchPreviewIntent = () => {
@@ -2325,6 +2262,8 @@
       if (!(mediaEl instanceof HTMLElement)) return false;
       const carouselEl = mediaEl.closest('.product-carousel');
       if (!carouselEl) return false;
+      if (productTouchPreviewSuppressUntil > performance.now()) return false;
+      if (!isProductTouchPreviewPageStable()) return false;
       const slider = getProductSliderState(carouselEl);
       return !slider || slider.suppressClickUntil <= performance.now();
     };
@@ -2348,7 +2287,6 @@
       lockPageForProductModal();
       lenis?.stop();
       stopProductCarousels();
-      productFullscreenModalEl.classList.remove('is-dismiss-closing');
       productFullscreenModalEl.classList.remove('is-closing');
       productFullscreenModalEl.classList.remove('is-opening');
       void productFullscreenModalEl.offsetWidth;
@@ -2398,7 +2336,6 @@
         lenis.scrollTo(modalScrollY, { immediate: true, force: true });
       }
       lenis?.start();
-      productFullscreenModalEl.classList.remove('is-dismiss-closing');
       productFullscreenModalEl.classList.remove('is-closing');
       productFullscreenModalEl.classList.remove('is-opening');
       window.requestAnimationFrame(() => {
@@ -2420,7 +2357,6 @@
             modalOpenAnimationTimer = null;
           }
           window.clearTimeout(modalCloseAnimationTimer);
-          productFullscreenModalEl.classList.remove('is-dismiss-closing');
           productFullscreenModalEl.classList.remove('is-opening');
           productFullscreenModalEl.classList.remove('is-closing');
           void productFullscreenModalEl.offsetWidth;
@@ -2452,16 +2388,31 @@
       handleProductCardOpen(event, cardEl);
     });
 
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!isProductTouchViewport()) return;
+        noteProductTouchPreviewPageMove();
+      },
+      { passive: true }
+    );
+
     document.addEventListener(
       'pointerdown',
       (event) => {
         if (!isProductTouchViewport() || event.pointerType === 'mouse') return;
         const mediaEl = event.target.closest?.('.product-media');
         if (!mediaEl?.closest('.product-carousel')) return;
+        if (!isProductTouchPreviewPageStable()) {
+          suppressProductTouchPreview();
+          clearProductTouchPreviewState();
+          return;
+        }
         productTouchPreviewPointerId = event.pointerId;
         productTouchPreviewMediaEl = mediaEl;
         productTouchPreviewStartX = event.clientX;
         productTouchPreviewStartY = event.clientY;
+        productTouchPreviewStartScrollY = window.scrollY;
         productTouchPreviewDidScroll = false;
       },
       { passive: true }
@@ -2474,11 +2425,13 @@
           return;
         const deltaX = event.clientX - productTouchPreviewStartX;
         const deltaY = event.clientY - productTouchPreviewStartY;
-        if (Math.hypot(deltaX, deltaY) < PRODUCT_TOUCH_PREVIEW_MOVE_THRESHOLD_PX) return;
+        const movedEnough = Math.hypot(deltaX, deltaY) >= PRODUCT_TOUCH_PREVIEW_MOVE_THRESHOLD_PX;
+        const scrolledEnough = didProductTouchPreviewPageMove();
+        if (!movedEnough && !scrolledEnough) return;
         productTouchPreviewDidScroll = true;
-        productTouchPreviewSuppressUntil = performance.now() + 320;
+        suppressProductTouchPreview();
         if (productTouchPreviewMediaEl instanceof HTMLElement) {
-          productTouchPreviewMediaEl.classList.remove('is-touch-preview-active');
+          setProductTouchPreviewState(productTouchPreviewMediaEl, false);
         }
       },
       { passive: true }
@@ -2490,7 +2443,12 @@
         if (event.pointerId !== productTouchPreviewPointerId) return;
         const mediaEl = productTouchPreviewMediaEl;
         const shouldActivate =
-          !productTouchPreviewDidScroll && canActivateProductTouchPreview(mediaEl);
+          !productTouchPreviewDidScroll &&
+          !didProductTouchPreviewPageMove() &&
+          canActivateProductTouchPreview(mediaEl);
+        if (productTouchPreviewDidScroll || didProductTouchPreviewPageMove()) {
+          suppressProductTouchPreview();
+        }
         clearProductTouchPreviewIntent();
         if (shouldActivate) {
           setProductTouchPreviewState(mediaEl, true);
@@ -2499,19 +2457,33 @@
       { passive: true }
     );
 
-    document.addEventListener('pointercancel', clearProductTouchPreviewIntent, {
-      passive: true
-    });
+    document.addEventListener(
+      'pointercancel',
+      () => {
+        suppressProductTouchPreview();
+        clearProductTouchPreviewIntent();
+      },
+      {
+        passive: true
+      }
+    );
 
     document.addEventListener('click', (event) => {
       if (!isProductTouchViewport()) return;
       if (event.target.closest('.product-preview-trigger')) return;
       const mediaEl = event.target.closest?.('.product-media');
-      if (!mediaEl) return;
+      if (!mediaEl) {
+        clearProductTouchPreviewState();
+        return;
+      }
       const cardEl = mediaEl.closest('.product-card');
       const carouselEl = mediaEl.closest('.product-carousel');
-      if (!cardEl || !carouselEl) return;
-      if (productTouchPreviewSuppressUntil > performance.now()) return;
+      if (!cardEl || !carouselEl) {
+        clearProductTouchPreviewState();
+        return;
+      }
+      if (productTouchPreviewSuppressUntil > performance.now() || !isProductTouchPreviewPageStable())
+        return;
 
       const slider = getProductSliderState(carouselEl);
       if (slider && slider.suppressClickUntil > performance.now()) return;
