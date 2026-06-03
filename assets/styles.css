@@ -28,11 +28,12 @@
   --modal-share-link-step-delay: 90ms;
   --modal-share-link-slide-distance: var(--product-preview-trigger-slide-distance);
   --section-round-visual-size: 12rem;
+  --product-card-content-gap: var(--space-4);
   --preview-overlay-motion-duration: var(--product-card-hover-duration);
   --preview-overlay-motion-ease: var(--preview-icon-motion-ease);
   --hero-pink-rgb: 246, 207, 224;
   --hero-blue-rgb: 207, 230, 251;
-  --product-old-price-color: #c86e76;
+  --product-price-old-color: #c86e76;
   --circle-strong-alpha: 0.78;
   --circle-mid-alpha: 0.4;
   --circle-fade-alpha: 0.08;
@@ -1147,6 +1148,7 @@ main > section {
   position: relative;
   --journey-pink: #d78fb1;
   --journey-blue: #7b9fbe;
+  --journey-step-size: var(--text-section-title);
   background:
     radial-gradient(circle at 18% 22%, rgba(215, 143, 177, 0.12), transparent 34%),
     radial-gradient(circle at 84% 12%, rgba(123, 159, 190, 0.16), transparent 30%),
@@ -1328,8 +1330,8 @@ main > section {
   justify-content: center;
   text-align: center;
   line-height: 1.24;
-  margin-top: 1.85rem;
-  margin-bottom: var(--space-3);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2);
   color: #273242 !important;
   isolation: isolate;
 }
@@ -1343,11 +1345,11 @@ main > section {
     calc(-50% + var(--journey-step-optical-x, 0px)),
     calc(-50% + var(--journey-step-optical-y, -1px))
   );
-  font-size: clamp(4.2rem, 7vw, 6.4rem);
+  font-size: var(--journey-step-size);
   font-weight: 700;
   font-family: var(--font-primary);
-  line-height: 0.82;
-  letter-spacing: -0.08em;
+  line-height: var(--heading-line-height);
+  letter-spacing: var(--heading-letter-spacing);
   color: var(--journey-step-color, rgba(43, 52, 66, 0.1));
   text-shadow: 0 14px 28px rgba(104, 121, 145, 0.08);
   z-index: -1;
@@ -1422,18 +1424,21 @@ main > section:not([id]) > .container > h2 {
   color: var(--preview-contrast) !important;
 }
 
-#hakkimizda h3 {
+.component-title {
+  margin-top: var(--space-4) !important;
+  margin-bottom: var(--space-2) !important;
+  font-family: var(--font-primary);
+  font-size: var(--text-subheading) !important;
+  font-weight: 400 !important;
+  letter-spacing: var(--heading-letter-spacing) !important;
+  line-height: var(--heading-line-height) !important;
+}
+
+#hakkimizda .component-title {
   color: var(--preview-contrast) !important;
 }
 
-#hakkimizda h3,
-#urun-yolculugu .journey-card h3,
-#urunler .product-carousel-group > h3,
-#sayaclar .card-body > p:last-child,
-#iletisim .contact-feature-item h3,
-#sss .accordion-button,
-#sss .accordion-button:not(.collapsed),
-#yorumlar .testimonial-card h3 {
+#sayaclar .card-body > p:last-child {
   font-family: var(--font-primary);
   font-size: var(--text-subheading) !important;
   font-weight: 400 !important;
@@ -1454,7 +1459,7 @@ main > section:not([id]) > .container > h2 {
 #urunler p.lead,
 #sss p.lead,
 #sss .accordion-body,
-#iletisim .section-title + p {
+#iletisim p.lead {
   font-family: var(--font-description);
   font-size: var(--text-description) !important;
   line-height: var(--content-line-height);
@@ -1473,7 +1478,7 @@ main > section:not([id]) > .container > h2 {
 #hakkimizda p.lead,
 #urunler p.lead,
 #sss p.lead,
-#iletisim .section-title + p {
+#iletisim p.lead {
   width: 100%;
   max-width: none;
   text-align: left;
@@ -1488,19 +1493,8 @@ main > section:not([id]) > .container > h2 {
   z-index: 1;
 }
 
-.card-title,
-#yorumlar h3 {
-  margin-top: var(--space-2) !important;
-  margin-bottom: var(--space-2) !important;
-}
-
-.card-title {
-  color: var(--preview-contrast);
-}
-
-#urunler .product-carousel-group > h3,
-#yorumlar h3,
-#sss .accordion-button {
+#urunler .product-carousel-group > .component-title,
+#yorumlar .component-title {
   color: var(--preview-contrast) !important;
   letter-spacing: var(--heading-letter-spacing);
 }
@@ -1825,8 +1819,8 @@ main > section:not([id]) > .container > h2 {
 
 #sayaclar .stat-counter {
   color: var(--preview-contrast);
-  margin-top: 1.85rem;
-  margin-bottom: var(--space-3) !important;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2) !important;
 }
 
 #sayaclar .card-body > p:last-child {
@@ -2753,15 +2747,13 @@ main > section:not([id]) > .container > h2 {
     transform: translate3d(0, 0, 0) scale(1);
   }
 
-  .product-media.is-touch-preview-active::after,
-  .product-media:focus-within::after {
+  .product-media.is-touch-preview-active::after {
     opacity: 1;
     transition: opacity var(--preview-overlay-motion-duration) var(--preview-overlay-motion-ease);
     transition-delay: 0ms;
   }
 
-  .product-media.is-touch-preview-active .product-preview-trigger,
-  .product-media:focus-within .product-preview-trigger {
+  .product-media.is-touch-preview-active .product-preview-trigger {
     opacity: 1;
     pointer-events: auto;
     transform: translate3d(-50%, -50%, 0) scale(1);
@@ -2769,8 +2761,7 @@ main > section:not([id]) > .container > h2 {
     transition-delay: 0ms;
   }
 
-  .product-media.is-touch-preview-active .card-img-top,
-  .product-media:focus-within .card-img-top {
+  .product-media.is-touch-preview-active .card-img-top {
     filter: brightness(0.9) saturate(0.95);
     transition: filter var(--preview-icon-motion-duration) var(--preview-icon-motion-ease);
     transition-delay: 0ms;
@@ -2822,14 +2813,14 @@ main > section:not([id]) > .container > h2 {
 .product-card .card-body {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: stretch;
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
   margin-top: 0;
   padding: var(--space-3);
-  gap: 0;
+  gap: var(--product-card-content-gap);
   position: relative;
   z-index: 2;
 }
@@ -2876,10 +2867,10 @@ main > section:not([id]) > .container > h2 {
   height: auto;
   min-height: 0;
   align-self: stretch;
-  justify-content: flex-start;
+  justify-content: center;
   box-sizing: border-box;
   overflow: hidden;
-  padding: calc(var(--space-3) + 8px) 0 calc(var(--space-3) - 8px);
+  padding: var(--space-3) 0;
 }
 
 /* Hard lock: compact cards must use exactly the same width for image and body blocks. */
@@ -2922,32 +2913,29 @@ main > section:not([id]) > .container > h2 {
 }
 
 .product-carousel-compact .product-meta-row {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
-  gap: 0.26rem;
+  gap: var(--product-card-content-gap);
   width: 100%;
 }
 
-.product-carousel-compact .product-meta-row .card-title {
+.product-carousel-compact .product-meta-row .product-price-current {
   font-size: var(--text-body-lg);
 }
 
-.product-carousel-compact .product-meta-row h3.card-title {
-  order: 1;
+.product-carousel-compact .product-meta-row .product-title {
   font-size: var(--text-subheading);
   text-align: left;
 }
 
 .product-carousel-compact .product-model {
-  order: 2;
   font-size: 0.82rem;
   letter-spacing: var(--heading-letter-spacing);
   text-align: left;
 }
 
-.product-carousel-compact .product-meta-row p.card-title {
-  order: 3;
+.product-carousel-compact .product-meta-row .product-price-current {
   text-align: left;
   justify-self: auto;
   width: 100%;
@@ -2972,21 +2960,21 @@ main > section:not([id]) > .container > h2 {
 
 .product-meta-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  column-gap: var(--space-2);
-  row-gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--product-card-content-gap);
   width: 100%;
 }
 
-#urunler .product-meta-row .card-title {
+#urunler .product-meta-row .product-title,
+#urunler .product-meta-row .product-price-current {
   font-size: var(--text-body-lg);
   font-weight: var(--text-body-weight);
   line-height: 1;
-  margin: 0;
+  margin: 0 !important;
 }
 
-#urunler .product-meta-row h3.card-title {
+#urunler .product-meta-row .product-title {
   grid-column: 1;
   grid-row: 1;
   font-family: var(--font-primary);
@@ -3014,8 +3002,8 @@ main > section:not([id]) > .container > h2 {
   line-height: 1.35;
 }
 
-#urunler .product-meta-row .product-old-price {
-  justify-self: end;
+#urunler .product-meta-row .product-price-old {
+  justify-self: start;
 }
 
 .product-carousel-featured .product-card {
@@ -3049,17 +3037,17 @@ main > section:not([id]) > .container > h2 {
 }
 
 .product-carousel-featured .product-rating {
-  margin-bottom: 1.2rem;
+  margin-bottom: 0;
 }
 
 .product-carousel-featured .product-meta-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: flex-start;
-  gap: 0.95rem;
+  gap: var(--product-card-content-gap);
 }
 
-#urunler .product-carousel-featured .product-meta-row h3.card-title {
+#urunler .product-carousel-featured .product-meta-row .product-title {
   grid-column: 1;
   grid-row: 1;
   font-size: var(--text-subheading) !important;
@@ -3075,27 +3063,27 @@ main > section:not([id]) > .container > h2 {
   gap: 0.7rem;
 }
 
-.product-price-row .card-title {
+.product-price-row .product-price-current {
   order: 0;
 }
 
-.product-price-row .product-old-price {
+.product-price-row .product-price-old {
   order: 1;
 }
 
 #urunler .product-carousel-featured .product-price-row {
   grid-column: 1;
   grid-row: 4;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
-#urunler .product-carousel-featured .product-price-row .product-old-price {
+#urunler .product-carousel-featured .product-price-row .product-price-old {
   order: 1;
 }
 
-#urunler .product-carousel-featured .product-price-row .card-title {
+#urunler .product-carousel-featured .product-price-row .product-price-current {
   order: 0;
-  text-align: right;
+  text-align: left;
 }
 
 #urunler .product-carousel-featured .product-description {
@@ -3120,20 +3108,20 @@ main > section:not([id]) > .container > h2 {
   color: var(--description-color) !important;
 }
 
-#urunler .product-carousel-featured .product-old-price {
+#urunler .product-carousel-featured .product-price-old {
   justify-self: start;
   font-size: 0.92rem;
   text-align: left;
-  color: var(--product-old-price-color) !important;
+  color: var(--product-price-old-color) !important;
 }
 
-.product-old-price {
+.product-price-old {
   grid-column: 2;
   grid-row: 2;
   margin: 0;
   justify-self: end;
   text-align: right;
-  color: var(--product-old-price-color) !important;
+  color: var(--product-price-old-color) !important;
 }
 
 .product-rating {
@@ -3195,7 +3183,8 @@ main > section:not([id]) > .container > h2 {
 
 /* Footer */
 .site-footer {
-  padding: clamp(2.75rem, 4vw, 4rem) 0;
+  --footer-pad-y: clamp(2.75rem, 4vw, 4rem);
+  padding: var(--footer-pad-y) 0;
   background: linear-gradient(
     115deg,
     rgba(248, 242, 247, 0.92) 0%,
@@ -3208,17 +3197,138 @@ main > section:not([id]) > .container > h2 {
   position: relative;
 }
 
+.footer-main {
+  display: grid;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  margin-bottom: var(--footer-pad-y);
+  border-bottom: 1px solid rgba(43, 52, 66, 0.1);
+}
+
+.footer-brand-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(10rem, 0.7fr) minmax(12rem, 0.9fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.footer-brand {
+  width: fit-content;
+  color: var(--preview-contrast);
+  font-family: var(--font-primary);
+  font-size: clamp(1.55rem, 2.1vw, 2rem);
+  font-weight: 700;
+  line-height: var(--heading-line-height);
+  letter-spacing: var(--heading-letter-spacing);
+  text-decoration: none;
+}
+
+.footer-brand:hover,
+.footer-brand:focus-visible,
+.footer-nav a:hover,
+.footer-nav a:focus-visible,
+.footer-social-links a:hover,
+.footer-social-links a:focus-visible,
+.footer-instagram-grid a:hover,
+.footer-instagram-grid a:focus-visible {
+  color: var(--preview-contrast);
+}
+
+.footer-brand:focus-visible,
+.footer-nav a:focus-visible,
+.footer-social-links a:focus-visible,
+.footer-instagram-grid a:focus-visible {
+  outline: 2px solid rgba(43, 52, 66, 0.28);
+  outline-offset: 4px;
+}
+
+.footer-nav,
+.footer-social-links {
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+}
+
+.footer-nav a,
+.footer-social-links a {
+  width: fit-content;
+  color: var(--description-color);
+  font-family: var(--font-description);
+  font-size: var(--text-description);
+  font-weight: var(--text-body-weight);
+  line-height: var(--content-line-height);
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+.footer-instagram {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.footer-instagram-title {
+  margin: 0;
+  color: var(--description-color);
+  font-family: var(--font-description);
+  font-size: var(--text-description);
+  font-weight: var(--text-body-weight);
+  line-height: var(--content-line-height);
+  letter-spacing: 0;
+}
+
+.footer-instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  max-width: 12rem;
+}
+
+.footer-instagram-grid a {
+  display: block;
+  aspect-ratio: 1 / 1;
+  border-radius: 0;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.58);
+  transform: translateZ(0);
+}
+
+.footer-instagram-grid img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition:
+    transform var(--preview-icon-motion-duration) var(--preview-icon-motion-ease),
+    filter var(--preview-icon-motion-duration) var(--preview-icon-motion-ease);
+}
+
+.footer-instagram-grid a:hover img,
+.footer-instagram-grid a:focus-visible img {
+  filter: brightness(0.96) saturate(1.04);
+  transform: scale(1.04);
+}
+
 .footer-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.85rem;
   flex-wrap: wrap;
+  min-height: var(--icon-size-control);
 }
 
 .footer-copy {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-description);
   color: var(--description-color);
+  min-height: var(--icon-size-control);
 }
 
 .footer-signature {
@@ -3226,6 +3336,7 @@ main > section:not([id]) > .container > h2 {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
+  min-height: var(--icon-size-control);
   color: var(--description-color) !important;
 }
 
@@ -3323,6 +3434,10 @@ main > section:not([id]) > .container > h2 {
     font-size: 2.35rem;
   }
 
+  .journey-section {
+    --journey-step-size: 2.35rem;
+  }
+
   .stats-title {
     font-size: 2rem !important;
   }
@@ -3362,6 +3477,10 @@ main > section:not([id]) > .container > h2 {
   :root {
     --mobile-round-control-size: calc(var(--icon-button-size) + 0.9rem);
     --mobile-section-title-size: clamp(1.45rem, 6.2vw, 2.35rem);
+  }
+
+  .journey-section {
+    --journey-step-size: var(--mobile-section-title-size);
   }
 
   main > section {
@@ -3531,7 +3650,7 @@ main > section:not([id]) > .container > h2 {
   }
 
   .journey-card h3::before {
-    font-size: clamp(3.8rem, 16vw, 5.2rem);
+    font-size: var(--journey-step-size);
   }
 
   #hakkimizda h2,
@@ -3608,15 +3727,14 @@ main > section:not([id]) > .container > h2 {
   }
 
   .product-carousel-featured .product-rating {
-    margin-bottom: 1.2rem;
+    margin-bottom: 0;
   }
 
   .product-carousel-featured .product-meta-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: baseline;
-    column-gap: var(--space-2);
-    row-gap: 0.45rem;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: var(--product-card-content-gap);
   }
 
   .product-carousel-compact .product-card {
@@ -3638,7 +3756,7 @@ main > section:not([id]) > .container > h2 {
     height: auto;
     min-height: 0;
     align-self: stretch;
-    justify-content: flex-start;
+    justify-content: center;
     padding-block: var(--space-3);
     padding-inline: 0;
   }
@@ -3647,11 +3765,11 @@ main > section:not([id]) > .container > h2 {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.26rem;
+    gap: var(--product-card-content-gap);
   }
 
-  .product-carousel-compact .product-meta-row h3.card-title,
-  .product-carousel-compact .product-meta-row > p.card-title,
+  .product-carousel-compact .product-meta-row .product-title,
+  .product-carousel-compact .product-meta-row .product-price-current,
   .product-carousel-compact .product-price-row,
   .product-carousel-compact .product-description,
   .product-carousel-compact .product-model {
@@ -3664,37 +3782,38 @@ main > section:not([id]) > .container > h2 {
   }
 
   .product-carousel-compact .product-rating {
-    margin-bottom: 1.2rem;
+    margin-bottom: 0;
   }
 
-  .product-carousel-featured .product-meta-row h3.card-title {
+  .product-carousel-featured .product-meta-row .product-title {
     grid-column: 1;
     grid-row: 1;
     min-width: 0;
   }
 
   .product-carousel-featured .product-price-row {
-    grid-column: 2;
-    grid-row: 1;
-    width: max-content;
-    align-self: baseline;
-    justify-self: end;
+    grid-column: 1;
+    grid-row: 4;
+    width: 100%;
+    align-self: start;
+    justify-self: stretch;
     order: initial;
+    justify-content: flex-start;
   }
 
-  #urunler .product-carousel-featured .product-price-row .product-old-price {
-    order: 0 !important;
-  }
-
-  #urunler .product-carousel-featured .product-price-row .card-title {
+  #urunler .product-carousel-featured .product-price-row .product-price-old {
     order: 1 !important;
   }
 
+  #urunler .product-carousel-featured .product-price-row .product-price-current {
+    order: 0 !important;
+  }
+
   .product-carousel-featured .product-description {
-    grid-column: 2;
-    grid-row: 2;
-    text-align: right;
-    justify-self: end;
+    grid-column: 1;
+    grid-row: 3;
+    text-align: left;
+    justify-self: stretch;
   }
 
   .product-carousel-featured .product-model {
@@ -3703,11 +3822,11 @@ main > section:not([id]) > .container > h2 {
     min-width: 0;
   }
 
-  #urunler .product-carousel-featured .product-meta-row h3.card-title {
+  #urunler .product-carousel-featured .product-meta-row .product-title {
     font-size: var(--text-subheading) !important;
   }
 
-  #urunler .product-carousel-compact .product-meta-row h3.card-title {
+  #urunler .product-carousel-compact .product-meta-row .product-title {
     font-size: var(--text-subheading) !important;
   }
 
@@ -3719,25 +3838,25 @@ main > section:not([id]) > .container > h2 {
   /* Match compact card text flow with featured cards on mobile/tablet. */
   #urunler .product-carousel-compact .product-meta-row {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    align-items: baseline !important;
-    column-gap: var(--space-2) !important;
-    row-gap: 0.45rem !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: var(--product-card-content-gap) !important;
   }
 
-  #urunler .product-carousel-compact .product-meta-row h3.card-title {
+  #urunler .product-carousel-compact .product-meta-row .product-title {
     grid-column: 1 !important;
     grid-row: 1 !important;
     min-width: 0 !important;
   }
 
   #urunler .product-carousel-compact .product-price-row {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    width: max-content !important;
-    align-self: baseline !important;
-    justify-self: end !important;
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    width: 100% !important;
+    align-self: start !important;
+    justify-self: stretch !important;
     order: initial !important;
+    justify-content: flex-start !important;
   }
 
   #urunler .product-carousel-compact .product-model {
@@ -3748,10 +3867,10 @@ main > section:not([id]) > .container > h2 {
   }
 
   #urunler .product-carousel-compact .product-description {
-    grid-column: 2 !important;
-    grid-row: 2 !important;
-    text-align: right !important;
-    justify-self: end !important;
+    grid-column: 1 !important;
+    grid-row: 4 !important;
+    text-align: left !important;
+    justify-self: stretch !important;
     max-width: none !important;
   }
 
@@ -3867,6 +3986,37 @@ main > section:not([id]) > .container > h2 {
   .footer-signature-heart svg {
     width: 100%;
     height: 100%;
+  }
+
+  .footer-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    text-align: center;
+  }
+
+  .footer-brand-row,
+  .footer-social-links,
+  .footer-instagram {
+    justify-content: center;
+    justify-items: center;
+    margin-inline: auto;
+  }
+
+  .footer-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    justify-items: center;
+  }
+
+  .footer-nav {
+    grid-template-columns: repeat(2, max-content);
+    justify-content: center;
+    column-gap: var(--space-4);
+    row-gap: 0.65rem;
+  }
+
+  .footer-instagram-grid {
+    max-width: 13rem;
   }
 
   .footer-bottom {

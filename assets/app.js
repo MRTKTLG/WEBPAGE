@@ -164,6 +164,7 @@
         'contact.feature.instagram.title': 'Mesajla Başlayalım',
         'contact.feature.instagram.body':
           'Aklındaki model, renk veya hediye fikrini Instagram’dan paylaşabilirsin.',
+        'footer.instagramTitle': "Instagram'dan Kareler",
         'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
       },
@@ -284,6 +285,7 @@
         'contact.feature.instagram.title': 'Start with a Message',
         'contact.feature.instagram.body':
           'Share the model, colors, or gift idea you have in mind on Instagram.',
+        'footer.instagramTitle': 'From Instagram',
         'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Designed with love by her husband.'
       }
@@ -1575,7 +1577,7 @@
     const ensureProductPreviewTrigger = (cardEl) => {
       if (!cardEl) return;
 
-      const nameText = cardEl.querySelector('.product-meta-row h3.card-title')?.textContent?.trim();
+      const nameText = cardEl.querySelector('.product-meta-row .product-title')?.textContent?.trim();
       cardEl.removeAttribute('role');
       cardEl.removeAttribute('tabindex');
       cardEl.removeAttribute('aria-label');
@@ -1839,14 +1841,32 @@
 
     const bindProductCarouselSwipe = (slider) => {
       let didMove = false;
+      const suppressSwipePreview = () => {
+        if (!isProductTouchViewport()) return;
+        const transitionMs = Number(slider.swiper?.params?.speed) || 0;
+        const suppressMs = transitionMs + 220;
+        slider.suppressClickUntil = Math.max(slider.suppressClickUntil, performance.now() + suppressMs);
+        slider.carouselEl?.classList.add('is-touch-dragging');
+        window.setTimeout(() => {
+          if (slider.suppressClickUntil > performance.now()) return;
+          slider.carouselEl?.classList.remove('is-touch-dragging');
+        }, suppressMs);
+        window.requestAnimationFrame(() => {
+          clearProductTouchPreviewState();
+          const focusedEl = document.activeElement;
+          if (focusedEl instanceof HTMLElement && focusedEl.closest('.product-carousel')) {
+            focusedEl.blur();
+          }
+        });
+      };
+
       slider.swiper?.on('sliderMove', () => {
         didMove = true;
-        slider.carouselEl?.classList.add('is-touch-dragging');
+        suppressSwipePreview();
       });
       slider.swiper?.on('touchEnd', () => {
         if (didMove) {
-          const transitionMs = Number(slider.swiper?.params?.speed) || 0;
-          slider.suppressClickUntil = performance.now() + transitionMs + 180;
+          suppressSwipePreview();
         } else {
           slider.carouselEl?.classList.remove('is-touch-dragging');
         }
@@ -1987,7 +2007,7 @@
     const getProductPreviewData = (cardEl) => {
       const imageEl = cardEl.querySelector('.card-img-top');
       const name =
-        cardEl.querySelector('.product-meta-row h3.card-title')?.textContent?.trim() ?? '';
+        cardEl.querySelector('.product-meta-row .product-title')?.textContent?.trim() ?? '';
 
       return {
         imageSrc: imageEl?.currentSrc || imageEl?.getAttribute('src') || '',
@@ -2482,11 +2502,19 @@
         clearProductTouchPreviewState();
         return;
       }
-      if (productTouchPreviewSuppressUntil > performance.now() || !isProductTouchPreviewPageStable())
+      if (
+        productTouchPreviewSuppressUntil > performance.now() ||
+        !isProductTouchPreviewPageStable()
+      ) {
+        clearProductTouchPreviewState();
         return;
+      }
 
       const slider = getProductSliderState(carouselEl);
-      if (slider && slider.suppressClickUntil > performance.now()) return;
+      if (slider && slider.suppressClickUntil > performance.now()) {
+        clearProductTouchPreviewState();
+        return;
+      }
 
       event.preventDefault();
       if (canActivateProductTouchPreview(mediaEl)) {
