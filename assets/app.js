@@ -1715,7 +1715,8 @@
           slideCount: slides.length,
           isPausedByInteraction: false,
           suppressClickUntil: 0,
-          controlsLockedUntil: 0
+          controlsLockedUntil: 0,
+          movingTimeoutId: null
         });
       });
     };
@@ -1732,6 +1733,21 @@
 
     const getProductSliderState = (carouselEl) =>
       productCarouselsState.find((slider) => slider.carouselEl === carouselEl) ?? null;
+
+    const setProductCarouselMoving = (slider, moving) => {
+      if (!slider?.carouselEl) return;
+      window.clearTimeout(slider.movingTimeoutId);
+      slider.movingTimeoutId = null;
+      slider.carouselEl.classList.toggle('is-product-carousel-moving', moving);
+      if (moving) {
+        clearProductTouchPreviewState();
+        const speed = Number(slider.swiper?.params?.speed) || 0;
+        slider.movingTimeoutId = window.setTimeout(() => {
+          slider.carouselEl?.classList.remove('is-product-carousel-moving');
+          slider.movingTimeoutId = null;
+        }, speed + 180);
+      }
+    };
 
     const mountProductCarouselControls = (slider) => {
       if (!slider?.carouselEl || slider.carouselEl.querySelector('.product-carousel-controls'))
@@ -1822,8 +1838,15 @@
           init() {
             syncProductCardInteractivity();
           },
+          slideChangeTransitionStart() {
+            setProductCarouselMoving(slider, true);
+            primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 2);
+          },
+          slideChangeTransitionEnd() {
+            setProductCarouselMoving(slider, false);
+          },
           slideChange() {
-            primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
+            primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 2);
           },
           breakpoint() {
             syncProductCardInteractivity();
@@ -1862,6 +1885,7 @@
 
       slider.swiper?.on('sliderMove', () => {
         didMove = true;
+        setProductCarouselMoving(slider, true);
         suppressSwipePreview();
       });
       slider.swiper?.on('touchEnd', () => {
@@ -1969,6 +1993,7 @@
       if (!slider.swiper || slider.slideCount <= 1) return false;
       if (slider.slideCount <= getProductVisibleCount(slider.carouselEl)) return false;
       if (slider.swiper.animating) return false;
+      setProductCarouselMoving(slider, true);
       if (direction < 0) {
         slider.swiper.slidePrev();
       } else {
