@@ -164,7 +164,6 @@
         'contact.feature.instagram.title': 'Mesajla Başlayalım',
         'contact.feature.instagram.body':
           'Aklındaki model, renk veya hediye fikrini Instagram’dan paylaşabilirsin.',
-        'footer.instagramTitle': "Instagram'dan Kareler",
         'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
       },
@@ -285,7 +284,6 @@
         'contact.feature.instagram.title': 'Start with a Message',
         'contact.feature.instagram.body':
           'Share the model, colors, or gift idea you have in mind on Instagram.',
-        'footer.instagramTitle': 'From Instagram',
         'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Designed with love by her husband.'
       }
