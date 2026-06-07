@@ -20,6 +20,7 @@
     const productRatingStars = Array.from(document.querySelectorAll('.product-rating-stars'));
     const footerBrandTextEl = document.querySelector('.footer-brand-marquee-text');
     const footerBrandWordEl = document.querySelector('.footer-brand-marquee-word');
+    const contactFormEl = document.getElementById('contactForm');
 
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
     const documentEl = document.documentElement;
@@ -144,39 +145,31 @@
           'Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.',
         'contact.ghost': 'İrtibat',
         'contact.title': 'İrtibat',
-        'contact.note.dm':
-          'Aklındaki model, renk veya hediye fikrini Instagram’dan paylaşarak başlayabilirsin.',
-        'contact.note.marketplaces.prefix': 'Sana özel tasarım ya da hazır modeller için',
-        'contact.note.marketplaces.between': ' ve ',
-        'contact.note.marketplaces.suffix': ' mağazalarına göz atabilirsin.',
-        'contact.note.shipping':
-          'Siparişler formunu koruyacak şekilde paketlenir ve Türkiye geneline kargolanır.',
-        'contact.note.handmade':
-          'Her ürün el işi özeniyle hazırlanır; detaylar üretime başlamadan birlikte netleştirilir.',
-        'contact.feature.aria': 'İletişim seçenekleri',
-        'contact.feature.shipping.title': 'Özenli Paketleme',
-        'contact.feature.shipping.body':
-          'Ürünler formunu koruyacak şekilde paketlenir ve Türkiye geneline kargolanır.',
-        'contact.feature.custom.title': 'Sana Özel Tasarım',
-        'contact.feature.custom.body':
-          'Renk, boyut ve detayları birlikte netleştirip sana özel bir tasarım hazırlayabilirim.',
-        'contact.feature.market.title': 'Hazır Modeller',
-        'contact.feature.market.body':
-          'Satışa hazır ürünleri Shopier ve Endolu mağazalarından inceleyebilirsin.',
-        'contact.feature.instagram.title': 'Mesajla Başlayalım',
-        'contact.feature.instagram.body':
-          'Aklındaki model, renk veya hediye fikrini Instagram’dan paylaşabilirsin.',
-        'footer.primary.copy':
-          'El emeği amigurumi oyuncaklar, özel tasarımlar ve özenli hediye hazırlıkları.',
-        'footer.social.contact': 'İletişim',
-        'footer.links.title': 'Hızlı Bağlantılar',
-        'footer.links.journey': 'Sipariş Yolculuğu',
-        'footer.order.title': 'Sipariş Bilgisi',
-        'footer.order.copy':
-          'Hazır modeller genellikle 3-6 iş günü içinde hazırlanır. Kişiye özel siparişlerde detaylar üretim öncesinde birlikte netleştirilir.',
-        'footer.order.action': 'Instagram’dan yaz',
-        'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
-        'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
+        'contact.note':
+          'Özel tasarım, hazır ürün veya hediye hazırlığı için mesajını paylaş; detayları üretime başlamadan birlikte netleştirelim.',
+        'contact.form.name.label': 'Ad Soyad',
+        'contact.form.name.placeholder': 'Adını yaz',
+        'contact.form.email.label': 'E-posta',
+        'contact.form.email.placeholder': 'ornek@mail.com',
+        'contact.form.message.label': 'Mesaj',
+        'contact.form.message.placeholder': 'Model, renk, adet veya teslimat beklentini yaz',
+        'contact.form.submit': 'Mesajı Gönder',
+        'contact.form.status.missing': 'Lütfen ad, e-posta ve mesaj alanlarını doldur.',
+        'contact.form.status.ready': 'E-posta taslağı hazırlandı.',
+        'contact.form.mail.subject': 'Nova Crafts iletişim',
+        'contact.form.mail.name': 'Ad Soyad',
+        'contact.form.mail.email': 'E-posta',
+        'contact.form.mail.message': 'Mesaj',
+        'contact.side.custom.title': 'Özel Tasarım',
+        'contact.side.custom.body':
+          'Özel tasarım talepleri için Instagram’dan irtibata geçebilirsin.',
+        'contact.side.custom.action': 'Instagram',
+        'contact.side.shops.title': 'Mağazalar',
+        'contact.side.shops.body':
+          'Hazır ürünleri Shopier ve Endolu mağazalarından inceleyebilirsin.',
+        'footer.copyright': '2026 Nova Crafts - Her hakkı saklıdır.',
+        'footer.signature': 'Eşi tarafından sevgiyle tasarlandı.',
+        'footer.scroll': 'Yukarı kaydır'
       },
       en: {
         'hero.slide1.titleBack': 'Honey',
@@ -272,40 +265,30 @@
           'The yarn, texture, and overall form were far better than I expected. The handmade care was visible in every detail, and it genuinely made me smile when it arrived.',
         'contact.ghost': 'Contact',
         'contact.title': 'Contact',
-        'contact.note.dm':
-          'You can start by sharing the model, colors, or gift idea you have in mind on Instagram.',
-        'contact.note.marketplaces.prefix':
-          'For a made-for-you design or ready-made pieces, you can visit',
-        'contact.note.marketplaces.between': ' and ',
-        'contact.note.marketplaces.suffix': '.',
-        'contact.note.shipping':
-          'Orders are packed to preserve their shape and shipped across Türkiye.',
-        'contact.note.handmade':
-          'Every piece is prepared with handmade care; details are confirmed together before production begins.',
-        'contact.feature.aria': 'Contact options',
-        'contact.feature.shipping.title': 'Careful Packaging',
-        'contact.feature.shipping.body':
-          'Each piece is packed to preserve its shape and shipped across Türkiye.',
-        'contact.feature.custom.title': 'Made for You',
-        'contact.feature.custom.body':
-          'We can refine the colors, size, and details together for a personal design.',
-        'contact.feature.market.title': 'Ready-Made Pieces',
-        'contact.feature.market.body':
+        'contact.note':
+          'Share your message for a custom design, ready piece, or gift preparation; details will be confirmed together before production begins.',
+        'contact.form.name.label': 'Full Name',
+        'contact.form.name.placeholder': 'Write your name',
+        'contact.form.email.label': 'Email',
+        'contact.form.email.placeholder': 'name@mail.com',
+        'contact.form.message.label': 'Message',
+        'contact.form.message.placeholder': 'Write the model, color, quantity, or delivery details',
+        'contact.form.submit': 'Send Message',
+        'contact.form.status.missing': 'Please fill in name, email, and message fields.',
+        'contact.form.status.ready': 'Email draft is ready.',
+        'contact.form.mail.subject': 'Nova Crafts contact',
+        'contact.form.mail.name': 'Full Name',
+        'contact.form.mail.email': 'Email',
+        'contact.form.mail.message': 'Message',
+        'contact.side.custom.title': 'Custom Design',
+        'contact.side.custom.body': 'For custom design requests, you can get in touch on Instagram.',
+        'contact.side.custom.action': 'Instagram',
+        'contact.side.shops.title': 'Shops',
+        'contact.side.shops.body':
           'You can browse ready-made pieces through the Shopier and Endolu shops.',
-        'contact.feature.instagram.title': 'Start with a Message',
-        'contact.feature.instagram.body':
-          'Share the model, colors, or gift idea you have in mind on Instagram.',
-        'footer.primary.copy':
-          'Handmade amigurumi toys, custom designs, and carefully prepared gifts.',
-        'footer.social.contact': 'Contact',
-        'footer.links.title': 'Quick Links',
-        'footer.links.journey': 'Order Journey',
-        'footer.order.title': 'Order Details',
-        'footer.order.copy':
-          'Ready-made models are usually prepared within 3-6 business days. Custom order details are confirmed together before production begins.',
-        'footer.order.action': 'Message on Instagram',
-        'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
-        'footer.signature': 'Designed with love by her husband.'
+        'footer.copyright': '2026 Nova Crafts - All rights reserved.',
+        'footer.signature': 'Designed with love by her spouse.',
+        'footer.scroll': 'Scroll up'
       }
     };
     const getStoredLanguage = () => {
@@ -381,6 +364,51 @@
         window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageCode);
       });
     });
+    const getActiveDictionary = () =>
+      i18nDictionary[document.documentElement.lang] || i18nDictionary.tr;
+    const setupContactForm = () => {
+      if (!(contactFormEl instanceof HTMLFormElement)) return;
+
+      const statusEl = contactFormEl.querySelector('[data-contact-form-status]');
+      const getFieldValue = (fieldName) =>
+        String(new FormData(contactFormEl).get(fieldName) || '').trim();
+
+      contactFormEl.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const dictionary = getActiveDictionary();
+        const name = getFieldValue('name');
+        const email = getFieldValue('email');
+        const message = getFieldValue('message');
+
+        if (!name || !email || !message || !contactFormEl.checkValidity()) {
+          contactFormEl.reportValidity();
+          if (statusEl) {
+            statusEl.textContent = dictionary['contact.form.status.missing'];
+          }
+          return;
+        }
+
+        const recipient = contactFormEl.dataset.contactEmail || 'hello@novacrafts.com';
+        const subject = encodeURIComponent(`${dictionary['contact.form.mail.subject']} - ${name}`);
+        const bodyLines = [
+          `${dictionary['contact.form.mail.name']}: ${name}`,
+          `${dictionary['contact.form.mail.email']}: ${email}`,
+          '',
+          `${dictionary['contact.form.mail.message']}:`,
+          message
+        ];
+
+        if (statusEl) {
+          statusEl.textContent = dictionary['contact.form.status.ready'];
+        }
+
+        window.location.href = `mailto:${recipient}?subject=${subject}&body=${encodeURIComponent(
+          bodyLines.join('\n')
+        )}`;
+      });
+    };
+    setupContactForm();
     const fitFooterBrandText = () => {
       if (
         !(footerBrandTextEl instanceof HTMLElement) ||
@@ -1649,12 +1677,12 @@
       if (previewTriggerEl.dataset.iconReady !== 'true') {
         previewTriggerEl.innerHTML = `
           <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
-            <circle class="preview-trigger-disc" cx="28" cy="28" r="28" />
-            <g class="preview-trigger-mark">
-              <path class="corner-segment corner-tl" d="M24 17h-4a3 3 0 0 0-3 3v4" />
-              <path class="corner-segment corner-tr" d="M32 17h4a3 3 0 0 1 3 3v4" />
-              <path class="corner-segment corner-bl" d="M24 39h-4a3 3 0 0 1-3-3v-4" />
-              <path class="corner-segment corner-br" d="M32 39h4a3 3 0 0 0 3-3v-4" />
+            <circle class="control-icon-disc" cx="28" cy="28" r="28" />
+            <g class="control-icon-mark" transform="translate(16 16)">
+              <path class="corner-segment corner-tl" d="M8 1h-3a4 4 0 0 0 -4 4v3" />
+              <path class="corner-segment corner-tr" d="M16 1h3a4 4 0 0 1 4 4v3" />
+              <path class="corner-segment corner-bl" d="M8 23h-3a4 4 0 0 1 -4 -4v-3" />
+              <path class="corner-segment corner-br" d="M16 23h3a4 4 0 0 0 4 -4v-3" />
             </g>
           </svg>
         `;
@@ -1862,7 +1890,9 @@
         >
           <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
             <circle class="control-icon-disc" cx="28" cy="28" r="28" />
-            <path class="control-icon-mark" d="m31 36-8-8 8-8" />
+            <g class="control-icon-mark" transform="translate(16 16)">
+              <path d="M15 6l-6 6l6 6" />
+            </g>
           </svg>
         </button>
         <button
@@ -1872,7 +1902,9 @@
         >
           <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
             <circle class="control-icon-disc" cx="28" cy="28" r="28" />
-            <path class="control-icon-mark" d="m25 36 8-8-8-8" />
+            <g class="control-icon-mark" transform="translate(16 16)">
+              <path d="M9 6l6 6l-6 6" />
+            </g>
           </svg>
         </button>
       `;
@@ -2871,7 +2903,9 @@
     });
 
     const clickableNavAnchors = Array.from(
-      document.querySelectorAll('a.navbar-brand[href^="#"], a.nav-link[href^="#"]')
+      document.querySelectorAll(
+        'a.navbar-brand[href^="#"], a.nav-link[href^="#"], a.footer-scroll-note[href^="#"]'
+      )
     );
     let userInteractedBeforeInitialHashAlign = false;
     let userInteractionVersion = 0;
