@@ -18,6 +18,8 @@
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
     const testimonialsSectionEl = document.getElementById('yorumlar');
     const productRatingStars = Array.from(document.querySelectorAll('.product-rating-stars'));
+    const footerBrandTextEl = document.querySelector('.footer-brand-marquee-text');
+    const footerBrandWordEl = document.querySelector('.footer-brand-marquee-word');
 
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
     const documentEl = document.documentElement;
@@ -164,6 +166,15 @@
         'contact.feature.instagram.title': 'Mesajla Başlayalım',
         'contact.feature.instagram.body':
           'Aklındaki model, renk veya hediye fikrini Instagram’dan paylaşabilirsin.',
+        'footer.primary.copy':
+          'El emeği amigurumi oyuncaklar, özel tasarımlar ve özenli hediye hazırlıkları.',
+        'footer.social.contact': 'İletişim',
+        'footer.links.title': 'Hızlı Bağlantılar',
+        'footer.links.journey': 'Sipariş Yolculuğu',
+        'footer.order.title': 'Sipariş Bilgisi',
+        'footer.order.copy':
+          'Hazır modeller genellikle 3-6 iş günü içinde hazırlanır. Kişiye özel siparişlerde detaylar üretim öncesinde birlikte netleştirilir.',
+        'footer.order.action': 'Instagram’dan yaz',
         'footer.copyright': '© 2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Kocası tarafından sevgiyle tasarlandı.'
       },
@@ -284,6 +295,15 @@
         'contact.feature.instagram.title': 'Start with a Message',
         'contact.feature.instagram.body':
           'Share the model, colors, or gift idea you have in mind on Instagram.',
+        'footer.primary.copy':
+          'Handmade amigurumi toys, custom designs, and carefully prepared gifts.',
+        'footer.social.contact': 'Contact',
+        'footer.links.title': 'Quick Links',
+        'footer.links.journey': 'Order Journey',
+        'footer.order.title': 'Order Details',
+        'footer.order.copy':
+          'Ready-made models are usually prepared within 3-6 business days. Custom order details are confirmed together before production begins.',
+        'footer.order.action': 'Message on Instagram',
         'footer.copyright': '© 2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Designed with love by her husband.'
       }
@@ -357,16 +377,50 @@
         const languageCode = buttonEl.getAttribute('data-lang-btn');
         if (languageCode !== 'tr' && languageCode !== 'en') return;
         applyLanguage(languageCode);
+        fitFooterBrandText();
         window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageCode);
       });
     });
-    document.fonts?.ready?.then(scheduleTitleCircleAlignment).catch(() => {});
+    const fitFooterBrandText = () => {
+      if (
+        !(footerBrandTextEl instanceof HTMLElement) ||
+        !(footerBrandWordEl instanceof HTMLElement)
+      )
+        return;
+
+      footerBrandTextEl.style.removeProperty('--footer-brand-fit-font-size');
+      const fitRatioRaw = window
+        .getComputedStyle(footerBrandTextEl)
+        .getPropertyValue('--footer-brand-fit-ratio');
+      const fitRatio = Number.parseFloat(fitRatioRaw);
+      const availableWidth =
+        footerBrandTextEl.clientWidth *
+        (Number.isFinite(fitRatio) ? Math.max(0.5, Math.min(1, fitRatio)) : 1);
+      const baseFontSize = Number.parseFloat(window.getComputedStyle(footerBrandTextEl).fontSize);
+      const naturalWidth = footerBrandWordEl.getBoundingClientRect().width;
+      if (!availableWidth || !naturalWidth || !Number.isFinite(baseFontSize)) return;
+
+      footerBrandTextEl.style.setProperty(
+        '--footer-brand-fit-font-size',
+        `${baseFontSize * (availableWidth / naturalWidth)}px`
+      );
+    };
+
+    fitFooterBrandText();
+    document.fonts?.ready
+      ?.then(() => {
+        scheduleTitleCircleAlignment();
+        fitFooterBrandText();
+      })
+      .catch(() => {});
 
     productRatingStars.forEach((ratingEl) => {
       if (ratingEl.dataset.ratingReady === 'true') return;
       const fillRaw = ratingEl.style.getPropertyValue('--rating-fill').trim();
       const fillPercent = Number.parseFloat(fillRaw);
-      const ratingValue = Number.isFinite(fillPercent) ? Math.max(0, Math.min(5, fillPercent / 20)) : 5;
+      const ratingValue = Number.isFinite(fillPercent)
+        ? Math.max(0, Math.min(5, fillPercent / 20))
+        : 5;
       const fullStars = Math.floor(ratingValue);
       const hasHalfStar = ratingValue % 1 >= 0.5;
       const fragment = document.createDocumentFragment();
@@ -1575,7 +1629,9 @@
     const ensureProductPreviewTrigger = (cardEl) => {
       if (!cardEl) return;
 
-      const nameText = cardEl.querySelector('.product-meta-row .product-title')?.textContent?.trim();
+      const nameText = cardEl
+        .querySelector('.product-meta-row .product-title')
+        ?.textContent?.trim();
       cardEl.removeAttribute('role');
       cardEl.removeAttribute('tabindex');
       cardEl.removeAttribute('aria-label');
@@ -1615,14 +1671,13 @@
       const isProductCarouselImage = Boolean(imageEl.closest('.product-carousel'));
       if (isProductCarouselImage) {
         const shouldPrioritize = priority === 'high';
-        imageEl.loading = shouldPrioritize ? 'eager' : 'lazy';
+        imageEl.loading = priority === 'lazy' ? 'lazy' : 'eager';
         imageEl.decoding = 'async';
         imageEl.fetchPriority = shouldPrioritize ? 'high' : 'low';
-        if (shouldPrioritize && !imageEl.complete && typeof imageEl.decode === 'function') {
-          imageEl.decode().catch(() => {
-            // Ignore decode rejections from browser timing/race conditions.
-          });
-        }
+        if (!shouldPrioritize || imageEl.complete || typeof imageEl.decode !== 'function') return;
+        imageEl.decode().catch(() => {
+          // Ignore decode rejections from browser timing/race conditions.
+        });
         return;
       }
       const shouldPrioritize = priority === 'high';
@@ -1637,6 +1692,37 @@
       }
     };
 
+    const getProductSlideImage = (slideEl) => slideEl?.querySelector?.('.card-img-top') ?? null;
+
+    const getNearbyProductSlides = (slider, preloadRadius) => {
+      const swiper = slider?.swiper;
+      const slides = Array.from(swiper?.slides ?? slider?.wrapperEl?.children ?? []);
+      if (!slides.length) return [];
+
+      const activeIndex = Number.isInteger(swiper?.activeIndex) ? swiper.activeIndex : 0;
+      const nearbySlides = [];
+      for (let offset = -preloadRadius; offset <= preloadRadius; offset += 1) {
+        const index = activeIndex + offset;
+        const slideEl = slides[index];
+        if (slideEl) nearbySlides.push(slideEl);
+      }
+
+      if (swiper?.params?.loop) {
+        const realIndex = Number.isInteger(swiper.realIndex) ? swiper.realIndex : activeIndex;
+        slides.forEach((slideEl) => {
+          const slideIndex = Number.parseInt(slideEl.dataset.swiperSlideIndex ?? '', 10);
+          if (!Number.isFinite(slideIndex)) return;
+          const distance = Math.min(
+            Math.abs(slideIndex - realIndex),
+            slider.slideCount - Math.abs(slideIndex - realIndex)
+          );
+          if (distance <= preloadRadius) nearbySlides.push(slideEl);
+        });
+      }
+
+      return [...new Set(nearbySlides)];
+    };
+
     const primeSliderImages = (rootEl, highPriorityCount = 0) => {
       const images = Array.from(rootEl?.querySelectorAll('.card-img-top') ?? []);
       images.forEach((imageEl) => {
@@ -1646,9 +1732,23 @@
         setProductImagePriority(imageEl, 'high');
       });
     };
+
+    const primeProductSliderImages = (
+      slider,
+      preloadRadius = getProductVisibleCount(slider?.carouselEl) + 2
+    ) => {
+      const images = Array.from(slider?.carouselInner?.querySelectorAll('.card-img-top') ?? []);
+      images.forEach((imageEl) => {
+        setProductImagePriority(imageEl, 'warm');
+      });
+      getNearbyProductSlides(slider, preloadRadius).forEach((slideEl) => {
+        setProductImagePriority(getProductSlideImage(slideEl), 'high');
+      });
+    };
+
     const primeAllProductSliderImages = () => {
       productCarouselsState.forEach((slider) => {
-        primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
+        primeProductSliderImages(slider);
       });
     };
     const observeProductSectionImagePriming = () => {
@@ -1835,22 +1935,25 @@
         on: {
           init() {
             syncProductCardInteractivity();
+            primeProductSliderImages(slider);
           },
           slideChangeTransitionStart() {
             setProductCarouselMoving(slider, true);
-            primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 2);
+            primeProductSliderImages(slider);
           },
           slideChangeTransitionEnd() {
             setProductCarouselMoving(slider, false);
           },
           slideChange() {
-            primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 2);
+            primeProductSliderImages(slider);
           },
           breakpoint() {
             syncProductCardInteractivity();
+            primeProductSliderImages(slider);
           },
           resize() {
             syncProductCardInteractivity();
+            primeProductSliderImages(slider);
           }
         }
       });
@@ -1866,7 +1969,10 @@
         if (!isProductTouchViewport()) return;
         const transitionMs = Number(slider.swiper?.params?.speed) || 0;
         const suppressMs = transitionMs + 220;
-        slider.suppressClickUntil = Math.max(slider.suppressClickUntil, performance.now() + suppressMs);
+        slider.suppressClickUntil = Math.max(
+          slider.suppressClickUntil,
+          performance.now() + suppressMs
+        );
         slider.carouselEl?.classList.add('is-touch-dragging');
         window.setTimeout(() => {
           if (slider.suppressClickUntil > performance.now()) return;
@@ -1979,7 +2085,7 @@
       productCarouselsState.forEach((slider) => {
         initProductSwiper(slider);
         slider.swiper?.update();
-        primeSliderImages(slider.carouselInner, getProductVisibleCount(slider.carouselEl) + 1);
+        primeProductSliderImages(slider);
       });
 
       syncProductCardInteractivity();
@@ -2735,6 +2841,7 @@
       updateSectionOrbParallax();
       syncHeroParallaxLayout();
       scheduleTitleCircleAlignment();
+      fitFooterBrandText();
       syncProductCarouselLayout();
       syncProductCardInteractivity();
       lenis?.resize();
