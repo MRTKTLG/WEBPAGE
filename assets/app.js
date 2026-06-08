@@ -2904,7 +2904,7 @@
 
     const clickableNavAnchors = Array.from(
       document.querySelectorAll(
-        'a.navbar-brand[href^="#"], a.nav-link[href^="#"], a.footer-scroll-note[href^="#"]'
+        'a.navbar-brand[href^="#"], a.nav-link[href^="#"], a.footer-top-button[href^="#"]'
       )
     );
     let userInteractedBeforeInitialHashAlign = false;
