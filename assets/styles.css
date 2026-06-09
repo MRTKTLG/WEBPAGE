@@ -7,7 +7,6 @@
   --icon-stroke-thin: 1.35;
   --icon-size-control: 48.012px;
   --icon-circle-size: 48.012px;
-  --icon-button-size: var(--icon-circle-size);
   --product-slider-control-size: var(--icon-circle-size);
   --product-preview-trigger-size: var(--product-slider-control-size);
   --icon-color-hero: var(--ink);
@@ -36,22 +35,6 @@
   --hero-title-accent-blue: #7b9fbe;
   --hero-title-accent-pink: #d78fb1;
   --product-price-old-color: #e24b5b;
-  --circle-strong-alpha: 0.78;
-  --circle-mid-alpha: 0.4;
-  --circle-fade-alpha: 0.08;
-  --circle-opacity: 0.62;
-  --hero-circle-pink: linear-gradient(
-    135deg,
-    rgba(var(--hero-pink-rgb), var(--circle-strong-alpha)) 0%,
-    rgba(var(--hero-pink-rgb), var(--circle-mid-alpha)) 62%,
-    rgba(var(--hero-pink-rgb), var(--circle-fade-alpha)) 100%
-  );
-  --hero-circle-blue: linear-gradient(
-    135deg,
-    rgba(var(--hero-blue-rgb), var(--circle-strong-alpha)) 0%,
-    rgba(var(--hero-blue-rgb), var(--circle-mid-alpha)) 62%,
-    rgba(var(--hero-blue-rgb), var(--circle-fade-alpha)) 100%
-  );
   --body-left: #fff8fb;
   --body-mid: #f6f0f8;
   --body-right: #eef8ff;
@@ -78,7 +61,6 @@
   --section-orb-pink-gradient: rgba(var(--section-orb-pink-rgb), var(--section-orb-fill-alpha));
   --section-orb-blue-gradient: rgba(var(--section-orb-blue-rgb), var(--section-orb-fill-alpha));
   --shadow-heading-gray: rgba(22, 24, 31, 0.28);
-  --ghost: rgba(234, 190, 214, 0.22);
   --section-pad-y: clamp(7.5rem, 11vw, 10rem);
   --section-pad-y-mobile: 6.5rem;
   --space-1: 0.75rem;
@@ -93,7 +75,6 @@
   --stack-gap: var(--space-2);
   --component-gap: var(--space-4);
   --section-intro-gap: var(--rhythm-gap-2);
-  --section-flow-gap: var(--rhythm-gap-2);
   --surface-radius: 1.1rem;
   --surface-fill: #fff;
   --testimonial-gap: 16px;
@@ -190,6 +171,47 @@ html {
   overflow-y: auto;
 }
 
+html.has-page-entry:not(.is-page-ready) .navbar {
+  opacity: 0;
+  transform: translate3d(0, -0.55rem, 0);
+}
+
+html.has-page-entry:not(.is-page-ready) .hero-wrap {
+  opacity: 0.01;
+}
+
+html.is-page-ready .navbar {
+  animation: pageNavReveal 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.is-page-ready .hero-wrap {
+  animation: pageHeroReveal 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pageNavReveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -0.55rem, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes pageHeroReveal {
+  from {
+    opacity: 0.01;
+    filter: saturate(0.92);
+  }
+
+  to {
+    opacity: 1;
+    filter: saturate(1);
+  }
+}
+
 html.is-modal-scroll-locked,
 body.is-modal-scroll-locked {
   overflow: hidden !important;
@@ -233,6 +255,17 @@ body.is-nav-collapsing {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html.has-page-entry:not(.is-page-ready) .navbar,
+  html.has-page-entry:not(.is-page-ready) .hero-wrap {
+    opacity: 1;
+    transform: none;
+  }
+
+  html.is-page-ready .navbar,
+  html.is-page-ready .hero-wrap {
+    animation: none;
+  }
+
   .media-skeleton.is-media-loading::before {
     animation: none;
     transform: none;
@@ -1194,11 +1227,6 @@ main > section {
     in srgb,
     var(--journey-step-on-blue) 62%,
     var(--journey-step-on-pink)
-  );
-  --journey-step-center: color-mix(
-    in srgb,
-    var(--journey-step-on-pink) 50%,
-    var(--journey-step-on-blue)
   );
   background: var(--section-pink-blue-gradient);
 }
@@ -2705,22 +2733,13 @@ main > section:not([id]) > .container > h2 {
   will-change: transform;
 }
 
-.product-preview-trigger .control-icon-disc,
-.product-preview-trigger .preview-trigger-disc {
+.product-preview-trigger .control-icon-disc {
   fill: rgba(246, 248, 251, var(--product-preview-trigger-disc-alpha));
   stroke: transparent;
   stroke-width: 0;
   transition:
     fill var(--preview-icon-motion-duration) var(--preview-icon-motion-ease),
     stroke var(--preview-icon-motion-duration) var(--preview-icon-motion-ease);
-}
-
-.product-preview-trigger .preview-trigger-mark {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .product-preview-trigger .corner-segment {
@@ -4045,17 +4064,19 @@ main > section:not([id]) > .container > h2 {
 
   #sss .accordion-button,
   #sss .accordion-button:not(.collapsed) {
-    padding: 1.2rem 1.25rem;
+    padding: 1.1rem 1rem;
+    font-size: 1rem !important;
+    line-height: 1.18 !important;
   }
 
   #sss .accordion-button .faq-chevron {
-    font-size: var(--icon-circle-size);
-    width: var(--icon-circle-size);
-    height: var(--icon-circle-size);
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
   }
 
   #sss .accordion-body {
-    padding: 0 1.25rem 1.2rem;
+    padding: 0 1rem 1.1rem;
   }
 
   .card-body > p.display-6 {

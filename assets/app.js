@@ -117,10 +117,10 @@
         'faq.q3.title': 'Türkiye geneline gönderim yapıyor musunuz?',
         'faq.q3.body':
           "Evet, Türkiye'nin tüm şehirlerine kargo gönderimi yapıyorum. Paketleme sırasında ürünün formunu koruyacak şekilde özenli bir hazırlık yapıyor, gönderi bilgisini de seninle paylaşıyorum.",
-        'faq.q4.title': 'Ürünü hediye olarak göndermek istersem yardımcı oluyor musunuz?',
+        'faq.q4.title': 'Hediye gönderiminde yardımcı oluyor musunuz?',
         'faq.q4.body':
           'Tabii. Hediye notu eklemek, daha özenli bir paketleme hazırlamak veya teslimat zamanını planlamak gibi detaylarda yardımcı oluyorum. Sipariş sırasında bunu belirtmen yeterli.',
-        'faq.q5.title': 'Sipariş vermeden önce süreç hakkında bilgi alabilir miyim?',
+        'faq.q5.title': 'Sipariş öncesi süreç hakkında bilgi alabilir miyim?',
         'faq.q5.body':
           'Elbette. Sipariş vermeden önce model, fiyat aralığı, hazırlık süresi ve uygunluk hakkında mesaj atabilirsin. Önce tüm detayları netleştirip ardından üretime geçmeyi tercih ediyorum.',
         'testimonials.title': 'Her emeğin ilhamı müşteri memnuniyetidir',
@@ -237,7 +237,7 @@
         'faq.q3.title': 'Do you ship across Türkiye?',
         'faq.q3.body':
           'Yes, I ship to all cities in Türkiye. Each product is packed carefully to protect its shape, and shipment details are shared with you.',
-        'faq.q4.title': 'Can you help if I want to send it as a gift?',
+        'faq.q4.title': 'Can you help with gift delivery?',
         'faq.q4.body':
           'Of course. I can help with details such as adding a gift note, preparing extra-careful packaging, or planning the delivery timing. Just mention it while placing your order.',
         'faq.q5.title': 'Can I get information before placing an order?',
@@ -626,6 +626,15 @@
         imageEl.addEventListener('error', onSettled, { once: true });
         const timeoutId = window.setTimeout(onSettled, timeoutMs);
       });
+    const revealInitialPage = async () => {
+      const activeHeroImage = heroCarousel?.querySelector('.carousel-item.active img');
+      await waitForImageDecode(activeHeroImage, 720);
+      await nextFrame();
+      documentEl.classList.add('is-page-ready');
+    };
+    revealInitialPage().catch(() => {
+      documentEl.classList.add('is-page-ready');
+    });
     const waitForPrecedingMediaStability = async (targetEl, timeoutMs = 420) => {
       if (!targetEl) return;
       const targetTop = getDocumentTop(targetEl);
