@@ -3321,7 +3321,7 @@ main > section:not([id]) > .container > h2 {
 .footer-brand-marquee {
   overflow: visible;
   min-height: clamp(8.5rem, 15vw, 16rem);
-  padding: clamp(1rem, 1.8vw, 1.55rem) 0;
+  padding: 0;
 }
 
 .footer-brand-marquee .container {
@@ -3341,9 +3341,9 @@ main > section:not([id]) > .container > h2 {
   letter-spacing: 0;
   text-align: center;
   white-space: nowrap;
-  color: rgba(43, 52, 66, 0.08);
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: clamp(1px, 0.16vw, 2.4px) rgba(43, 52, 66, 0.9);
+  color: rgba(43, 52, 66, 0.9);
+  -webkit-text-fill-color: currentColor;
+  -webkit-text-stroke: 0 currentColor;
 }
 
 .footer-brand-marquee-word {
@@ -3352,6 +3352,9 @@ main > section:not([id]) > .container > h2 {
 
 .site-footer {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--section-pad-y) 0 0;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 48%),
     var(--section-pink-blue-gradient);
@@ -3370,7 +3373,7 @@ main > section:not([id]) > .container > h2 {
   height: var(--icon-circle-size);
   border: 0;
   border-radius: 50%;
-  background: #f6f8fb;
+  background: transparent;
   color: var(--ink);
   text-decoration: none;
   box-shadow: none;
@@ -3383,18 +3386,20 @@ main > section:not([id]) > .container > h2 {
 .footer-top-button:hover,
 .footer-top-button:focus-visible {
   color: var(--ink);
-  background: #f6f8fb;
+  background: transparent;
   text-decoration: none;
 }
 
 .footer-top-button svg {
-  width: calc(var(--icon-size-control) * 0.62);
-  height: calc(var(--icon-size-control) * 0.62);
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
 .footer-secondary {
-  padding: clamp(1.1rem, 2.25vw, 1.7rem) 0;
+  margin-top: var(--section-pad-y);
+  padding-top: var(--space-4);
+  padding-bottom: clamp(1.1rem, 2.25vw, 1.7rem);
 }
 
 .footer-bottom {
@@ -3584,6 +3589,14 @@ main > section:not([id]) > .container > h2 {
 
   main > section {
     padding-block: var(--section-pad-y-mobile) !important;
+  }
+
+  .site-footer {
+    padding: var(--section-pad-y-mobile) 0 0;
+  }
+
+  .footer-secondary {
+    margin-top: var(--section-pad-y-mobile);
   }
 
   .ghost-heading {
