@@ -18,8 +18,6 @@
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
     const testimonialsSectionEl = document.getElementById('yorumlar');
     const productRatingStars = Array.from(document.querySelectorAll('.product-rating-stars'));
-    const footerBrandTextEl = document.querySelector('.footer-brand-marquee-text');
-    const footerBrandWordEl = document.querySelector('.footer-brand-marquee-word');
     const contactFormEl = document.getElementById('contactForm');
 
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
@@ -167,6 +165,10 @@
         'contact.side.shops.title': 'Mağazalar',
         'contact.side.shops.body':
           'Hazır ürünleri Shopier ve Endolu mağazalarından inceleyebilirsin.',
+        'footer.follow': 'instagram.com/novacrafts',
+        'footer.link.instagram': 'instagram.com/novacrafts',
+        'footer.link.shopier': 'shopier.com/novacrafts',
+        'footer.link.endolu': 'endolu.com/novacrafts',
         'footer.copyright': '2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Eşi tarafından sevgiyle tasarlandı.',
         'footer.scroll': 'Yukarı kaydır'
@@ -286,6 +288,10 @@
         'contact.side.shops.title': 'Shops',
         'contact.side.shops.body':
           'You can browse ready-made pieces through the Shopier and Endolu shops.',
+        'footer.follow': 'instagram.com/novacrafts',
+        'footer.link.instagram': 'instagram.com/novacrafts',
+        'footer.link.shopier': 'shopier.com/novacrafts',
+        'footer.link.endolu': 'endolu.com/novacrafts',
         'footer.copyright': '2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Designed with love by her spouse.',
         'footer.scroll': 'Scroll up'
@@ -360,7 +366,6 @@
         const languageCode = buttonEl.getAttribute('data-lang-btn');
         if (languageCode !== 'tr' && languageCode !== 'en') return;
         applyLanguage(languageCode);
-        fitFooterBrandText();
         window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageCode);
       });
     });
@@ -409,36 +414,10 @@
       });
     };
     setupContactForm();
-    const fitFooterBrandText = () => {
-      if (
-        !(footerBrandTextEl instanceof HTMLElement) ||
-        !(footerBrandWordEl instanceof HTMLElement)
-      )
-        return;
 
-      footerBrandTextEl.style.removeProperty('--footer-brand-fit-font-size');
-      const fitRatioRaw = window
-        .getComputedStyle(footerBrandTextEl)
-        .getPropertyValue('--footer-brand-fit-ratio');
-      const fitRatio = Number.parseFloat(fitRatioRaw);
-      const availableWidth =
-        footerBrandTextEl.clientWidth *
-        (Number.isFinite(fitRatio) ? Math.max(0.5, Math.min(1, fitRatio)) : 1);
-      const baseFontSize = Number.parseFloat(window.getComputedStyle(footerBrandTextEl).fontSize);
-      const naturalWidth = footerBrandWordEl.getBoundingClientRect().width;
-      if (!availableWidth || !naturalWidth || !Number.isFinite(baseFontSize)) return;
-
-      footerBrandTextEl.style.setProperty(
-        '--footer-brand-fit-font-size',
-        `${baseFontSize * (availableWidth / naturalWidth)}px`
-      );
-    };
-
-    fitFooterBrandText();
     document.fonts?.ready
       ?.then(() => {
         scheduleTitleCircleAlignment();
-        fitFooterBrandText();
       })
       .catch(() => {});
 
@@ -1688,10 +1667,10 @@
           <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false">
             <circle class="control-icon-disc" cx="28" cy="28" r="28" />
             <g class="control-icon-mark" transform="translate(16 16)">
-              <path class="corner-segment corner-tl" d="M8 1h-3a4 4 0 0 0 -4 4v3" />
-              <path class="corner-segment corner-tr" d="M16 1h3a4 4 0 0 1 4 4v3" />
-              <path class="corner-segment corner-bl" d="M8 23h-3a4 4 0 0 1 -4 -4v-3" />
-              <path class="corner-segment corner-br" d="M16 23h3a4 4 0 0 0 4 -4v-3" />
+              <path class="corner-segment corner-tl" d="M8 3h-2.5a2.5 2.5 0 0 0 -2.5 2.5v2.5" />
+              <path class="corner-segment corner-tr" d="M16 3h2.5a2.5 2.5 0 0 1 2.5 2.5v2.5" />
+              <path class="corner-segment corner-bl" d="M8 21h-2.5a2.5 2.5 0 0 1 -2.5 -2.5v-2.5" />
+              <path class="corner-segment corner-br" d="M16 21h2.5a2.5 2.5 0 0 0 2.5 -2.5v-2.5" />
             </g>
           </svg>
         `;
@@ -2882,7 +2861,6 @@
       updateSectionOrbParallax();
       syncHeroParallaxLayout();
       scheduleTitleCircleAlignment();
-      fitFooterBrandText();
       syncProductCarouselLayout();
       syncProductCardInteractivity();
       lenis?.resize();
