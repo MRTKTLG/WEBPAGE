@@ -33,9 +33,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <script>
-      document.documentElement.classList.add('has-page-entry');
-    </script>
+    <script src="assets/page-entry.js"></script>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23f6cfe0'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Teko, Arial, sans-serif' fill='%23111319'%3EY%3C/text%3E%3C/svg%3E"
@@ -51,7 +49,7 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="assets/styles.css?v=20260617041148" />
+    <link rel="stylesheet" href="assets/styles.css?v=20260617204930" />
   </head>
   <body>
     <nav class="navbar navbar-expand-lg">
@@ -1889,7 +1887,11 @@
                     >
                       <div class="contact-form-grid">
                         <label class="contact-form-field">
-                          <span class="component-title contact-form-label" data-i18n="contact.form.name.label">Ad Soyad</span>
+                          <span
+                            class="component-title contact-form-label"
+                            data-i18n="contact.form.name.label"
+                            >Ad Soyad</span
+                          >
                           <input
                             type="text"
                             name="name"
@@ -1901,7 +1903,11 @@
                           />
                         </label>
                         <label class="contact-form-field">
-                          <span class="component-title contact-form-label" data-i18n="contact.form.email.label">E-posta</span>
+                          <span
+                            class="component-title contact-form-label"
+                            data-i18n="contact.form.email.label"
+                            >E-posta</span
+                          >
                           <input
                             type="email"
                             name="email"
@@ -1913,7 +1919,11 @@
                           />
                         </label>
                         <label class="contact-form-field contact-form-field-wide">
-                          <span class="component-title contact-form-label" data-i18n="contact.form.message.label">Mesaj</span>
+                          <span
+                            class="component-title contact-form-label"
+                            data-i18n="contact.form.message.label"
+                            >Mesaj</span
+                          >
                           <textarea
                             name="message"
                             rows="5"
@@ -1945,7 +1955,7 @@
                         </p>
                         <a
                           class="contact-side-link"
-                          href="https://www.instagram.com/"
+                          href="https://www.instagram.com/novacrafts"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -1971,7 +1981,7 @@
                         <div class="contact-shop-links">
                           <a
                             class="contact-side-link"
-                            href="https://shopier.com"
+                            href="https://shopier.com/novacrafts"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1983,11 +1993,11 @@
                                 <path d="M9 19v-5h6v5" />
                               </svg>
                             </span>
-                            <span>shopier.com</span>
+                            <span>shopier.com/novacrafts</span>
                           </a>
                           <a
                             class="contact-side-link"
-                            href="https://endolu.com"
+                            href="https://endolu.com/novacrafts"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1999,7 +2009,7 @@
                                 <path d="M9 19v-5h6v5" />
                               </svg>
                             </span>
-                            <span>endolu.com</span>
+                            <span>endolu.com/novacrafts</span>
                           </a>
                         </div>
                       </article>
@@ -2012,10 +2022,16 @@
         </main>
 
         <footer class="site-footer" aria-label="Alt bilgi">
-          <a class="footer-top-button" href="#anasayfa" aria-label="Yukarı kaydır" data-i18n-attr="aria-label" data-i18n="footer.scroll">
-              <svg viewBox="0 0 56 56" role="presentation" focusable="false" aria-hidden="true">
-                <circle class="control-icon-disc" cx="28" cy="28" r="28" />
-                <g class="control-icon-mark" transform="translate(16 16)">
+          <a
+            class="footer-top-button"
+            href="#anasayfa"
+            aria-label="Yukarı kaydır"
+            data-i18n-attr="aria-label"
+            data-i18n="footer.scroll"
+          >
+            <svg viewBox="0 0 56 56" role="presentation" focusable="false" aria-hidden="true">
+              <circle class="control-icon-disc" cx="28" cy="28" r="28" />
+              <g class="control-icon-mark" transform="translate(16 16)">
                 <path d="M6 15l6 -6l6 6" />
               </g>
             </svg>
@@ -2028,32 +2044,46 @@
                   <div class="footer-quality-item">
                     <span class="footer-quality-icon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" role="presentation" focusable="false">
-                        <path d="M3 21c-.667 -.667 3.262 -6.236 11.785 -16.709a3.5 3.5 0 1 1 5.078 4.791c-10.575 8.612 -16.196 12.585 -16.863 11.918" />
+                        <path
+                          d="M3 21c-.667 -.667 3.262 -6.236 11.785 -16.709a3.5 3.5 0 1 1 5.078 4.791c-10.575 8.612 -16.196 12.585 -16.863 11.918"
+                        />
                         <path d="M17.5 6.5l-1 1" />
-                        <path d="M17 7c-2.333 -2.667 -3.5 -4 -5 -4s-2 1 -2 2c0 4 8.161 8.406 6 11c-1.056 1.268 -3.363 1.285 -5.75 .808" />
+                        <path
+                          d="M17 7c-2.333 -2.667 -3.5 -4 -5 -4s-2 1 -2 2c0 4 8.161 8.406 6 11c-1.056 1.268 -3.363 1.285 -5.75 .808"
+                        />
                         <path d="M5.739 15.425c-1.393 -.565 -3.739 -1.925 -3.739 -3.425" />
                         <path d="M19.5 9.5l1.5 1.5" />
                       </svg>
                     </span>
-                    <span class="footer-quality-label" data-i18n="footer.quality.handmade">El Yapımı</span>
+                    <span class="footer-quality-label" data-i18n="footer.quality.handmade"
+                      >El Yapımı</span
+                    >
                   </div>
                   <div class="footer-quality-item">
                     <span class="footer-quality-icon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" role="presentation" focusable="false">
-                        <path d="M19.5 12.572l-3 2.928m-5.5 3.5a8916.99 8916.99 0 0 0 -6.5 -6.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
+                        <path
+                          d="M19.5 12.572l-3 2.928m-5.5 3.5a8916.99 8916.99 0 0 0 -6.5 -6.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"
+                        />
                         <path d="M15 19l2 2l4 -4" />
                       </svg>
                     </span>
-                    <span class="footer-quality-label" data-i18n="footer.quality.safe">Güvenli</span>
+                    <span class="footer-quality-label" data-i18n="footer.quality.safe"
+                      >Güvenli</span
+                    >
                   </div>
                   <div class="footer-quality-item">
                     <span class="footer-quality-icon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" role="presentation" focusable="false">
-                        <path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" />
+                        <path
+                          d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06"
+                        />
                         <path d="M15 19l2 2l4 -4" />
                       </svg>
                     </span>
-                    <span class="footer-quality-label" data-i18n="footer.quality.durable">Uzun Ömürlü</span>
+                    <span class="footer-quality-label" data-i18n="footer.quality.durable"
+                      >Uzun Ömürlü</span
+                    >
                   </div>
                 </div>
                 <nav class="footer-brand-links" aria-label="Sosyal medya ve mağaza bağlantıları">
@@ -2095,7 +2125,12 @@
               <div class="footer-bottom">
                 <div class="footer-copy small text-body-secondary">
                   <span class="footer-copy-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 24 24"
+                      role="presentation"
+                      focusable="false"
+                      aria-hidden="true"
+                    >
                       <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
                       <path d="M14.5 9a3.5 4 0 1 0 0 6" />
                     </svg>
@@ -2104,7 +2139,12 @@
                 </div>
                 <div class="footer-signature small text-body-secondary">
                   <span class="footer-signature-heart" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 24 24"
+                      role="presentation"
+                      focusable="false"
+                      aria-hidden="true"
+                    >
                       <path
                         d="M19.5 12.572L12 20l-7.5-7.428a5 5 0 0 1 7.5-6.572a5 5 0 0 1 7.5 6.572z"
                       />
@@ -2248,6 +2288,9 @@
                   alt="Seçilen ürünün büyük önizlemesi"
                   class="product-fullscreen-image"
                   id="productFullscreenImage"
+                  src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%271200%27 height=%271200%27 viewBox=%270 0 1200 1200%27%3E%3C/svg%3E"
+                  width="1200"
+                  height="1200"
                   loading="lazy"
                   decoding="async"
                 />
@@ -2271,6 +2314,6 @@
       defer
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-    <script src="assets/app.js?v=20260617041148" defer></script>
+    <script src="assets/app.js?v=20260617204930" defer></script>
   </body>
 </html>

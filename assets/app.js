@@ -48,6 +48,8 @@
       '.product-fullscreen-native-toggle'
     );
     const LANGUAGE_STORAGE_KEY = 'nova-language';
+    const PRODUCT_MODAL_PLACEHOLDER_SRC =
+      'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%271200%27 height=%271200%27 viewBox=%270 0 1200 1200%27%3E%3C/svg%3E';
     const i18nDictionary = {
       tr: {
         'hero.slide1.titleBack': 'Bal',
@@ -2306,7 +2308,7 @@
         `${currentProductPreviewData.name || 'Ürün'} ${shareUrl}`
       );
       productFullscreenShareWhatsAppEl.href = `https://wa.me/?text=${shareText}`;
-      productFullscreenShareInstagramEl.href = 'https://www.instagram.com/';
+      productFullscreenShareInstagramEl.href = 'https://www.instagram.com/novacrafts';
     };
 
     const lockPageForProductModal = () => {
@@ -2504,6 +2506,10 @@
       setProductModalZoomState(false);
       resetProductModalPan();
       closeProductShareMenu();
+      if (productFullscreenImageEl) {
+        productFullscreenImageEl.src = PRODUCT_MODAL_PLACEHOLDER_SRC;
+        productFullscreenImageEl.alt = 'Seçilen ürünün büyük önizlemesi';
+      }
       unlockPageForProductModal();
       if (lenis?.scrollTo) {
         lenis.scrollTo(modalScrollY, { immediate: true, force: true });
