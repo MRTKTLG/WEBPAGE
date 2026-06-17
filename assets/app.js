@@ -165,10 +165,12 @@
         'contact.side.shops.title': 'Mağazalar',
         'contact.side.shops.body':
           'Hazır ürünleri Shopier ve Endolu mağazalarından inceleyebilirsin.',
-        'footer.follow': 'instagram.com/novacrafts',
         'footer.link.instagram': 'instagram.com/novacrafts',
         'footer.link.shopier': 'shopier.com/novacrafts',
         'footer.link.endolu': 'endolu.com/novacrafts',
+        'footer.quality.handmade': 'El Yapımı',
+        'footer.quality.safe': 'Güvenli',
+        'footer.quality.durable': 'Uzun Ömürlü',
         'footer.copyright': '2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Eşi tarafından sevgiyle tasarlandı.',
         'footer.scroll': 'Yukarı kaydır'
@@ -288,10 +290,12 @@
         'contact.side.shops.title': 'Shops',
         'contact.side.shops.body':
           'You can browse ready-made pieces through the Shopier and Endolu shops.',
-        'footer.follow': 'instagram.com/novacrafts',
         'footer.link.instagram': 'instagram.com/novacrafts',
         'footer.link.shopier': 'shopier.com/novacrafts',
         'footer.link.endolu': 'endolu.com/novacrafts',
+        'footer.quality.handmade': 'Handmade',
+        'footer.quality.safe': 'Safe Touch',
+        'footer.quality.durable': 'Lasting Shape',
         'footer.copyright': '2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Designed with love by her spouse.',
         'footer.scroll': 'Scroll up'
