@@ -19,6 +19,18 @@
     const testimonialsSectionEl = document.getElementById('yorumlar');
     const productRatingStars = Array.from(document.querySelectorAll('.product-rating-stars'));
     const contactFormEl = document.getElementById('contactForm');
+    const swiperStylesEl = document.getElementById('swiperStyles');
+    const contactMessageEl = contactFormEl?.querySelector('textarea[name="message"]');
+    const contactMessageScrollbarEl = contactFormEl?.querySelector('.contact-message-scrollbar');
+    const contactMessageScrollbarThumbEl = contactFormEl?.querySelector(
+      '.contact-message-scrollbar-thumb'
+    );
+
+    if (swiperStylesEl instanceof HTMLLinkElement) {
+      window.addEventListener('load', () => swiperStylesEl.setAttribute('media', 'all'), {
+        once: true
+      });
+    }
 
     const productCarousels = Array.from(document.querySelectorAll('.product-carousel'));
     const documentEl = document.documentElement;
@@ -52,6 +64,9 @@
       'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%271200%27 height=%271200%27 viewBox=%270 0 1200 1200%27%3E%3C/svg%3E';
     const i18nDictionary = {
       tr: {
+        'seo.title': 'El Yapımı Amigurumi Oyuncaklar | Nova Crafts',
+        'seo.description':
+          'El yapımı amigurumi oyuncakları, kişiye özel tasarımları ve özenle hazırlanan hediye seçeneklerini keşfedin. Nova Crafts ile ayrıntıları birlikte belirleyin.',
         'hero.slide1.titleBack': 'Bal',
         'hero.slide1.titleFront': 'Düşü',
         'hero.slide1.desc':
@@ -72,26 +87,26 @@
         'about.ghost': 'Hakkımda',
         'about.title': 'Hakkımda',
         'about.lead':
-          'Her amigurumi tasarımında estetik görünümü, temiz işçiliği ve özenli detayları bir araya getiriyorum. Hazırladığım her ürünün, ilk bakışta özen hissi veren ve uzun süre keyifle kullanılabilecek özel bir parça olmasını önemsiyorum.',
-        'about.qualityTitle': 'Kalite ve Üretim Anlayışım',
+          'Her tasarımda sade ve sıcak bir görünüm ile titiz el işçiliğini buluşturuyorum. İlk ilmekten son dokunuşa kadar her ayrıntıyı özenle şekillendiriyor; her parçanın zarif, güven veren ve zamanla değerini koruyan bir hatıraya dönüşmesini amaçlıyorum.',
+        'about.qualityTitle': 'Malzeme ve İşçilik',
         'about.qualityDesc':
-          'Malzeme seçiminden son kontrole kadar her aşamada kaliteyi ön planda tutuyorum. Yumuşak dokulu iplikler, dengeli form ve titiz işçilikle her modelin düzenli, sağlam ve güven veren bir standartta hazırlanmasına özen gösteriyorum. Sipariş öncesinde tüm detayları netleştiriyor, üretim sürecini başından teslimata kadar özenle takip ediyorum.',
-        'about.designTitle': 'Tasarım Yaklaşımım',
+          'İplik, dolgu ve yardımcı malzemeleri dokusuna, görünümüne ve kullanım amacına göre seçiyorum. Ölçü, form, dikiş bütünlüğü ve son kontrolleri aynı titizlikle yönetiyor; her parçayı rafine bir sunumla teslimata hazırlıyorum.',
+        'about.designTitle': 'Sade ve Özgün Tasarım Anlayışı',
         'about.designDesc':
-          'Tasarımlarımı zamansız, sade ve sıcak bir çizgide hazırlıyor; çocuklara keyifle eşlik edecek, ailelerin ise güvenle tercih edebileceği ürünler ortaya koyuyorum. Her tasarımın sevimli görünmenin ötesinde, özenli ve özel hissettiren bir bütün olmasını önemsiyorum.',
+          'Sade formları, yumuşak renk paletlerini ve karakterli ayrıntıları dengeli bir bütün içinde buluşturuyorum. Yalnızca sevimli görünen değil; bulunduğu yere sıcaklık katan, hediye edildiği anı özel kılan ve kendine özgü bir hikâye taşıyan tasarımlar yaratıyorum.',
         'journey.title': 'Bir siparişin incelikle tamamlanan hikâyesi',
-        'journey.step1.title': 'Siparişin Alınması',
+        'journey.step1.title': 'Sipariş ve Detaylar',
         'journey.step1.desc':
-          'Model, renk ve özel detaylar netleştiğinde hazırlık süreci özenle planlanır.',
-        'journey.step2.title': 'Hazırlık Süreci',
+          'Modeli, renkleri ve kişisel ayrıntıları seninle netleştiriyor; hazırlık planını oluşturuyorum.',
+        'journey.step2.title': 'Özenli İşçilik',
         'journey.step2.desc':
-          'Tasarım, belirlenen detaylara göre özenle hazırlanır ve karakterini kazanmaya başlar.',
-        'journey.step3.title': 'Kargoya Teslim',
+          'Her ilmeği belirlediğimiz ayrıntılara göre şekillendiriyor, tasarıma kendi karakterini kazandırıyorum.',
+        'journey.step3.title': 'Son Kontrol ve Kargo',
         'journey.step3.desc':
-          'Son kontroller tamamlandığında ürün özenli bir sunumla kargoya teslim edilir.',
+          'Formunu ve detaylarını son kez kontrol ediyor, özenle paketleyerek kargoya teslim ediyorum.',
         'journey.step4.title': 'Teslimat Anı',
         'journey.step4.desc':
-          'Teslimatla birlikte özenle hazırlanan tasarım, özel ve anlamlı bir hediyeye dönüşür.',
+          'Tasarım sana ya da sevdiklerine ulaştığında, emeğin kişisel bir hatıraya dönüşmesini diliyorum.',
         'counter.title': 'Her ilmekte özen, her siparişte mutluluk',
         'counter.item1': 'Özel Tasarım',
         'counter.item2': 'Tamamlanan Sipariş',
@@ -99,7 +114,7 @@
         'products.ghost': 'Ürünler',
         'products.title': 'Ürünler',
         'products.lead':
-          'El emeğiyle hazırlanan amigurumi tasarımları arasından en sevilen modelleri ve avantajlı fiyatlarla sunduğum seçili ürünleri burada inceleyebilirsin.',
+          'El emeğiyle hazırladığım karakterli tasarımları, en sevilen modelleri ve dönemsel olarak özel fiyatla sunduğum seçili parçaları burada keşfedebilirsin.',
         'products.popular': 'Popüler Ürünler',
         'products.sale': 'Kampanyalı Ürünler',
         'products.saleBadge': 'İndirimli ürün',
@@ -107,52 +122,52 @@
         'faq.ghost': 'Sık Sorulan Sorular',
         'faq.title': 'Sık Sorulan Sorular',
         'faq.lead':
-          'Sipariş süreci, teslimat ve özel tasarımlarla ilgili en çok sorulan soruları burada topladım. Aklına takılan farklı bir detay olursa iletişim bölümünden her zaman yazabilirsin.',
-        'faq.q1.title': 'Siparişim ne kadar sürede hazırlanıyor?',
+          'Siparişten teslimata kadar merak edebileceğin ayrıntıları burada yanıtladım. Aradığın cevabı bulamazsan bana her zaman yazabilirsin.',
+        'faq.q1.title': 'Siparişim ne kadar sürede hazırlanır?',
         'faq.q1.body':
-          'Hazır modellerde ortalama 3-6 iş günü içinde üretimi tamamlıyorum. Kişiye özel siparişlerde modelin detayına göre net hazırlık süresini sipariş öncesinde birlikte belirtiyorum.',
-        'faq.q2.title': 'Kişiye özel renk veya model seçebiliyor muyum?',
+          'Hazır modelleri genellikle 3-6 iş günü içinde hazırlıyorum. Kişiye özel tasarımlarda süre modelin ayrıntılarına göre değişebildiği için net teslim planını siparişten önce seninle paylaşıyorum.',
+        'faq.q2.title': 'Renkleri veya modeli kişiselleştirebilir miyim?',
         'faq.q2.body':
-          'Evet. Renk, boyut ve bazı tasarım detaylarını birlikte netleştirerek sana özel bir çalışma hazırlayabiliyorum. Referans görsel veya fikir paylaşman süreci daha da kolaylaştırıyor.',
-        'faq.q3.title': 'Türkiye geneline gönderim yapıyor musunuz?',
+          'Elbette. Renk, boyut ve uygun tasarım ayrıntılarını birlikte belirleyerek sana özel bir parça hazırlayabilirim. Varsa referans görselini veya fikrini paylaşman yeterli.',
+        'faq.q3.title': "Türkiye'nin her yerine gönderim var mı?",
         'faq.q3.body':
-          "Evet, Türkiye'nin tüm şehirlerine kargo gönderimi yapıyorum. Paketleme sırasında ürünün formunu koruyacak şekilde özenli bir hazırlık yapıyor, gönderi bilgisini de seninle paylaşıyorum.",
-        'faq.q4.title': 'Hediye gönderiminde yardımcı oluyor musunuz?',
+          "Evet, Türkiye'nin tüm şehirlerine gönderim yapıyorum. Ürünü formunu koruyacak biçimde özenle paketliyor, kargoya verildiğinde gönderi bilgisini seninle paylaşıyorum.",
+        'faq.q4.title': 'Siparişi doğrudan hediye olarak gönderebilir miyim?',
         'faq.q4.body':
-          'Tabii. Hediye notu eklemek, daha özenli bir paketleme hazırlamak veya teslimat zamanını planlamak gibi detaylarda yardımcı oluyorum. Sipariş sırasında bunu belirtmen yeterli.',
-        'faq.q5.title': 'Sipariş öncesi süreç hakkında bilgi alabilir miyim?',
+          'Evet. Hediye notu, özenli sunum ve teslimat zamanı gibi ayrıntıları sipariş sırasında birlikte planlayabiliriz. İsteğini başta belirtmen yeterli.',
+        'faq.q5.title': 'Sipariş vermeden önce detayları konuşabilir miyiz?',
         'faq.q5.body':
-          'Elbette. Sipariş vermeden önce model, fiyat aralığı, hazırlık süresi ve uygunluk hakkında mesaj atabilirsin. Önce tüm detayları netleştirip ardından üretime geçmeyi tercih ediyorum.',
+          'Elbette. Model, fiyat, hazırlık süresi ve uygunlukla ilgili tüm sorularını yanıtlıyorum. Her ayrıntıda aynı fikirde olduğumuzdan emin olduktan sonra üretime başlıyorum.',
         'testimonials.title': 'Her emeğin ilhamı müşteri memnuniyetidir',
         'testimonials.aria': 'Müşteri yorumları',
         'testimonials.t1':
-          'Sipariş öncesinde tüm detayları sabırla konuştuk, süreç boyunca düzenli bilgilendirme aldım ve ürün elime ulaştığında fotoğraftakinden bile daha özenli ve kaliteli olduğunu görmek beni gerçekten çok mutlu etti.',
+          'Siparişten önce bütün ayrıntıları konuştuk, süreç boyunca da düzenli bilgi aldım. Paket elime ulaştığında işçiliğin fotoğraflardan bile daha etkileyici olduğunu gördüm.',
         'testimonials.t2':
-          'Renk ve model seçiminde her ayrıntı tek tek konuşuldu. Sonuç tam hayal ettiğim gibi oldu ve kutuyu açar açmaz emeğin ne kadar özenli olduğunu hissettim.',
+          'Renkleri ve modeli birlikte netleştirdik. Sonuç tam hayal ettiğim gibiydi; kutuyu açtığım anda her detayın ne kadar özenle hazırlandığı belliydi.',
         'testimonials.t3':
-          'Dikişlerin temizliği, dolgunun dengesi ve genel görünüm gerçekten çok başarılıydı. Fotoğrafta güzel görünüyordu ama canlı hali çok daha etkileyiciydi.',
+          'Dikişleri çok temiz, formu dengeli ve dokusu harikaydı. Fotoğraflarda çok beğenmiştim ama yakından görünce işçiliğine daha da hayran kaldım.',
         'testimonials.t4':
-          'İstediğim renkleri ve modeli birebir uygulamış olması harikaydı; ayrıca paketleme o kadar özenliydi ki ürünü hem kendim için çok keyifle açtım hem de hediye etmeden önce içim tamamen rahattı.',
+          'İstediğim renkler ve küçük ayrıntılar tam konuştuğumuz gibi uygulanmıştı. Özenli paketleme sayesinde hediyeyi gönül rahatlığıyla doğrudan sahibine gönderebildim.',
         'testimonials.t5':
-          'Üretim süreci boyunca sürekli bilgilendirildim. Sanki hazır ürün almıyormuşum da benim için özel bir hikâye hazırlanıyormuş gibi hissettirdi.',
+          'Hazırlık sürecindeki küçük güncellemeler kendimi işin bir parçası gibi hissettirdi. Hazır bir ürün değil, benim için tasarlanmış özel bir parça aldım.',
         'testimonials.t6':
-          'Hediye ettiğim kişi ilk bakışta çok etkilendi. Hem sevimli hem kaliteli bir iş çıkmıştı; uzun süre saklanacak özel bir hediye oldu.',
+          'Hediye ettiğim kişi görür görmez çok sevdi. Sevimli olmasının yanında gerçekten kaliteli ve yıllarca saklanmak isteyeceği kadar özel bir parça oldu.',
         'testimonials.t7':
-          'İletişim baştan sona çok hızlı ve güven vericiydi, her soruma hemen dönüş aldım ve teslimat da konuştuğumuz tarihte sorunsuz şekilde gerçekleştiği için tüm deneyim beklediğimden çok daha rahattı.',
+          'İletişim baştan sona sıcak ve güven vericiydi. Sorularıma hızlıca yanıt aldım, siparişim de konuştuğumuz tarihte sorunsuz biçimde ulaştı.',
         'testimonials.t8':
-          'Hem iletişimdeki sıcak yaklaşım hem de işçilikteki titizlik gerçekten fark ediliyordu; hediye olarak hazırlattığım bu amigurumi karşı tarafı çok mutlu etti ve beklediğimden çok daha özel bir sonuç ortaya çıktı.',
+          'Hem iletişimdeki sıcaklık hem de işçilikteki titizlik çok özeldi. Hediye için hazırlattığım tasarım beklediğimden daha zarif oldu ve sahibini çok mutlu etti.',
         'testimonials.t9':
-          'Kumaş, iplik ve form kalitesi beklediğimden çok daha iyiydi. El emeği olduğu her detayından hissediliyordu ve teslim aldığımda gerçekten gülümsedim.',
+          'İpliğin dokusu, formu ve bitiş detayları beklentimin üzerindeydi. El emeğinin özeni her yerinde hissediliyor; paketi açtığımda yüzümde kocaman bir gülümseme vardı.',
         'contact.ghost': 'İrtibat',
         'contact.title': 'İrtibat',
         'contact.note':
-          'Özel tasarım, hazır ürün veya hediye hazırlığı için mesajını paylaş; detayları üretime başlamadan birlikte netleştirelim.',
+          'Aklındaki modeli, renkleri veya hediye fikrini benimle paylaş; üretime başlamadan önce tüm ayrıntıları birlikte netleştirelim.',
         'contact.form.name.label': 'Ad Soyad',
-        'contact.form.name.placeholder': 'Adını yaz',
+        'contact.form.name.placeholder': 'Adını ve soyadını yaz',
         'contact.form.email.label': 'E-posta',
-        'contact.form.email.placeholder': 'ornek@mail.com',
+        'contact.form.email.placeholder': 'E-posta adresini yaz',
         'contact.form.message.label': 'Mesaj',
-        'contact.form.message.placeholder': 'Model, renk, adet veya teslimat beklentini yaz',
+        'contact.form.message.placeholder': 'Mesajını yaz',
         'contact.form.submit': 'Mesajı Gönder',
         'contact.form.status.missing': 'Lütfen ad, e-posta ve mesaj alanlarını doldur.',
         'contact.form.status.ready': 'E-posta taslağı hazırlandı.',
@@ -162,22 +177,25 @@
         'contact.form.mail.message': 'Mesaj',
         'contact.side.custom.title': 'Özel Tasarım',
         'contact.side.custom.body':
-          'Özel tasarım talepleri için Instagram’dan irtibata geçebilirsin.',
+          'Aklındaki tasarımı konuşmak ve seçenekleri birlikte değerlendirmek için bana Instagram’dan yazabilirsin.',
         'contact.side.custom.action': 'Instagram',
         'contact.side.shops.title': 'Mağazalar',
         'contact.side.shops.body':
-          'Hazır ürünleri Shopier ve Endolu mağazalarından inceleyebilirsin.',
+          'Hazır ürünlerimi ve güncel seçenekleri Shopier ile Endolu mağazalarımda inceleyebilirsin.',
         'footer.link.instagram': 'instagram.com/novacrafts',
         'footer.link.shopier': 'shopier.com/novacrafts',
         'footer.link.endolu': 'endolu.com/novacrafts',
         'footer.quality.handmade': 'El Yapımı',
         'footer.quality.safe': 'Güvenli',
-        'footer.quality.durable': 'Uzun Ömürlü',
+        'footer.quality.durable': 'Dayanıklı',
         'footer.copyright': '2026 Nova Crafts - Her hakkı saklıdır.',
         'footer.signature': 'Eşi tarafından sevgiyle tasarlandı.',
         'footer.scroll': 'Yukarı kaydır'
       },
       en: {
+        'seo.title': 'Handmade Amigurumi Toys | Nova Crafts',
+        'seo.description':
+          'Discover handmade amigurumi toys, custom designs, and thoughtfully prepared gifts. Choose the details together with Nova Crafts.',
         'hero.slide1.titleBack': 'Honey',
         'hero.slide1.titleFront': 'Dream',
         'hero.slide1.desc':
@@ -198,26 +216,26 @@
         'about.ghost': 'About',
         'about.title': 'About',
         'about.lead':
-          'Every amigurumi piece is designed with a refined look, neat craftsmanship, and considered details. My aim is for each piece to feel special at first glance and remain a joyful companion for years.',
-        'about.qualityTitle': 'Quality & Craftsmanship',
+          'I bring a warm, understated look and meticulous handcraft together in every design. From the first stitch to the final touch, I shape each detail with care so the finished piece feels refined, reassuring, and worthy of becoming a treasured keepsake.',
+        'about.qualityTitle': 'Materials & Craftsmanship',
         'about.qualityDesc':
-          'From material selection to the final check, quality guides every step. I use soft yarns, balanced forms, and meticulous handwork so each model is finished to a consistent, durable, and reassuring standard. Before production begins, every detail is clarified and the process is followed carefully through delivery.',
-        'about.designTitle': 'My Design Approach',
+          'I choose yarn, filling, and supporting materials for their texture, appearance, and intended use. I give the same attention to proportion, form, seam integrity, and final inspection, then prepare every piece for delivery with a refined presentation.',
+        'about.designTitle': 'A Simple, Distinctive Design Approach',
         'about.designDesc':
-          'I work in a timeless, simple, and warm style, creating pieces children can enjoy and families can choose with confidence. Beyond looking sweet, every design is meant to feel thoughtful, balanced, and genuinely special.',
+          'I bring simple forms, gentle color palettes, and characterful details together in a balanced whole. I create pieces that do more than look charming: they bring warmth to a space, make a gift feel personal, and carry a story of their own.',
         'journey.title': 'How each order comes thoughtfully to life',
-        'journey.step1.title': 'Order Received',
+        'journey.step1.title': 'Order & Details',
         'journey.step1.desc':
-          'Once the model, colors, and personal details are confirmed, the preparation plan is shaped with care.',
-        'journey.step2.title': 'Handmade Preparation',
+          'Together, we define the model, colors, and personal details before I create a clear preparation plan.',
+        'journey.step2.title': 'Careful Craftsmanship',
         'journey.step2.desc':
-          'The design is made according to the agreed details and gradually gains its own character.',
-        'journey.step3.title': 'Ready to Ship',
+          'I shape every stitch around the details we agreed on, gradually giving the design its own character.',
+        'journey.step3.title': 'Final Check & Shipping',
         'journey.step3.desc':
-          'After final checks, the piece is carefully presented, packed, and handed over for shipping.',
-        'journey.step4.title': 'A Meaningful Arrival',
+          'I inspect the form and finishing touches one last time, then pack the piece carefully for shipping.',
+        'journey.step4.title': 'The Delivery Moment',
         'journey.step4.desc':
-          'On arrival, the handmade piece becomes a personal and meaningful gift.',
+          'When the design reaches you or someone you love, I hope the handwork becomes a personal keepsake.',
         'counter.title': 'Care in every stitch, joy in every order',
         'counter.item1': 'Custom Designs',
         'counter.item2': 'Completed Orders',
@@ -225,7 +243,7 @@
         'products.ghost': 'Products',
         'products.title': 'Products',
         'products.lead':
-          'Explore the most-loved handmade amigurumi designs, along with selected pieces offered at special prices.',
+          'Discover the characterful pieces I make by hand, including most-loved designs and selected creations offered at special prices from time to time.',
         'products.popular': 'Popular Products',
         'products.sale': 'Special Offers',
         'products.saleBadge': 'Discounted product',
@@ -233,52 +251,52 @@
         'faq.ghost': 'Frequently Asked Questions',
         'faq.title': 'Frequently Asked Questions',
         'faq.lead':
-          'Here are the most common questions about ordering, delivery, and custom preparation. If you need anything else, you can always reach out through the contact section.',
-        'faq.q1.title': 'How long does it take to prepare my order?',
+          'I have answered the details you may wonder about from ordering through delivery. If you cannot find what you need, you can always write to me.',
+        'faq.q1.title': 'How long will my order take to prepare?',
         'faq.q1.body':
-          'Ready-made models are usually prepared within 3-6 business days. For custom orders, I confirm a clear preparation timeline based on the model details before the order is finalized.',
-        'faq.q2.title': 'Can I choose custom colors or a custom model?',
+          'I usually prepare ready-made models within 3-6 business days. Custom designs may take longer depending on their details, so I share a clear timeline with you before the order is confirmed.',
+        'faq.q2.title': 'Can I personalize the colors or model?',
         'faq.q2.body':
-          'Yes. We can finalize the color, size, and selected design details together to create a piece made especially for you. A reference image or idea is always helpful.',
-        'faq.q3.title': 'Do you ship across Türkiye?',
+          'Of course. We can choose the colors, size, and suitable design details together so I can make a piece especially for you. Simply share a reference image or your idea if you have one.',
+        'faq.q3.title': 'Is delivery available throughout Türkiye?',
         'faq.q3.body':
-          'Yes, I ship to all cities in Türkiye. Each product is packed carefully to protect its shape, and shipment details are shared with you.',
-        'faq.q4.title': 'Can you help with gift delivery?',
+          'Yes, I ship to every city in Türkiye. I pack each piece carefully to protect its shape and share the tracking details with you once it is dispatched.',
+        'faq.q4.title': 'Can I send the order directly as a gift?',
         'faq.q4.body':
-          'Of course. I can help with details such as adding a gift note, preparing extra-careful packaging, or planning the delivery timing. Just mention it while placing your order.',
-        'faq.q5.title': 'Can I get information before placing an order?',
+          'Yes. We can plan details such as a gift note, thoughtful presentation, and delivery timing together. Just let me know when you place the order.',
+        'faq.q5.title': 'Can we discuss the details before I order?',
         'faq.q5.body':
-          'Absolutely. Before ordering, you can message me about the model, price range, preparation time, and availability. I prefer to clarify all details first, then begin production.',
+          'Absolutely. I am happy to answer your questions about the model, price, preparation time, and availability. I begin making your piece only after we agree on every detail.',
         'testimonials.title': 'Customer happiness inspires every piece',
         'testimonials.aria': 'Customer reviews',
         'testimonials.t1':
-          'Before ordering, we discussed every detail patiently. I received regular updates throughout the process, and when the product arrived, it looked even more carefully made and higher quality than in the photos.',
+          'We discussed every detail before I ordered, and I received regular updates along the way. When the package arrived, the craftsmanship was even more impressive than it looked in the photos.',
         'testimonials.t2':
-          'Every detail was discussed during the color and model selection. The result was exactly what I imagined, and the care in the craftsmanship was clear the moment I opened the box.',
+          'We chose the colors and finalized the model together. The result was exactly what I imagined, and the care behind every detail was clear the moment I opened the box.',
         'testimonials.t3':
-          'The stitching quality, stuffing balance, and overall appearance were truly impressive. It looked great in photos, but in person it was even better.',
+          'The seams were beautifully neat, the form was balanced, and the texture felt wonderful. I loved it in the photos, but the craftsmanship was even better in person.',
         'testimonials.t4':
-          'The requested colors and model were followed perfectly. The packaging was so thoughtful that I enjoyed opening it myself and felt completely confident gifting it.',
+          'The colors and small details were exactly as we discussed. The thoughtful packaging meant I could send it directly to the recipient with complete confidence.',
         'testimonials.t5':
-          'I received updates throughout the production process. It felt less like buying a ready-made item and more like having a special story created just for me.',
+          'The little updates during preparation made me feel part of the process. I did not receive something off the shelf; I received a piece designed especially for me.',
         'testimonials.t6':
-          'The person I gifted it to was impressed at first glance. It was both adorable and beautifully made, a special gift to keep for a long time.',
+          'The person I gave it to loved it at first sight. It was not only adorable but beautifully made, the kind of special piece they will want to keep for years.',
         'testimonials.t7':
-          'Communication was fast and reassuring from start to finish. Every question was answered quickly, and delivery arrived smoothly on the agreed date, making the whole experience easier than I expected.',
+          'Communication felt warm and reassuring from start to finish. My questions were answered quickly, and the order arrived smoothly on the date we discussed.',
         'testimonials.t8':
-          'The warm communication and precise craftsmanship both stood out. This amigurumi gift made the recipient very happy and turned out even more special than I expected.',
+          'The warmth in the communication and precision in the handwork both stood out. The gift turned out more refined than I expected and made its recipient very happy.',
         'testimonials.t9':
-          'The yarn, texture, and overall form were far better than I expected. The handmade care was visible in every detail, and it genuinely made me smile when it arrived.',
+          'The yarn texture, form, and finishing details exceeded my expectations. The care of handwork is visible throughout, and I had the biggest smile when I opened the package.',
         'contact.ghost': 'Contact',
         'contact.title': 'Contact',
         'contact.note':
-          'Share your message for a custom design, ready piece, or gift preparation; details will be confirmed together before production begins.',
+          'Share the model, colors, or gift idea you have in mind, and we can define every detail together before I begin making it.',
         'contact.form.name.label': 'Full Name',
-        'contact.form.name.placeholder': 'Write your name',
+        'contact.form.name.placeholder': 'Enter your full name',
         'contact.form.email.label': 'Email',
-        'contact.form.email.placeholder': 'name@mail.com',
+        'contact.form.email.placeholder': 'Enter your email address',
         'contact.form.message.label': 'Message',
-        'contact.form.message.placeholder': 'Write the model, color, quantity, or delivery details',
+        'contact.form.message.placeholder': 'Write your message',
         'contact.form.submit': 'Send Message',
         'contact.form.status.missing': 'Please fill in name, email, and message fields.',
         'contact.form.status.ready': 'Email draft is ready.',
@@ -288,17 +306,17 @@
         'contact.form.mail.message': 'Message',
         'contact.side.custom.title': 'Custom Design',
         'contact.side.custom.body':
-          'For custom design requests, you can get in touch on Instagram.',
+          'Message me on Instagram to talk through your idea and explore the possibilities together.',
         'contact.side.custom.action': 'Instagram',
         'contact.side.shops.title': 'Shops',
         'contact.side.shops.body':
-          'You can browse ready-made pieces through the Shopier and Endolu shops.',
+          'Browse my ready-made pieces and current selections through my Shopier and Endolu stores.',
         'footer.link.instagram': 'instagram.com/novacrafts',
         'footer.link.shopier': 'shopier.com/novacrafts',
         'footer.link.endolu': 'endolu.com/novacrafts',
         'footer.quality.handmade': 'Handmade',
         'footer.quality.safe': 'Safe Touch',
-        'footer.quality.durable': 'Lasting Shape',
+        'footer.quality.durable': 'Durable',
         'footer.copyright': '2026 Nova Crafts - All rights reserved.',
         'footer.signature': 'Designed with love by her spouse.',
         'footer.scroll': 'Scroll up'
@@ -343,6 +361,7 @@
     const applyLanguage = (languageCode) => {
       const dictionary = i18nDictionary[languageCode] || i18nDictionary.tr;
       document.documentElement.lang = languageCode;
+      document.title = dictionary['seo.title'];
       getI18nNodes().forEach((node) => {
         const key = node.getAttribute('data-i18n');
         if (!key || !dictionary[key]) return;
@@ -420,6 +439,93 @@
       });
     };
     setupContactForm();
+
+    const setupContactMessageScrollbar = () => {
+      if (
+        !(contactMessageEl instanceof HTMLTextAreaElement) ||
+        !(contactMessageScrollbarEl instanceof HTMLElement) ||
+        !(contactMessageScrollbarThumbEl instanceof HTMLElement)
+      ) {
+        return;
+      }
+
+      const syncScrollbar = () => {
+        const trackHeight = contactMessageScrollbarEl.clientHeight;
+        const maxScroll = contactMessageEl.scrollHeight - contactMessageEl.clientHeight;
+        const isScrollable = maxScroll > 1 && trackHeight > 0;
+        contactMessageScrollbarEl.classList.toggle('is-scrollable', isScrollable);
+
+        if (!isScrollable) {
+          contactMessageScrollbarEl.style.removeProperty('--contact-scroll-thumb-height');
+          contactMessageScrollbarEl.style.removeProperty('--contact-scroll-thumb-offset');
+          return;
+        }
+
+        const visibleRatio = contactMessageEl.clientHeight / contactMessageEl.scrollHeight;
+        const thumbHeight = Math.max(trackHeight * visibleRatio, 24);
+        const maxThumbOffset = Math.max(trackHeight - thumbHeight, 0);
+        const scrollRatio = contactMessageEl.scrollTop / maxScroll;
+        contactMessageScrollbarEl.style.setProperty(
+          '--contact-scroll-thumb-height',
+          `${thumbHeight.toFixed(2)}px`
+        );
+        contactMessageScrollbarEl.style.setProperty(
+          '--contact-scroll-thumb-offset',
+          `${(maxThumbOffset * scrollRatio).toFixed(2)}px`
+        );
+      };
+
+      let dragPointerId = null;
+      let dragStartY = 0;
+      let dragStartScrollTop = 0;
+
+      contactMessageScrollbarThumbEl.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dragPointerId = event.pointerId;
+        dragStartY = event.clientY;
+        dragStartScrollTop = contactMessageEl.scrollTop;
+        contactMessageScrollbarThumbEl.setPointerCapture(event.pointerId);
+      });
+      contactMessageScrollbarThumbEl.addEventListener('pointermove', (event) => {
+        if (event.pointerId !== dragPointerId) return;
+
+        const maxScroll = contactMessageEl.scrollHeight - contactMessageEl.clientHeight;
+        const maxThumbTravel =
+          contactMessageScrollbarEl.clientHeight - contactMessageScrollbarThumbEl.offsetHeight;
+        if (maxScroll <= 0 || maxThumbTravel <= 0) return;
+
+        contactMessageEl.scrollTop =
+          dragStartScrollTop + ((event.clientY - dragStartY) * maxScroll) / maxThumbTravel;
+      });
+      const stopDragging = (event) => {
+        if (event.pointerId !== dragPointerId) return;
+        dragPointerId = null;
+        if (contactMessageScrollbarThumbEl.hasPointerCapture(event.pointerId)) {
+          contactMessageScrollbarThumbEl.releasePointerCapture(event.pointerId);
+        }
+      };
+      contactMessageScrollbarThumbEl.addEventListener('pointerup', stopDragging);
+      contactMessageScrollbarThumbEl.addEventListener('pointercancel', stopDragging);
+      contactMessageScrollbarEl.addEventListener('pointerdown', (event) => {
+        if (event.target === contactMessageScrollbarThumbEl) return;
+        const thumbRect = contactMessageScrollbarThumbEl.getBoundingClientRect();
+        const direction = event.clientY < thumbRect.top ? -1 : 1;
+        contactMessageEl.scrollBy({
+          top: direction * contactMessageEl.clientHeight * 0.85,
+          behavior: 'smooth'
+        });
+      });
+
+      contactMessageEl.addEventListener('scroll', syncScrollbar, { passive: true });
+      contactMessageEl.addEventListener('input', syncScrollbar);
+      window.addEventListener('resize', syncScrollbar, { passive: true });
+      if ('ResizeObserver' in window) {
+        new ResizeObserver(syncScrollbar).observe(contactMessageEl);
+      }
+      window.requestAnimationFrame(syncScrollbar);
+    };
+    setupContactMessageScrollbar();
 
     document.fonts?.ready
       ?.then(() => {

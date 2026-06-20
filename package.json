@@ -4,17 +4,20 @@
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
-    "assets:version": "node scripts/bump-asset-version.cjs",
+    "build": "node scripts/build-site.cjs",
     "format": "prettier --write \"index.html\" \"assets/**/*.{css,js}\"",
-    "lint:js": "eslint assets/app.js",
+    "lint:js": "eslint assets/app.js scripts/build-site.cjs",
     "lint:css": "stylelint \"assets/styles.css\"",
     "lint": "npm run lint:js && npm run lint:css",
     "test:mobile-touch": "node scripts/mobile-touch-smoke.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
+    "bootstrap": "^5.3.8",
+    "esbuild": "^0.28.1",
     "eslint": "^8.57.0",
     "prettier": "^3.3.3",
+    "purgecss": "^8.0.0",
     "stylelint": "^16.10.0",
     "stylelint-config-standard": "^36.0.1"
   }

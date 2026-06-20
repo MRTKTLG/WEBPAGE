@@ -3,6 +3,7 @@
 tmp/
 .tmp/
 node_modules/
+_site/
 .npm/
 Library/
 output/playwright/

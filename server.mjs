@@ -34,7 +34,7 @@ const SECURITY_HEADERS = {
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self'",
-    "script-src 'self' https://cdn.jsdelivr.net",
+    "script-src 'self' 'sha256-q/d+jLzFJKwJ8l//3I9BV7dqbmbH3NWNvlKH5yPgm0c=' https://cdn.jsdelivr.net",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: https:",
