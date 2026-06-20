@@ -287,7 +287,8 @@
         'contact.form.mail.email': 'Email',
         'contact.form.mail.message': 'Message',
         'contact.side.custom.title': 'Custom Design',
-        'contact.side.custom.body': 'For custom design requests, you can get in touch on Instagram.',
+        'contact.side.custom.body':
+          'For custom design requests, you can get in touch on Instagram.',
         'contact.side.custom.action': 'Instagram',
         'contact.side.shops.title': 'Shops',
         'contact.side.shops.body':
@@ -308,8 +309,7 @@
       return storedLanguage === 'en' ? 'en' : 'tr';
     };
     const titleCircleTargets = [
-      { anchorSelector: '.hero-title-anchor', textSelector: '.hero-split-title' },
-      { anchorSelector: '.section-title' }
+      { anchorSelector: '.hero-title-anchor', textSelector: '.hero-split-title' }
     ];
     const syncTitleCircleAlignment = () => {
       titleCircleTargets.forEach(({ anchorSelector, textSelector }) => {
@@ -424,6 +424,8 @@
     document.fonts?.ready
       ?.then(() => {
         scheduleTitleCircleAlignment();
+        refreshGhostMetrics();
+        updateGhostHeadingPosition();
       })
       .catch(() => {});
 
