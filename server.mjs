@@ -121,16 +121,15 @@ function serveStatic(req, res) {
     '.ico'
   ]);
   const isStaticAsset = staticAssetExtensions.has(ext);
-  const hasVersionToken =
-    isStaticAsset &&
-    (requestUrl.searchParams.has('v') || requestUrl.searchParams.has('ver'));
+  const versionToken = requestUrl.searchParams.get('v') || requestUrl.searchParams.get('ver') || '';
+  const hasContentHash = isStaticAsset && /^[a-f\d]{12}$/i.test(versionToken);
   const cacheControl =
     ext === '.html'
       ? 'no-cache'
-      : hasVersionToken
+      : hasContentHash
         ? 'public, max-age=31536000, immutable'
         : isStaticAsset
-        ? 'public, max-age=2592000, stale-while-revalidate=86400'
+          ? 'no-cache'
         : 'public, max-age=3600';
   res.writeHead(200, {
     'Content-Type': MIME[ext] || 'application/octet-stream',

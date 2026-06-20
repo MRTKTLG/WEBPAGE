@@ -23,7 +23,24 @@ async function build() {
   fs.rmSync(outputDir, { recursive: true, force: true });
   fs.mkdirSync(outputAssetsDir, { recursive: true });
 
-  const indexSource = readSource('index.html');
+  const htmlFiles = ['index.html'];
+  const collectHtmlFiles = (directory, prefix = '') => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const relativePath = path.join(prefix, entry.name);
+      if (entry.isDirectory()) {
+        collectHtmlFiles(path.join(directory, entry.name), relativePath);
+      } else if (entry.name.endsWith('.html')) {
+        htmlFiles.push(relativePath);
+      }
+    }
+  };
+  const blogDir = path.join(rootDir, 'blog');
+  if (fs.existsSync(blogDir)) collectHtmlFiles(blogDir, 'blog');
+  const htmlSources = htmlFiles.map((relativePath) => ({
+    relativePath,
+    source: readSource(relativePath)
+  }));
+  const allHtmlSource = htmlSources.map(({ source }) => source).join('\n');
   const appSource = readSource('assets/app.js');
   const stylesSource = readSource('assets/styles.css');
   const bootstrapSource = fs.readFileSync(
@@ -33,7 +50,7 @@ async function build() {
   const [purgedBootstrap] = await new PurgeCSS().purge({
     content: [
       {
-        raw: `${indexSource}\n${appSource}\n${stylesSource}`,
+        raw: `${allHtmlSource}\n${appSource}\n${stylesSource}`,
         extension: 'html'
       }
     ],
@@ -94,13 +111,14 @@ async function build() {
     .digest('hex')
     .slice(0, 12);
 
-  const indexHtml = indexSource
-    .replace(/\s*<link[^>]*data-build-remove[^>]*\/>/g, '')
-    .replace(/\s*<script[^>]*data-build-remove[^>]*><\/script>/g, '')
-    .replace(/assets\/styles\.css\?v=[^"]+/g, `assets/styles.css?v=${versionToken}`)
-    .replace(/assets\/app\.js\?v=[^"]+/g, `assets/app.js?v=${versionToken}`);
-
-  writeOutput('index.html', indexHtml);
+  for (const { relativePath, source } of htmlSources) {
+    const html = source
+      .replace(/\s*<link[^>]*data-build-remove[^>]*\/>/g, '')
+      .replace(/\s*<script[^>]*data-build-remove[^>]*><\/script>/g, '')
+      .replace(/assets\/styles\.css\?v=[^"]+/g, `assets/styles.css?v=${versionToken}`)
+      .replace(/assets\/app\.js\?v=[^"]+/g, `assets/app.js?v=${versionToken}`);
+    writeOutput(relativePath, html);
+  }
   writeOutput('assets/styles.css', cssResult.code);
   writeOutput('assets/app.js', jsCode);
   fs.copyFileSync(path.join(rootDir, 'sitemap.xml'), path.join(outputDir, 'sitemap.xml'));

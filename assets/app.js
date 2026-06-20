@@ -11,7 +11,8 @@
     const navbarEl = document.querySelector('.navbar');
     const statsSectionEl = document.getElementById('sayaclar');
     const productsSectionEl = document.getElementById('urunler');
-    const navLinks = Array.from(document.querySelectorAll('a.nav-link[href^="#"]'));
+    const allNavLinks = Array.from(document.querySelectorAll('a.nav-link'));
+    const navLinks = allNavLinks.filter((link) => link.getAttribute('href')?.startsWith('#'));
     const getI18nNodes = () => Array.from(document.querySelectorAll('[data-i18n]'));
     const languageButtons = Array.from(document.querySelectorAll('[data-lang-btn]'));
     const heroCarousel = document.getElementById('heroCarousel');
@@ -83,6 +84,7 @@
         'nav.about': 'Hakkımda',
         'nav.products': 'Ürünler',
         'nav.faq': 'SSS',
+        'nav.blog': 'Blog',
         'nav.contact': 'İrtibat',
         'about.ghost': 'Hakkımda',
         'about.title': 'Hakkımda',
@@ -119,6 +121,23 @@
         'products.sale': 'Kampanyalı Ürünler',
         'products.saleBadge': 'İndirimli ürün',
         'products.other': 'Diğer Ürünler',
+        'blog.ghost': 'Blog',
+        'blog.title': 'Blog',
+        'blog.lead':
+          'Amigurumi bakımı, hediye seçimi ve kişiye özel tasarım süreci için hazırladığım kısa ve kullanışlı rehberleri keşfet.',
+        'blog.all': 'Tüm Blog Yazıları',
+        'blog.read': 'Yazının Devamı',
+        'blog.reading.five': '5 dk. okuma',
+        'blog.reading.six': '6 dk. okuma',
+        'blog.post.care.title': 'Amigurumi Oyuncak Bakımı: Formunu ve Dokusunu Koruma Rehberi',
+        'blog.post.care.desc':
+          'El yapımı amiguruminizi temizlerken dokusunu ve formunu koruyan temel bakım adımları.',
+        'blog.post.gift.title': 'Amigurumi Hediye Seçerken Nelere Dikkat Edilmeli?',
+        'blog.post.gift.desc':
+          'Yaşa, kullanım amacına ve kişisel tarza göre doğru modeli seçmek için pratik bir yol haritası.',
+        'blog.post.custom.title': 'Kişiye Özel Amigurumi Tasarım Süreci Nasıl İlerler?',
+        'blog.post.custom.desc':
+          'Fikirden renk seçimine, üretimden son kontrole kadar kişisel bir tasarımın nasıl şekillendiğini keşfet.',
         'faq.ghost': 'Sık Sorulan Sorular',
         'faq.title': 'Sık Sorulan Sorular',
         'faq.lead':
@@ -183,6 +202,7 @@
         'contact.side.shops.body':
           'Hazır ürünlerimi ve güncel seçenekleri Shopier ile Endolu mağazalarımda inceleyebilirsin.',
         'footer.link.instagram': 'instagram.com/novacrafts',
+        'footer.link.blog': 'Blog',
         'footer.link.shopier': 'shopier.com/novacrafts',
         'footer.link.endolu': 'endolu.com/novacrafts',
         'footer.quality.handmade': 'El Yapımı',
@@ -212,6 +232,7 @@
         'nav.about': 'About',
         'nav.products': 'Products',
         'nav.faq': 'FAQ',
+        'nav.blog': 'Blog',
         'nav.contact': 'Contact',
         'about.ghost': 'About',
         'about.title': 'About',
@@ -248,6 +269,23 @@
         'products.sale': 'Special Offers',
         'products.saleBadge': 'Discounted product',
         'products.other': 'More Products',
+        'blog.ghost': 'Blog',
+        'blog.title': 'Blog',
+        'blog.lead':
+          'Explore concise, practical guides to amigurumi care, thoughtful gift selection, and the custom design process.',
+        'blog.all': 'All Blog Posts',
+        'blog.read': 'Continue Reading',
+        'blog.reading.five': '5 min read',
+        'blog.reading.six': '6 min read',
+        'blog.post.care.title': 'Amigurumi Care: A Guide to Preserving Shape and Texture',
+        'blog.post.care.desc':
+          'Essential care steps that protect the texture and shape of your handmade amigurumi.',
+        'blog.post.gift.title': 'What Should You Consider When Choosing an Amigurumi Gift?',
+        'blog.post.gift.desc':
+          'A practical guide to choosing the right design for age, purpose, and personal style.',
+        'blog.post.custom.title': 'How Does the Custom Amigurumi Design Process Work?',
+        'blog.post.custom.desc':
+          'See how a personal design takes shape from the first idea and color choices through final inspection.',
         'faq.ghost': 'Frequently Asked Questions',
         'faq.title': 'Frequently Asked Questions',
         'faq.lead':
@@ -312,6 +350,7 @@
         'contact.side.shops.body':
           'Browse my ready-made pieces and current selections through my Shopier and Endolu stores.',
         'footer.link.instagram': 'instagram.com/novacrafts',
+        'footer.link.blog': 'Blog',
         'footer.link.shopier': 'shopier.com/novacrafts',
         'footer.link.endolu': 'endolu.com/novacrafts',
         'footer.quality.handmade': 'Handmade',
@@ -358,10 +397,58 @@
         syncTitleCircleAlignment();
       });
     };
+    const syncGhostHeadingLineBreaks = () => {
+      document.querySelectorAll('.ghost-title-wrap').forEach((wrapEl) => {
+        const titleEl = wrapEl.querySelector('.section-title');
+        const ghostEl = wrapEl.querySelector('.ghost-heading');
+        if (!titleEl || !ghostEl) return;
+
+        const titleText = titleEl.textContent.trim().replace(/\s+/g, ' ');
+        if (!titleText) return;
+        if (window.innerWidth > 767) {
+          if (ghostEl.textContent.trim() !== titleText || ghostEl.children.length) {
+            ghostEl.textContent = titleText;
+          }
+          return;
+        }
+
+        const words = titleText.split(' ');
+        const measurementFragment = document.createDocumentFragment();
+        words.forEach((word, index) => {
+          const wordEl = document.createElement('span');
+          wordEl.textContent = index < words.length - 1 ? `${word} ` : word;
+          measurementFragment.append(wordEl);
+        });
+        titleEl.replaceChildren(measurementFragment);
+
+        const lines = [];
+        Array.from(titleEl.children).forEach((wordEl) => {
+          const lineTop = Math.round(wordEl.getBoundingClientRect().top);
+          const currentLine = lines.at(-1);
+          if (!currentLine || Math.abs(currentLine.top - lineTop) > 2) {
+            lines.push({ top: lineTop, words: [wordEl.textContent.trim()] });
+          } else {
+            currentLine.words.push(wordEl.textContent.trim());
+          }
+        });
+        titleEl.textContent = titleText;
+
+        const ghostFragment = document.createDocumentFragment();
+        lines.forEach((line) => {
+          const lineEl = document.createElement('span');
+          lineEl.className = 'ghost-heading-line';
+          lineEl.textContent = line.words.join(' ');
+          ghostFragment.append(lineEl);
+        });
+        ghostEl.replaceChildren(ghostFragment);
+      });
+    };
     const applyLanguage = (languageCode) => {
       const dictionary = i18nDictionary[languageCode] || i18nDictionary.tr;
       document.documentElement.lang = languageCode;
-      document.title = dictionary['seo.title'];
+      if (document.querySelector('[data-i18n="seo.title"]')) {
+        document.title = dictionary['seo.title'];
+      }
       getI18nNodes().forEach((node) => {
         const key = node.getAttribute('data-i18n');
         if (!key || !dictionary[key]) return;
@@ -382,10 +469,11 @@
         buttonEl.classList.toggle('is-active', isActive);
         buttonEl.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
+      syncGhostHeadingLineBreaks();
       scheduleTitleCircleAlignment();
     };
     const initialLanguage = getStoredLanguage();
-    applyLanguage(initialLanguage);
+    if (languageButtons.length > 0) applyLanguage(initialLanguage);
     languageButtons.forEach((buttonEl) => {
       buttonEl.addEventListener('click', () => {
         const languageCode = buttonEl.getAttribute('data-lang-btn');
@@ -529,7 +617,9 @@
 
     document.fonts?.ready
       ?.then(() => {
+        syncGhostHeadingLineBreaks();
         scheduleTitleCircleAlignment();
+        syncNavLinkWidths();
         refreshGhostMetrics();
         updateGhostHeadingPosition();
       })
@@ -719,15 +809,6 @@
         imageEl.addEventListener('error', onSettled, { once: true });
         const timeoutId = window.setTimeout(onSettled, timeoutMs);
       });
-    const revealInitialPage = async () => {
-      const activeHeroImage = heroCarousel?.querySelector('.carousel-item.active img');
-      await waitForImageDecode(activeHeroImage, 720);
-      await nextFrame();
-      documentEl.classList.add('is-page-ready');
-    };
-    revealInitialPage().catch(() => {
-      documentEl.classList.add('is-page-ready');
-    });
     const waitForPrecedingMediaStability = async (targetEl, timeoutMs = 420) => {
       if (!targetEl) return;
       const targetTop = getDocumentTop(targetEl);
@@ -796,7 +877,7 @@
     initMediaSkeletons();
 
     const syncNavLinkWidths = () => {
-      if (!navLinks.length) return;
+      if (!allNavLinks.length) return;
 
       if (window.innerWidth < 992) {
         document.documentElement.style.removeProperty('--nav-link-uniform-width');
@@ -805,7 +886,7 @@
 
       let maxWidth = 0;
 
-      navLinks.forEach((link) => {
+      allNavLinks.forEach((link) => {
         const previousInlineSize = link.style.inlineSize;
         link.style.inlineSize = 'auto';
         maxWidth = Math.max(maxWidth, Math.ceil(link.getBoundingClientRect().width));
@@ -1208,6 +1289,8 @@
 
     const refreshGhostMetrics = () => {
       if (!ghostSectionMetrics.length) return;
+
+      syncGhostHeadingLineBreaks();
 
       ghostSectionMetrics.forEach((metric) => {
         if (!metric.titleWrapEl) return;
@@ -3042,22 +3125,13 @@
     window.addEventListener('keydown', cancelAnchorSettleForUserInput, {
       once: true
     });
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (window.scrollY > 2) {
-          markUserInteractedBeforeInitialHashAlign();
-        }
-      },
-      { passive: true, once: true }
-    );
-    const alignAnchorTarget = (target, isHomeTarget) => {
+    const alignAnchorTarget = (target, isHomeTarget, alignmentGap = 0) => {
       if (!target) return true;
       refreshCollapsedNavOffset();
       syncNavOffset();
       const desiredTop = isHomeTarget
         ? 0
-        : Math.max(Math.round(getDocumentTop(target) - getNavOffset()), 0);
+        : Math.max(Math.round(getDocumentTop(target) - getNavOffset() - alignmentGap), 0);
       const delta = desiredTop - window.scrollY;
       if (Math.abs(delta) <= 1) return true;
       if (lenis?.scrollTo) {
@@ -3077,7 +3151,8 @@
       target,
       isHomeTarget,
       isMobileNavInteraction,
-      durationSeconds
+      durationSeconds,
+      alignmentGap = 0
     }) => {
       const token = ++navAnchorSettleToken;
       const startDelayMs = Math.max(Math.round(durationSeconds * 1000) + 120, 240);
@@ -3086,7 +3161,7 @@
       const runCheck = () => {
         if (token !== navAnchorSettleToken) return;
         checks += 1;
-        const settled = alignAnchorTarget(target, isHomeTarget);
+        const settled = alignAnchorTarget(target, isHomeTarget, alignmentGap);
         updateActiveSection();
         if (settled && checks >= 2) return;
         if (checks >= maxChecks) return;
@@ -3176,51 +3251,35 @@
       if (!hash || hash.length < 2) return;
       const target = document.querySelector(hash);
       if (!target) return;
+      const alignmentTarget = target.matches('section.section-ghost')
+        ? target.querySelector('.ghost-title-wrap') || target
+        : target;
       const interactionVersionAtStart = userInteractionVersion;
-      const scrollYAtStart = window.scrollY;
-      const didScrollSinceStart = () => Math.abs(window.scrollY - scrollYAtStart) > 8;
       const isHomeTarget = hash === '#anasayfa';
       const isMobileNavInteraction = isMobileViewport();
+      const alignmentGap = 0;
       await closeNavMenuIfNeeded();
-      if (didScrollSinceStart()) return;
       if (interactionVersionAtStart !== userInteractionVersion) return;
       refreshCollapsedNavOffset();
       syncNavOffset();
       if (isMobileNavInteraction) {
         await waitForStableNavbar();
-        if (didScrollSinceStart()) return;
         if (interactionVersionAtStart !== userInteractionVersion) return;
       }
-      await waitForPrecedingMediaStability(target);
-      if (didScrollSinceStart()) return;
+      alignAnchorTarget(alignmentTarget, isHomeTarget, alignmentGap);
+      await waitForPrecedingMediaStability(alignmentTarget);
       if (interactionVersionAtStart !== userInteractionVersion) return;
-      await waitForLayoutStability(target);
-      if (didScrollSinceStart()) return;
+      await waitForLayoutStability(alignmentTarget);
       if (interactionVersionAtStart !== userInteractionVersion) return;
-      const nextTop = isHomeTarget
-        ? 0
-        : Math.max(Math.round(getDocumentTop(target) - getNavOffset()), 0);
-      const duration = isMobileNavInteraction ? 1 : 1.05;
-      if (lenis?.scrollTo) {
-        lenis.scrollTo(nextTop, {
-          duration,
-          easing: (t) => 1 - Math.pow(1 - t, 3.2),
-          force: true,
-          immediate: false
-        });
-      } else {
-        window.scrollTo({
-          top: nextTop,
-          behavior: 'smooth'
-        });
-      }
+      alignAnchorTarget(alignmentTarget, isHomeTarget, alignmentGap);
       activeSectionHash = hash;
       setActiveNavLink(hash);
       scheduleAnchorSettle({
-        target,
+        target: alignmentTarget,
         isHomeTarget,
         isMobileNavInteraction,
-        durationSeconds: duration
+        durationSeconds: 0,
+        alignmentGap
       });
     };
     window.addEventListener('hashchange', () => {
@@ -3232,7 +3291,6 @@
         const hash = window.location.hash;
         if (!hash || hash === '#anasayfa') return;
         if (userInteractedBeforeInitialHashAlign) return;
-        if (window.scrollY > 2) return;
         alignFromCurrentHash().catch(() => {});
       },
       { once: true }
