@@ -142,6 +142,10 @@
           'Amigurumi bakımı, hediye seçimi ve kişiye özel tasarım süreci için hazırladığım kısa ve kullanışlı rehberleri keşfet.',
         'blog.all': 'Tüm Blog Yazıları',
         'blog.read': 'Yazının Devamı',
+        'blog.date': '20 Haziran 2026',
+        'blog.category.care': 'Bakım Rehberi',
+        'blog.category.gift': 'Hediye Rehberi',
+        'blog.category.custom': 'Tasarım Süreci',
         'blog.reading.five': '5 dk. okuma',
         'blog.reading.six': '6 dk. okuma',
         'blog.post.care.title': 'Amigurumi Oyuncak Bakımı: Formunu ve Dokusunu Koruma Rehberi',
@@ -290,6 +294,10 @@
           'Explore concise, practical guides to amigurumi care, thoughtful gift selection, and the custom design process.',
         'blog.all': 'All Blog Posts',
         'blog.read': 'Continue Reading',
+        'blog.date': 'June 20, 2026',
+        'blog.category.care': 'Care Guide',
+        'blog.category.gift': 'Gift Guide',
+        'blog.category.custom': 'Design Process',
         'blog.reading.five': '5 min read',
         'blog.reading.six': '6 min read',
         'blog.post.care.title': 'Amigurumi Care: A Guide to Preserving Shape and Texture',
@@ -903,8 +911,21 @@
 
       allNavLinks.forEach((link) => {
         const previousInlineSize = link.style.inlineSize;
+        const currentText = link.textContent;
+        const translationKey = link.getAttribute('data-i18n');
+        const candidateTexts = new Set([currentText]);
+        if (translationKey) {
+          candidateTexts.add(i18nDictionary.tr[translationKey]);
+          candidateTexts.add(i18nDictionary.en[translationKey]);
+        }
+
         link.style.inlineSize = 'auto';
-        maxWidth = Math.max(maxWidth, Math.ceil(link.getBoundingClientRect().width));
+        candidateTexts.forEach((candidateText) => {
+          if (!candidateText) return;
+          link.textContent = candidateText;
+          maxWidth = Math.max(maxWidth, Math.ceil(link.getBoundingClientRect().width));
+        });
+        link.textContent = currentText;
         link.style.inlineSize = previousInlineSize;
       });
 
@@ -1416,7 +1437,7 @@
       const travelDistance = Math.max(viewportHeight + rect.height, 1);
       const progress = clamp((viewportHeight - rect.top) / travelDistance, 0, 1);
       const normalizedProgress = progress * 2 - 1;
-      const ranges = window.innerWidth <= 767 ? [96] : [96, -48, 192, -48, 96];
+      const ranges = window.innerWidth <= 767 ? [96, 192, 96] : [96, -48, 192, -48, 96];
 
       inspirationTracks.forEach((track, index) => {
         const offsetPx = normalizedProgress * (ranges[index] ?? ranges[0]);
