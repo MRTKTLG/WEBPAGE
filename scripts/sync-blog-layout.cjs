@@ -32,6 +32,7 @@ const localizeLayout = (template, rootPrefix, topTarget) =>
     .replaceAll('href="#sss"', `href="${rootPrefix}index.html#sss"`)
     .replaceAll('href="#iletisim"', `href="${rootPrefix}index.html#iletisim"`)
     .replaceAll('href="blog/index.html"', `href="${rootPrefix}blog/index.html"`)
+    .replaceAll('src="assets/', `src="${rootPrefix}assets/`)
     .replace(
       `class="nav-link" href="${rootPrefix}blog/index.html"`,
       `class="nav-link is-active" href="${rootPrefix}blog/index.html"`

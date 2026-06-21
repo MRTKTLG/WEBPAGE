@@ -8,7 +8,6 @@ const { PurgeCSS } = require('purgecss');
 
 const rootDir = path.resolve(__dirname, '..');
 const outputDir = path.join(rootDir, '_site');
-const outputAssetsDir = path.join(outputDir, 'assets');
 
 const readSource = (relativePath) => fs.readFileSync(path.join(rootDir, relativePath), 'utf8');
 const writeOutput = (relativePath, content) => {
@@ -21,7 +20,7 @@ const formatBytes = (bytes) => `${(bytes / 1024).toFixed(1)} KiB`;
 
 async function build() {
   fs.rmSync(outputDir, { recursive: true, force: true });
-  fs.mkdirSync(outputAssetsDir, { recursive: true });
+  fs.mkdirSync(outputDir, { recursive: true });
 
   const htmlFiles = ['index.html'];
   const collectHtmlFiles = (directory, prefix = '') => {
@@ -122,9 +121,20 @@ async function build() {
   writeOutput('assets/styles.css', cssResult.code);
   writeOutput('assets/app.js', jsCode);
   fs.copyFileSync(path.join(rootDir, 'sitemap.xml'), path.join(outputDir, 'sitemap.xml'));
-  fs.cpSync(path.join(rootDir, 'assets/img'), path.join(outputAssetsDir, 'img'), {
-    recursive: true
-  });
+  const referencedImagePaths = new Set(
+    [...`${allHtmlSource}\n${appSource}\n${stylesSource}`.matchAll(/assets\/img\/[\w./-]+/g)].map(
+      ([relativePath]) => relativePath
+    )
+  );
+  for (const relativePath of referencedImagePaths) {
+    const sourcePath = path.join(rootDir, relativePath);
+    if (!fs.existsSync(sourcePath)) {
+      throw new Error(`Referenced image is missing: ${relativePath}`);
+    }
+    const outputPath = path.join(outputDir, relativePath);
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.copyFileSync(sourcePath, outputPath);
+  }
   fs.writeFileSync(path.join(outputDir, '.nojekyll'), '', 'utf8');
 
   const sourceCssBytes = Buffer.byteLength(bootstrapSource) + Buffer.byteLength(stylesSource);

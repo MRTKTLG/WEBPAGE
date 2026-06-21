@@ -62,8 +62,8 @@
   --section-orb-pink-gradient: rgba(var(--section-orb-pink-rgb), var(--section-orb-fill-alpha));
   --section-orb-blue-gradient: rgba(var(--section-orb-blue-rgb), var(--section-orb-fill-alpha));
   --shadow-heading-gray: rgba(22, 24, 31, 0.28);
-  --section-pad-y: clamp(7.5rem, 11vw, 10rem);
-  --section-pad-y-mobile: 6.5rem;
+  --section-pad-y: clamp(6rem, 8vw, 8rem);
+  --section-pad-y-mobile: 4.75rem;
   --space-1: 0.75rem;
   --space-2: 1rem;
   --space-3: 1.25rem;
@@ -363,13 +363,21 @@ body.is-modal-scroll-locked .navbar {
 }
 
 .navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(0.45rem, 1vw, 0.7rem);
+  flex: 0 0 auto;
   color: var(--ink);
+  line-height: 1;
+}
+
+.navbar-brand-text {
   font-family: var(--font-primary);
-  letter-spacing: 0.01em;
   font-size: var(--text-brand);
-  line-height: 1.1;
   font-weight: 700;
-  text-transform: none;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .navbar-brand:hover,
@@ -1779,9 +1787,10 @@ main > section:not([id]) > .container > h2 {
 .inspiration-gallery {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: var(--testimonial-gap);
-  height: 42rem;
+  height: auto;
+  aspect-ratio: 5 / 2.25;
   overflow: hidden;
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
   mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
@@ -1799,7 +1808,7 @@ main > section:not([id]) > .container > h2 {
   display: flex;
   flex-direction: column;
   gap: var(--testimonial-gap);
-  transform: translate3d(0, calc(-8.5rem + var(--inspiration-parallax-y)), 0);
+  transform: translate3d(0, calc(-12rem + var(--inspiration-parallax-y)), 0);
   will-change: transform;
   backface-visibility: hidden;
 }
@@ -1826,10 +1835,11 @@ main > section:not([id]) > .container > h2 {
 @media (max-width: 991px) {
   .inspiration-gallery {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    height: 36rem;
+    height: auto;
+    aspect-ratio: 2 / 2.25;
   }
 
-  .inspiration-column:last-child {
+  .inspiration-column:nth-child(n + 3) {
     display: none;
   }
 }
@@ -1837,10 +1847,11 @@ main > section:not([id]) > .container > h2 {
 @media (max-width: 767px) {
   .inspiration-gallery {
     grid-template-columns: minmax(0, 1fr);
-    height: 34rem;
+    height: auto;
+    aspect-ratio: 1 / 2.25;
   }
 
-  .inspiration-column:not(:first-child) {
+  .inspiration-column:nth-child(n + 2) {
     display: none;
   }
 

@@ -20,6 +20,19 @@
     const testimonialsSectionEl = document.getElementById('yorumlar');
     const inspirationSectionEl = document.getElementById('ilham-galerisi');
     const inspirationTracks = Array.from(document.querySelectorAll('.inspiration-track'));
+    inspirationTracks.forEach((track) => {
+      if (track.dataset.continuityReady === 'true') return;
+      const sourceCards = Array.from(track.querySelectorAll('.inspiration-card')).slice(0, 2);
+      sourceCards.forEach((card) => {
+        const clone = card.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        clone.dataset.inspirationClone = 'true';
+        clone.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
+        clone.querySelectorAll('img').forEach((image) => image.setAttribute('alt', ''));
+        track.append(clone);
+      });
+      track.dataset.continuityReady = 'true';
+    });
     const productRatingStars = Array.from(document.querySelectorAll('.product-rating-stars'));
     const contactFormEl = document.getElementById('contactForm');
     const swiperStylesEl = document.getElementById('swiperStyles');
@@ -140,7 +153,7 @@
         'blog.post.custom.title': 'Kişiye Özel Amigurumi Tasarım Süreci Nasıl İlerler?',
         'blog.post.custom.desc':
           'Fikirden renk seçimine, üretimden son kontrole kadar kişisel bir tasarımın nasıl şekillendiğini keşfet.',
-        'gallery.title': 'Her İlmek Bir Hikâyeye Dönüşür',
+        'gallery.title': 'İlmeklerin ardındaki dünya',
         'faq.ghost': 'Sık Sorulan Sorular',
         'faq.title': 'Sık Sorulan Sorular',
         'faq.lead':
@@ -288,7 +301,7 @@
         'blog.post.custom.title': 'How Does the Custom Amigurumi Design Process Work?',
         'blog.post.custom.desc':
           'See how a personal design takes shape from the first idea and color choices through final inspection.',
-        'gallery.title': 'Every Stitch Becomes a Story',
+        'gallery.title': 'The world behind the stitches',
         'faq.ghost': 'Frequently Asked Questions',
         'faq.title': 'Frequently Asked Questions',
         'faq.lead':
@@ -1403,7 +1416,7 @@
       const travelDistance = Math.max(viewportHeight + rect.height, 1);
       const progress = clamp((viewportHeight - rect.top) / travelDistance, 0, 1);
       const normalizedProgress = progress * 2 - 1;
-      const ranges = window.innerWidth <= 767 ? [82, -64, 92] : [105, -80, 125];
+      const ranges = window.innerWidth <= 767 ? [96] : [96, -48, 192, -48, 96];
 
       inspirationTracks.forEach((track, index) => {
         const offsetPx = normalizedProgress * (ranges[index] ?? ranges[0]);
@@ -3129,6 +3142,8 @@
     let userInteractedBeforeInitialHashAlign = false;
     let userInteractionVersion = 0;
     let navAnchorSettleToken = 0;
+    let isAnchorScrollActive = false;
+    let anchorScrollEndTimer = 0;
     const markUserInteractedBeforeInitialHashAlign = () => {
       userInteractedBeforeInitialHashAlign = true;
       userInteractionVersion += 1;
@@ -3136,26 +3151,34 @@
     const cancelAnchorSettleForUserInput = () => {
       markUserInteractedBeforeInitialHashAlign();
       navAnchorSettleToken += 1;
+      if (!isAnchorScrollActive) return;
+      isAnchorScrollActive = false;
+      window.clearTimeout(anchorScrollEndTimer);
+      if (lenis?.scrollTo) {
+        lenis.scrollTo(window.scrollY, {
+          immediate: true,
+          force: true
+        });
+      } else {
+        window.scrollTo({
+          top: window.scrollY,
+          behavior: 'auto'
+        });
+      }
     };
     window.addEventListener('touchstart', cancelAnchorSettleForUserInput, {
-      passive: true,
-      once: true
+      passive: true
     });
     window.addEventListener('touchmove', cancelAnchorSettleForUserInput, {
-      passive: true,
-      once: true
+      passive: true
     });
     window.addEventListener('wheel', cancelAnchorSettleForUserInput, {
-      passive: true,
-      once: true
+      passive: true
     });
     window.addEventListener('pointerdown', cancelAnchorSettleForUserInput, {
-      passive: true,
-      once: true
+      passive: true
     });
-    window.addEventListener('keydown', cancelAnchorSettleForUserInput, {
-      once: true
-    });
+    window.addEventListener('keydown', cancelAnchorSettleForUserInput);
     const alignAnchorTarget = (target, isHomeTarget, alignmentGap = 0) => {
       if (!target) return true;
       refreshCollapsedNavOffset();
@@ -3259,6 +3282,14 @@
         activeSectionHash = href;
         setActiveNavLink(href);
         const duration = isMobileNavInteraction ? 1 : 1.05;
+        window.clearTimeout(anchorScrollEndTimer);
+        isAnchorScrollActive = true;
+        anchorScrollEndTimer = window.setTimeout(
+          () => {
+            isAnchorScrollActive = false;
+          },
+          Math.round(duration * 1000) + 120
+        );
         if (lenis?.scrollTo) {
           lenis.scrollTo(nextTop, {
             duration,
