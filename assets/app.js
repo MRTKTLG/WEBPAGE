@@ -18,6 +18,8 @@
     const heroCarousel = document.getElementById('heroCarousel');
     const testimonialTracks = Array.from(document.querySelectorAll('.testimonial-track'));
     const testimonialsSectionEl = document.getElementById('yorumlar');
+    const inspirationSectionEl = document.getElementById('ilham-galerisi');
+    const inspirationTracks = Array.from(document.querySelectorAll('.inspiration-track'));
     const productRatingStars = Array.from(document.querySelectorAll('.product-rating-stars'));
     const contactFormEl = document.getElementById('contactForm');
     const swiperStylesEl = document.getElementById('swiperStyles');
@@ -138,6 +140,7 @@
         'blog.post.custom.title': 'Kişiye Özel Amigurumi Tasarım Süreci Nasıl İlerler?',
         'blog.post.custom.desc':
           'Fikirden renk seçimine, üretimden son kontrole kadar kişisel bir tasarımın nasıl şekillendiğini keşfet.',
+        'gallery.title': 'Her İlmek Bir Hikâyeye Dönüşür',
         'faq.ghost': 'Sık Sorulan Sorular',
         'faq.title': 'Sık Sorulan Sorular',
         'faq.lead':
@@ -202,7 +205,6 @@
         'contact.side.shops.body':
           'Hazır ürünlerimi ve güncel seçenekleri Shopier ile Endolu mağazalarımda inceleyebilirsin.',
         'footer.link.instagram': 'instagram.com/novacrafts',
-        'footer.link.blog': 'Blog',
         'footer.link.shopier': 'shopier.com/novacrafts',
         'footer.link.endolu': 'endolu.com/novacrafts',
         'footer.quality.handmade': 'El Yapımı',
@@ -286,6 +288,7 @@
         'blog.post.custom.title': 'How Does the Custom Amigurumi Design Process Work?',
         'blog.post.custom.desc':
           'See how a personal design takes shape from the first idea and color choices through final inspection.',
+        'gallery.title': 'Every Stitch Becomes a Story',
         'faq.ghost': 'Frequently Asked Questions',
         'faq.title': 'Frequently Asked Questions',
         'faq.lead':
@@ -350,7 +353,6 @@
         'contact.side.shops.body':
           'Browse my ready-made pieces and current selections through my Shopier and Endolu stores.',
         'footer.link.instagram': 'instagram.com/novacrafts',
-        'footer.link.blog': 'Blog',
         'footer.link.shopier': 'shopier.com/novacrafts',
         'footer.link.endolu': 'endolu.com/novacrafts',
         'footer.quality.handmade': 'Handmade',
@@ -1135,7 +1137,7 @@
       currentOffsetPx: null
     }));
     const orbParallaxSections = Array.from(
-      document.querySelectorAll('.stats-section, #yorumlar')
+      document.querySelectorAll('.stats-section, #yorumlar, #ilham-galerisi')
     ).map((sectionEl) => ({
       sectionEl,
       currentPinkOffsetPx: 0,
@@ -1386,6 +1388,31 @@
       return isStillAnimating;
     };
 
+    const updateInspirationParallax = () => {
+      if (!inspirationSectionEl || !inspirationTracks.length) return false;
+
+      if (prefersReducedMotion.matches) {
+        inspirationTracks.forEach((track) => {
+          track.style.setProperty('--inspiration-parallax-y', '0px');
+        });
+        return false;
+      }
+
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const rect = inspirationSectionEl.getBoundingClientRect();
+      const travelDistance = Math.max(viewportHeight + rect.height, 1);
+      const progress = clamp((viewportHeight - rect.top) / travelDistance, 0, 1);
+      const normalizedProgress = progress * 2 - 1;
+      const ranges = window.innerWidth <= 767 ? [82, -64, 92] : [105, -80, 125];
+
+      inspirationTracks.forEach((track, index) => {
+        const offsetPx = normalizedProgress * (ranges[index] ?? ranges[0]);
+        track.style.setProperty('--inspiration-parallax-y', `${offsetPx.toFixed(3)}px`);
+      });
+
+      return progress > 0 && progress < 1;
+    };
+
     const updateTitleReveal = (sectionEl) => {
       if (!sectionEl) return false;
 
@@ -1408,7 +1435,8 @@
       const isJourneyAnimating = updateTitleReveal(document.querySelector('#urun-yolculugu'));
       const isStatsAnimating = updateTitleReveal(statsSectionEl);
       const isFeedbackAnimating = updateTitleReveal(document.querySelector('#yorumlar'));
-      return isJourneyAnimating || isStatsAnimating || isFeedbackAnimating;
+      const isGalleryAnimating = updateTitleReveal(inspirationSectionEl);
+      return isJourneyAnimating || isStatsAnimating || isFeedbackAnimating || isGalleryAnimating;
     };
 
     const updateActiveSection = () => {
@@ -3024,6 +3052,7 @@
     refreshGhostMetrics();
     updateActiveSection();
     updateGhostHeadingPosition();
+    updateInspirationParallax();
     updateSectionOrbParallax();
 
     function performScrollEffects() {
@@ -3032,6 +3061,7 @@
       updateActiveSection();
       updateStatsTitleReveal();
       updateGhostHeadingPosition();
+      updateInspirationParallax();
       updateSectionOrbParallax();
       applyHeroScrollParallax();
     }
@@ -3059,6 +3089,7 @@
       refreshGhostMetrics();
       updateActiveSection();
       updateGhostHeadingPosition();
+      updateInspirationParallax();
       updateSectionOrbParallax();
       syncHeroParallaxLayout();
       scheduleTitleCircleAlignment();
@@ -3205,8 +3236,13 @@
         }
 
         const navClosePromise = closeNavMenuIfNeeded();
-        refreshCollapsedNavOffset();
-        syncNavOffset();
+        if (isMobileNavInteraction) {
+          await navClosePromise;
+          await waitForStableNavbar(2, 12);
+        } else {
+          refreshCollapsedNavOffset();
+          syncNavOffset();
+        }
         const focusedEl = document.activeElement;
         if (focusedEl instanceof HTMLElement && navCollapseEl?.contains(focusedEl)) {
           focusedEl.blur();
@@ -3243,7 +3279,9 @@
           isMobileNavInteraction,
           durationSeconds: duration
         });
-        navClosePromise.catch(() => {});
+        if (!isMobileNavInteraction) {
+          navClosePromise.catch(() => {});
+        }
       });
     });
     const alignFromCurrentHash = async () => {
