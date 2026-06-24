@@ -9,6 +9,18 @@
         ? bootstrap.Collapse.getOrCreateInstance(navCollapseEl, { toggle: false })
         : null;
     const navbarEl = document.querySelector('.navbar');
+    const syncMobileNavSurfaceHeight = () => {
+      if (!navbarEl || !navCollapseEl) return;
+      const menuHeight = window.matchMedia('(max-width: 991px)').matches
+        ? Math.max(navCollapseEl.getBoundingClientRect().height, 0)
+        : 0;
+      navbarEl.style.setProperty('--mobile-menu-height', `${menuHeight}px`);
+    };
+    if ('ResizeObserver' in window && navCollapseEl) {
+      new ResizeObserver(syncMobileNavSurfaceHeight).observe(navCollapseEl);
+    }
+    window.addEventListener('resize', syncMobileNavSurfaceHeight, { passive: true });
+    syncMobileNavSurfaceHeight();
     const statsSectionEl = document.getElementById('sayaclar');
     const productsSectionEl = document.getElementById('urunler');
     const allNavLinks = Array.from(document.querySelectorAll('a.nav-link'));
@@ -130,16 +142,12 @@
         'counter.item3': 'Mutlu Müşteri',
         'products.ghost': 'Ürünler',
         'products.title': 'Ürünler',
-        'products.lead':
-          'El emeğiyle hazırladığım karakterli tasarımları, en sevilen modelleri ve dönemsel olarak özel fiyatla sunduğum seçili parçaları burada keşfedebilirsin.',
         'products.popular': 'Popüler Ürünler',
         'products.sale': 'Kampanyalı Ürünler',
         'products.saleBadge': 'İndirimli ürün',
         'products.other': 'Diğer Ürünler',
         'blog.ghost': 'Blog',
         'blog.title': 'Blog',
-        'blog.lead':
-          'Amigurumi bakımı, hediye seçimi ve kişiye özel tasarım süreci için hazırladığım kısa ve kullanışlı rehberleri keşfet.',
         'blog.all': 'Tüm Blog Yazıları',
         'blog.read': 'Yazının Devamı',
         'blog.date': '20 Haziran 2026',
@@ -160,8 +168,6 @@
         'gallery.title': 'İlmeklerin ardındaki dünya',
         'faq.ghost': 'Sık Sorulan Sorular',
         'faq.title': 'Sık Sorulan Sorular',
-        'faq.lead':
-          'Siparişten teslimata kadar merak edebileceğin ayrıntıları burada yanıtladım. Aradığın cevabı bulamazsan bana her zaman yazabilirsin.',
         'faq.q1.title': 'Siparişim ne kadar sürede hazırlanır?',
         'faq.q1.body':
           'Hazır modelleri genellikle 3-6 iş günü içinde hazırlıyorum. Kişiye özel tasarımlarda süre modelin ayrıntılarına göre değişebildiği için net teslim planını siparişten önce seninle paylaşıyorum.',
@@ -199,8 +205,6 @@
           'İpliğin dokusu, formu ve bitiş detayları beklentimin üzerindeydi. El emeğinin özeni her yerinde hissediliyor; paketi açtığımda yüzümde kocaman bir gülümseme vardı.',
         'contact.ghost': 'İrtibat',
         'contact.title': 'İrtibat',
-        'contact.note':
-          'Aklındaki modeli, renkleri veya hediye fikrini benimle paylaş; üretime başlamadan önce tüm ayrıntıları birlikte netleştirelim.',
         'contact.form.name.label': 'Ad Soyad',
         'contact.form.name.placeholder': 'Adını ve soyadını yaz',
         'contact.form.email.label': 'E-posta',
@@ -282,16 +286,12 @@
         'counter.item3': 'Happy Customers',
         'products.ghost': 'Products',
         'products.title': 'Products',
-        'products.lead':
-          'Discover the characterful pieces I make by hand, including most-loved designs and selected creations offered at special prices from time to time.',
         'products.popular': 'Popular Products',
         'products.sale': 'Special Offers',
         'products.saleBadge': 'Discounted product',
         'products.other': 'More Products',
         'blog.ghost': 'Blog',
         'blog.title': 'Blog',
-        'blog.lead':
-          'Explore concise, practical guides to amigurumi care, thoughtful gift selection, and the custom design process.',
         'blog.all': 'All Blog Posts',
         'blog.read': 'Continue Reading',
         'blog.date': 'June 20, 2026',
@@ -312,8 +312,6 @@
         'gallery.title': 'The world behind the stitches',
         'faq.ghost': 'Frequently Asked Questions',
         'faq.title': 'Frequently Asked Questions',
-        'faq.lead':
-          'I have answered the details you may wonder about from ordering through delivery. If you cannot find what you need, you can always write to me.',
         'faq.q1.title': 'How long will my order take to prepare?',
         'faq.q1.body':
           'I usually prepare ready-made models within 3-6 business days. Custom designs may take longer depending on their details, so I share a clear timeline with you before the order is confirmed.',
@@ -351,8 +349,6 @@
           'The yarn texture, form, and finishing details exceeded my expectations. The care of handwork is visible throughout, and I had the biggest smile when I opened the package.',
         'contact.ghost': 'Contact',
         'contact.title': 'Contact',
-        'contact.note':
-          'Share the model, colors, or gift idea you have in mind, and we can define every detail together before I begin making it.',
         'contact.form.name.label': 'Full Name',
         'contact.form.name.placeholder': 'Enter your full name',
         'contact.form.email.label': 'Email',
@@ -1025,9 +1021,16 @@
       closeNavMenuIfNeeded().catch(() => {});
     };
 
-    navCollapseEl?.addEventListener('show.bs.collapse', rememberNavMenuScrollPosition);
-    navCollapseEl?.addEventListener('shown.bs.collapse', rememberNavMenuScrollPosition);
+    navCollapseEl?.addEventListener('show.bs.collapse', () => {
+      syncMobileNavSurfaceHeight();
+      rememberNavMenuScrollPosition();
+    });
+    navCollapseEl?.addEventListener('shown.bs.collapse', () => {
+      syncMobileNavSurfaceHeight();
+      rememberNavMenuScrollPosition();
+    });
     navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
+      syncMobileNavSurfaceHeight();
       window.clearTimeout(navMenuScrollSettleTimer);
       navMenuScrollCloseArmed = false;
       navMenuOpenedDuringPageMove = false;
@@ -3160,17 +3163,12 @@
         'a.navbar-brand[href^="#"], a.nav-link[href^="#"], a.footer-top-button[href^="#"]'
       )
     );
-    let userInteractedBeforeInitialHashAlign = false;
     let userInteractionVersion = 0;
     let navAnchorSettleToken = 0;
     let isAnchorScrollActive = false;
     let anchorScrollEndTimer = 0;
-    const markUserInteractedBeforeInitialHashAlign = () => {
-      userInteractedBeforeInitialHashAlign = true;
-      userInteractionVersion += 1;
-    };
     const cancelAnchorSettleForUserInput = () => {
-      markUserInteractedBeforeInitialHashAlign();
+      userInteractionVersion += 1;
       navAnchorSettleToken += 1;
       if (!isAnchorScrollActive) return;
       isAnchorScrollActive = false;
@@ -3341,9 +3339,7 @@
       if (!hash || hash.length < 2) return;
       const target = document.querySelector(hash);
       if (!target) return;
-      const alignmentTarget = target.matches('section.section-ghost')
-        ? target.querySelector('.ghost-title-wrap') || target
-        : target;
+      const alignmentTarget = target;
       const interactionVersionAtStart = userInteractionVersion;
       const isHomeTarget = hash === '#anasayfa';
       const isMobileNavInteraction = isMobileViewport();
@@ -3375,16 +3371,6 @@
     window.addEventListener('hashchange', () => {
       alignFromCurrentHash().catch(() => {});
     });
-    window.addEventListener(
-      'load',
-      () => {
-        const hash = window.location.hash;
-        if (!hash || hash === '#anasayfa') return;
-        if (userInteractedBeforeInitialHashAlign) return;
-        alignFromCurrentHash().catch(() => {});
-      },
-      { once: true }
-    );
 
     navCollapseEl?.addEventListener('hidden.bs.collapse', () => {
       refreshCollapsedNavOffset();
