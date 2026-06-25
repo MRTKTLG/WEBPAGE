@@ -120,7 +120,9 @@ async function build() {
   }
   writeOutput('assets/styles.css', cssResult.code);
   writeOutput('assets/app.js', jsCode);
-  fs.copyFileSync(path.join(rootDir, 'sitemap.xml'), path.join(outputDir, 'sitemap.xml'));
+  for (const staticFile of ['robots.txt', 'sitemap.xml']) {
+    fs.copyFileSync(path.join(rootDir, staticFile), path.join(outputDir, staticFile));
+  }
   const referencedImagePaths = new Set(
     [...`${allHtmlSource}\n${appSource}\n${stylesSource}`.matchAll(/assets\/img\/[\w./-]+/g)].map(
       ([relativePath]) => relativePath
